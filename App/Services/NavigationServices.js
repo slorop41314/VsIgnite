@@ -13,12 +13,13 @@ function setTopLevelNavigator(navigatorRef) {
 
 function navigate(routeName, params) {
   if (_navigator) {
-    _navigator.props.dispatch(
-      NavigationActions.navigate({
-        routeName,
-        params,
-      })
-    );
+    // _navigator.props.dispatch(
+    //   NavigationActions.navigate({
+    //     routeName,
+    //     params,
+    //   })
+    // );
+    _navigator.currentNavProp.navigate(routeName, params)
   }
 }
 
