@@ -6,6 +6,7 @@ import {
 } from 'react-navigation-redux-helpers'
 import { connect } from 'react-redux'
 import AppNavigation from './AppNavigation'
+import NavigationServices from '../Services/NavigationServices'
 
 export const appNavigatorMiddleware = createReactNavigationReduxMiddleware(
   (state) => state.nav,
@@ -15,7 +16,7 @@ export const appNavigatorMiddleware = createReactNavigationReduxMiddleware(
 const ReduxAppNavigator = createReduxContainer(AppNavigation, 'root')
 
 class ReduxNavigation extends React.Component {
-  componentDidMount () {
+  componentDidMount() {
     if (Platform.OS === 'ios') return
     BackHandler.addEventListener('hardwareBackPress', () => {
       const { dispatch, nav } = this.props
@@ -29,13 +30,16 @@ class ReduxNavigation extends React.Component {
     })
   }
 
-  componentWillUnmount () {
+  componentWillUnmount() {
     if (Platform.OS === 'ios') return
     BackHandler.removeEventListener('hardwareBackPress', undefined)
   }
 
-  render () {
-    return <ReduxAppNavigator dispatch={this.props.dispatch} state={this.props.nav} />
+  render() {
+    return <ReduxAppNavigator
+      ref={navRef => NavigationServices.setTopLevelNavigator(navRef)}
+      dispatch={this.props.dispatch}
+      state={this.props.nav} />
   }
 }
 
