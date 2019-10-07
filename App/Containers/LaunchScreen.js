@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { ScrollView, Text, Image, View, Button } from 'react-native'
 import { Images } from '../Themes'
 import NavigationServices from '../Services/NavigationServices'
-import {PlaceholderImage} from 'react-native-awesome-component'
 
 // Styles
 import styles from './Styles/LaunchScreenStyles'

@@ -10575,7 +10575,7 @@ react-native-animatable@^1.3.2:
 
 "react-native-awesome-component@https://github.com/RZulfikri/react-native-awesome-component.git":
   version "0.0.1"
-  resolved "https://github.com/RZulfikri/react-native-awesome-component.git#623f82a98fc7c6c24f902b401173c0afa3054487"
+  resolved "https://github.com/RZulfikri/react-native-awesome-component.git#f8ba9ddff76348484c37b4c6beec92228070df32"
   dependencies:
     prop-types "^15.7.2"
     rn-placeholder "^3.0.0"
