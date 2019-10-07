@@ -65,7 +65,7 @@ class ExampleScreen extends Component {
 
         <Styled.Container isCard padded style={{ marginTop: 10 }}>
           <Styled.H5>
-            Image Placeholder
+            Text Placeholder
           </Styled.H5>
           <PlaceholderText>{this.state.text}</PlaceholderText>
         </Styled.Container>
