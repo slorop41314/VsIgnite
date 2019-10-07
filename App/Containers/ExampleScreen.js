@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
 import { ScrollView, Text, KeyboardAvoidingView } from 'react-native'
 import { connect } from 'react-redux'
-import {Styled, PlaceholderImage, PlaceholderText} from 'react-native-awesome-component'
+import { Styled, PlaceholderImage, PlaceholderText, CustomButton } from 'react-native-awesome-component'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
 // Styles
 import styles from './Styles/ExampleScreenStyle'
+import { GlobalConst } from 'react-native-awesome-component'
 
 class ExampleScreen extends Component {
   constructor(props) {
@@ -17,13 +18,13 @@ class ExampleScreen extends Component {
   }
 
   componentDidMount() {
-    setTimeout(() => this.setState({text: 'Hello this is sample of text placeholder'}), 3000)
+    setTimeout(() => this.setState({ text: 'Hello this is sample of text placeholder' }), 3000)
   }
 
-  render () {
+  render() {
     return (
       <ScrollView style={styles.container}>
-        <Styled.Container isCard padded style={{marginTop: 10}}>
+        <Styled.Container isCard padded style={{ marginTop: 10 }}>
           <Styled.H5>
             Typography
           </Styled.H5>
@@ -50,7 +51,7 @@ class ExampleScreen extends Component {
           </Styled.H7>
         </Styled.Container>
 
-        <Styled.Container isCard padded style={{marginTop: 10}}>
+        <Styled.Container isCard padded style={{ marginTop: 10 }}>
           <Styled.H5>
             Image Placeholder
           </Styled.H5>
@@ -62,11 +63,34 @@ class ExampleScreen extends Component {
           <PlaceholderImage uri={'http://rahmatzulfikri.xyz/images/avatar2.jpg'} />
         </Styled.Container>
 
-        <Styled.Container isCard padded style={{marginTop: 10}}>
+        <Styled.Container isCard padded style={{ marginTop: 10 }}>
           <Styled.H5>
             Image Placeholder
           </Styled.H5>
           <PlaceholderText>{this.state.text}</PlaceholderText>
+        </Styled.Container>
+
+        <Styled.Container isCard padded style={{ marginTop: 10 }}>
+          <Styled.H5>
+            Custom Button
+          </Styled.H5>
+          <Styled.H2>Active Button</Styled.H2>
+          <CustomButton
+            title='INI TITLE'
+            isCard
+          />
+          <Styled.H2>Disable Button</Styled.H2>
+          <CustomButton
+            title='INI TITLE'
+            disabled
+            width={'50%'}
+          />
+          <Styled.H2>Loading Button</Styled.H2>
+          <CustomButton
+            title='INI TITLE'
+            loading
+            radius={10}
+          />
         </Styled.Container>
       </ScrollView>
     )
