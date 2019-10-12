@@ -1,14 +1,9 @@
 import { NavigationActions } from 'react-navigation';
 
 let _navigator;
-let _currentScreen;
 
 function setTopLevelNavigator(navigatorRef) {
   _navigator = navigatorRef;
-
-  if (_navigator) {
-    _currentScreen = getActiveRouteName(navigatorRef.currentNavProp.state)
-  }
 }
 
 function navigate(routeName, params) {
@@ -22,26 +17,31 @@ function navigate(routeName, params) {
   }
 }
 
-function getActiveRouteName(navigationState) {
-  if (!navigationState) {
-    return null;
-  }
-  const route = navigationState.routes[navigationState.index];
-  // dive into nested navigators
-  if (route.routes) {
-    return getActiveRouteName(route);
-  }
-  return route.routeName;
+function dispatch(action) {
+  const navigation = _navigator.currentNavProp
+  navigation.dispatch(action)
 }
 
-function getCurrentScreen() {
-  return _currentScreen
+function findActiveScreen(state) {
+  const {routes, index} = state
+  if (routes && routes[index]) {
+    return findActiveScreen(routes[index])
+  } else {
+    return state
+  }
+}
+
+function getActiveScreenAndParams() {
+  const navigation = _navigator.currentNavProp
+  const {state} = navigation
+  return findActiveScreen(state, null)
 }
 
 // add other navigation functions that you need and export them
 
 export default {
   navigate,
+  dispatch,
   setTopLevelNavigator,
-  getCurrentScreen,
+  getActiveScreenAndParams,
 };
