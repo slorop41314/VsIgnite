@@ -7,6 +7,7 @@ import ReduxPersist from '../Config/ReduxPersist'
 
 // Styles
 import styles from './Styles/RootContainerStyles'
+import { ConnectionHandler } from 'react-native-awesome-component'
 
 class RootContainer extends Component {
   componentDidMount() {
@@ -19,6 +20,7 @@ class RootContainer extends Component {
   render() {
     return (
       <View style={styles.applicationView}>
+        <ConnectionHandler/>
         <StatusBar barStyle='light-content' />
         <ReduxNavigation />
       </View>
