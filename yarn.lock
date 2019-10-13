@@ -10573,11 +10573,14 @@ react-native-animatable@^1.3.2:
   dependencies:
     prop-types "^15.5.10"
 
-"react-native-awesome-component@https://github.com/RZulfikri/react-native-awesome-component.git":
-  version "0.0.1"
-  resolved "https://github.com/RZulfikri/react-native-awesome-component.git#a91f4dfb052c3d232162f953ad7537012a0c1e15"
+react-native-awesome-component@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-awesome-component/-/react-native-awesome-component-0.1.1.tgz#f0d90c55e67fbe015ae33fabb5367727ae3b31fa"
+  integrity sha512-8//jSAnLz8wOa6WYAiNBmjI9rU0BvoVxyaeCAWPmmNGd32g5ycvlqlTYxwaBKCAV4OEM4W9ovntB3cbWK+AVMQ==
   dependencies:
     prop-types "^15.7.2"
+    react-native-iphone-x-helper "^1.2.1"
+    react-native-vector-icons "^6.6.0"
     rn-placeholder "^3.0.0"
     styled-components "^4.3.2"
 
