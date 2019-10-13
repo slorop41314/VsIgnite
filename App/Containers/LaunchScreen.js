@@ -25,7 +25,7 @@ export default class LaunchScreen extends Component {
 
           <Button
             title='Navigate To Example'
-            onPress={() => NavigationServices.navigate('ExampleScreen')}
+            onPress={() => NavigationServices.navigate('Example Screen')}
           />
 
         </ScrollView>

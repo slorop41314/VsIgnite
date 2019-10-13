@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, KeyboardAvoidingView } from 'react-native'
+import { ScrollView, Text, KeyboardAvoidingView, View } from 'react-native'
 import { connect } from 'react-redux'
-import { Styled, PlaceholderImage, PlaceholderText, CustomButton } from 'react-native-awesome-component'
+import { Styled, PlaceholderImage, PlaceholderText, CustomButton, CustomHeader } from 'react-native-awesome-component'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
 
