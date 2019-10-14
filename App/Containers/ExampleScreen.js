@@ -11,6 +11,7 @@ import styles from './Styles/ExampleScreenStyle'
 import { Colors, Images } from '../Themes'
 
 const SUCCESS_ALERT_OPTIONS = {
+  enableDismiss: true,
   type: 'success',
   imgSuccess: undefined,
   successColor: CustomColor.alertSuccess,
@@ -23,6 +24,7 @@ const SUCCESS_ALERT_OPTIONS = {
 }
 
 const INFO_ALERT_OPTION = {
+  enableDismiss: true,
   type: 'info',
   imgInfo: undefined,
   infoColor: CustomColor.alertInfo,
@@ -39,6 +41,7 @@ const INFO_ALERT_OPTION = {
 }
 
 const ERROR_ALERT_OPTION = {
+  enableDismiss: true,
   type: 'error',
   imgError: undefined,
   errorColor: CustomColor.alertError,
@@ -51,6 +54,7 @@ const ERROR_ALERT_OPTION = {
 }
 
 const CUSTOM_ALERT_OPTIONS = {
+  enableDismiss: true,
   type: 'success',
   imgSuccess: Images.clearLogo,
   successColor: Colors.background,
