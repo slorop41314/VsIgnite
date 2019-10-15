@@ -10594,13 +10594,14 @@ react-native-animatable@^1.3.2:
     prop-types "^15.5.10"
 
 "react-native-awesome-component@git+https://github.com/RZulfikri/react-native-awesome-component.git":
-  version "0.1.1"
-  resolved "git+https://github.com/RZulfikri/react-native-awesome-component.git#dfb4160d46f9231aba94cc632ca3941772dcaff1"
+  version "0.1.2"
+  resolved "git+https://github.com/RZulfikri/react-native-awesome-component.git#2d959c14f6b4e8f07b53c5f8789a6f9760aa5149"
   dependencies:
     "@react-native-community/netinfo" "^4.4.0"
     prop-types "^15.7.2"
     react-native-dropdownalert "^4.2.0"
     react-native-iphone-x-helper "^1.2.1"
+    react-native-modal "^11.4.0"
     react-native-vector-icons "^6.6.0"
     rn-placeholder "^3.0.0"
     styled-components "^4.3.2"

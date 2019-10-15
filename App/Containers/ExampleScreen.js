@@ -4,6 +4,7 @@ import { connect } from 'react-redux'
 import { Styled, PlaceholderImage, PlaceholderText, CustomButton, Method } from 'react-native-awesome-component'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import Icons from 'react-native-vector-icons/FontAwesome5'
 import CustomColor from 'react-native-awesome-component/src/colors'
 
 // Styles
@@ -201,6 +202,18 @@ class ExampleScreen extends Component {
             title='INI TITLE'
             loading
             radius={10}
+          />
+          <Styled.H2>Custom Render Button</Styled.H2>
+          <CustomButton
+            radius={10}
+            renderActiveTitle={() => {
+              return (
+                <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <Icons name={'redo-alt'} color={CustomColor.white} size={18} />
+                  <Styled.H3 style={{ marginLeft: 10, color: CustomColor.white }}>Reload</Styled.H3>
+                </View>
+              )
+            }}
           />
         </Styled.Container>
         <Styled.Container isCard padded style={{ marginTop: 10 }}>
