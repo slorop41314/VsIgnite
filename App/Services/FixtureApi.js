@@ -20,5 +20,19 @@ export default {
       ok: true,
       data: username.toLowerCase() === 'gantman' ? gantmanData : skellockData
     }
+  },
+  getProfileList: (data) => {
+    const { page } = data
+    if (page === 1) {
+      return {
+        ok: true,
+        data: require('../Fixtures/profile-1.json')
+      }
+    } else {
+      return {
+        ok: true,
+        data: require('../Fixtures/profile-2.json')
+      }
+    }
   }
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation'
+import CustomFlatListScreen from '../Containers/CustomFlatListScreen'
 import ExampleScreen from '../Containers/ExampleScreen'
 import { createStackNavigator } from 'react-navigation-stack';
 import LaunchScreen from '../Containers/LaunchScreen'
@@ -9,7 +10,17 @@ import { CustomHeader } from 'react-native-awesome-component';
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
-  'Example Screen': { 
+  CustomFlatListScreen: {
+    screen: CustomFlatListScreen,
+    navigationOptions: ({ navigation }) => {
+      return {
+        header: <CustomHeader navigation={navigation} />,
+        // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT
+        headerLeft: null,
+      };
+    },
+  },
+  'Example Screen': {
     screen: ExampleScreen,
     navigationOptions: ({ navigation }) => {
       return {
@@ -18,9 +29,9 @@ const PrimaryNav = createStackNavigator({
         headerLeft: null,
       };
     },
-   },
-  LaunchScreen: { 
-    screen: LaunchScreen, 
+  },
+  LaunchScreen: {
+    screen: LaunchScreen,
     navigationOptions: ({ navigation }) => {
       return {
         header: <CustomHeader navigation={navigation} />,

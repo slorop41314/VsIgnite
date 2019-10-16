@@ -100,7 +100,7 @@ class ExampleScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      text: '',
+      text: undefined,
     }
 
     this.showSuccessAlert = this.showSuccessAlert.bind(this)
