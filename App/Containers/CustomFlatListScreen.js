@@ -19,7 +19,6 @@ class CustomFlatListScreen extends Component {
       meta = getProfileListStatus.payload.meta
     }
 
-    console.tron.error({ profileList })
     return (
       <CustomFlatList
         data={profileList}
