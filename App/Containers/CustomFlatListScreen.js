@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, KeyboardAvoidingView, View } from 'react-native'
+import { ScrollView, Text, KeyboardAvoidingView, View, Button } from 'react-native'
 import { connect } from 'react-redux'
 import { CustomFlatList } from 'react-native-awesome-component'
 import ProfileActions from '../Redux/ProfileRedux'

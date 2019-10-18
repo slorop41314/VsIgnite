@@ -1,6 +1,6 @@
 export const DEFAULT_INITIAL_STATE = {
   data: null,
-  fetching: null,
+  fetching: false,
   payload: null,
   error: null,
 }
