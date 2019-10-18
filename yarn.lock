@@ -10601,8 +10601,9 @@ react-native-animatable@^1.3.2:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-awesome-component@../react-native-awesome-component:
+"react-native-awesome-component@https://github.com/RZulfikri/react-native-awesome-component.git":
   version "0.1.3"
+  resolved "https://github.com/RZulfikri/react-native-awesome-component.git#1b4e5f2d015df9fe2ce36279bae5e8f92bd5569d"
   dependencies:
     "@react-native-community/netinfo" "^4.4.0"
     prop-types "^15.7.2"
