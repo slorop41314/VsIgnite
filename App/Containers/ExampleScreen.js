@@ -169,7 +169,7 @@ class ExampleScreen extends Component {
             Image Placeholder
           </Styled.H5>
           <Styled.H2>Once No Uri / Loading</Styled.H2>
-          <PlaceholderImage uri={''} />
+          <PlaceholderImage uri={undefined} />
           <Styled.H2>Once Uri Corrent</Styled.H2>
           <PlaceholderImage uri={'http://rahmatzulfikri.xyz/images/avatar.jpg'} />
           <Styled.H2>Once Uri Not Found / Error</Styled.H2>
