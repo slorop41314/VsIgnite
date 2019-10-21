@@ -33,6 +33,11 @@ export default class LaunchScreen extends Component {
             onPress={() => NavigationServices.navigate('CustomFlatListScreen')}
           />
 
+          <Button
+            title='Navigate To Custom Input'
+            onPress={() => NavigationServices.navigate('CustomInputScreen')}
+          />
+
         </ScrollView>
       </View>
     )
