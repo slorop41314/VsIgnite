@@ -1,8 +1,9 @@
 // a library to wrap and simplify api calls
 import apisauce from 'apisauce'
+import { Method } from 'react-native-awesome-component/'
 
 // our "constructor"
-const create = (baseURL = 'https://api.github.com/') => {
+const create = (baseURL = 'https://httpstat.us/') => {
   // ------
   // STEP 1
   // ------
@@ -20,6 +21,8 @@ const create = (baseURL = 'https://api.github.com/') => {
     timeout: 10000
   })
 
+  api.addMonitor(response => Method.ApiHelper.responseMonitoring(response))
+
   // ------
   // STEP 2
   // ------
@@ -34,9 +37,13 @@ const create = (baseURL = 'https://api.github.com/') => {
   // Since we can't hide from that, we embrace it by getting out of the
   // way at this level.
   //
-  const getRoot = () => api.get('')
-  const getRate = () => api.get('rate_limit')
-  const getUser = (username) => api.get('search/users', {q: username})
+  // const getRoot = () => api.get('')
+  // const getRate = () => api.get('rate_limit')
+  // const getUser = (username) => api.get('search/users', {q: username})
+
+  const test200 = (params) => api.post('200', params)
+  const test400 = (params) => api.get('400', params)
+  const test500 = (params) => api.get('500', params) 
 
   // ------
   // STEP 3
@@ -52,9 +59,13 @@ const create = (baseURL = 'https://api.github.com/') => {
   //
   return {
     // a list of the API functions from step 2
-    getRoot,
-    getRate,
-    getUser
+    // getRoot,
+    // getRate,
+    // getUser,
+
+    test200,
+    test400,
+    test500,
   }
 }
 

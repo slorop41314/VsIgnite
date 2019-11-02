@@ -38,6 +38,11 @@ export default class LaunchScreen extends Component {
             onPress={() => NavigationServices.navigate('CustomInputScreen')}
           />
 
+          <Button
+            title='Navigate To Test Connection'
+            onPress={() => NavigationServices.navigate('TestConnectionScreen')}
+          />
+
         </ScrollView>
       </View>
     )

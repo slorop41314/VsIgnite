@@ -1,5 +1,6 @@
 import React from 'react';
 import { createAppContainer } from 'react-navigation'
+import TestConnectionScreen from '../Containers/TestConnectionScreen'
 import CustomInputScreen from '../Containers/CustomInputScreen'
 import CustomFlatListScreen from '../Containers/CustomFlatListScreen'
 import ExampleScreen from '../Containers/ExampleScreen'
@@ -11,6 +12,16 @@ import { CustomHeader } from 'react-native-awesome-component';
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator({
+  TestConnectionScreen: {
+    screen: TestConnectionScreen,
+    navigationOptions: ({ navigation }) => {
+      return {
+        header: <CustomHeader navigation={navigation} />,
+        // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT
+        headerLeft: null,
+      };
+    },
+  },
   CustomInputScreen: {
     screen: CustomInputScreen,
     navigationOptions: ({ navigation }) => {
