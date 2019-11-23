@@ -39,7 +39,7 @@ target 'VsIgnite' do
   pod 'Firebase/Messaging', '~> 6.3.0'
   pod 'Fabric', '~> 1.10.2'
   pod 'Crashlytics', '~> 3.13.2'
-
+  pod 'Firebase/Firestore', '~> 6.3.0'
 
   target 'VsIgniteTests' do
     inherit! :search_paths
