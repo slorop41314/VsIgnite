@@ -20,7 +20,7 @@ class RootContainer extends Component {
      * NEED TO REMOVE
      * remove thi code after you test crashlytic
      */
-    firebase.crashlytics().recordError(37,"Test Error");
+    // firebase.crashlytics().recordError(37,"Test Error");
   }
 
   render () {
