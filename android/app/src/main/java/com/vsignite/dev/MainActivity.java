@@ -1,4 +1,4 @@
-package com.vsignite;
+package com.vsignite.dev;
 
 import com.facebook.react.ReactActivity;
 

@@ -37,6 +37,7 @@
     "react-native-animatable": "^1.3.2",
     "react-native-config": "^0.11.7",
     "react-native-device-info": "2.1.3",
+    "react-native-firebase": "git+https://github.com/RZulfikri/react-native-firebase.git#update/androidx",
     "react-native-gesture-handler": "^1.4.1",
     "react-native-i18n": "^2.0.14",
     "react-native-iphone-x-helper": "^1.2.1",

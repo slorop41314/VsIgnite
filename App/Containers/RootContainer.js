@@ -7,6 +7,7 @@ import ReduxPersist from '../Config/ReduxPersist'
 
 // Styles
 import styles from './Styles/RootContainerStyles'
+import firebase from 'react-native-firebase'
 
 class RootContainer extends Component {
   componentDidMount () {
@@ -14,6 +15,12 @@ class RootContainer extends Component {
     if (!ReduxPersist.active) {
       this.props.startup()
     }
+
+    /**
+     * NEED TO REMOVE
+     * remove thi code after you test crashlytic
+     */
+    firebase.crashlytics().recordError(37,"Test Error");
   }
 
   render () {

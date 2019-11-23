@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "739423356391",
+    "firebase_url": "https://vsignite-7765d.firebaseio.com",
+    "project_id": "vsignite-7765d",
+    "storage_bucket": "vsignite-7765d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:739423356391:android:b94a6b7de9e4cb784ca942",
+        "android_client_info": {
+          "package_name": "com.vsignite.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "739423356391-blts79qcl2kh8ck93qvdl1v7sv40acv8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.vsignite.dev",
+            "certificate_hash": "203341017812f7c4d7b9ec9f87565bbf36b01de0"
+          }
+        },
+        {
+          "client_id": "739423356391-fhuvqrivum2qagvmu9u7vh7082r32nri.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0b0UchvoY39usbFcjxBJVFSF4FfiyA9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "739423356391-fhuvqrivum2qagvmu9u7vh7082r32nri.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
