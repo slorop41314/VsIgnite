@@ -31,7 +31,7 @@ class MessageInput extends Component {
           activeOpacity={0.8}
           onPress={onPress}
           style={{
-            backgroundColor: Colors.messageRight,
+            backgroundColor: value.length === 0 ? Colors.steel : Colors.messageRight,
             height: 40,
             paddingHorizontal: 20,
             justifyContent: 'center',
