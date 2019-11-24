@@ -8,7 +8,7 @@ import ActionButton from 'react-native-action-button';
 
 // Styles
 import styles from './Styles/ChannelScreenStyle'
-import { getChannelList } from '../Services/ChatEngine'
+import { getChannelList } from '../Services/firestore-chat-engine/modules/channel'
 import { ChannelItem } from '../Components/ChannelItem'
 import { ItemSeparator } from '../Components/ItemSeparator';
 
@@ -27,24 +27,25 @@ class ChannelScreen extends Component {
   }
 
   onPressFAB() {
-    const {navigation} = this.props
+    const { navigation } = this.props
     navigation.navigate('UserListScreen')
   }
 
-  onPressItem() {
-
+  onPressItem(channel) {
+    const { navigation } = this.props
+    navigation.navigate('ChatScreen', channel)
   }
 
   render() {
     const { channels } = this.state
     return (
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <FlatList
           data={channels}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <ChannelItem data={item} onPress={this.onPressItem} />}
+          renderItem={({ item }) => <ChannelItem data={item} onPress={() => this.onPressItem(item)} />}
           ItemSeparatorComponent={() => <ItemSeparator />}
-          contentContainerStyle={{padding: 10}}
+          contentContainerStyle={{ padding: 10 }}
         />
         <ActionButton
           buttonColor="rgba(231,76,60,1)"

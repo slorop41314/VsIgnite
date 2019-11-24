@@ -7,7 +7,10 @@ import { connect } from 'react-redux'
 // Styles
 import styles from './Styles/UserListScreenStyle'
 import { UserItem } from '../Components/UserItem'
-import { getUserList, generateUUID, createOrgetChannel, CHANNEL_TYPE } from '../Services/ChatEngine'
+import { CHANNEL_TYPE } from '../Services/firestore-chat-engine/modules/helper'
+import { getUserList } from '../Services/firestore-chat-engine/modules/user'
+import { createOrgetChannel } from '../Services/firestore-chat-engine/modules/channel'
+
 import { Colors } from '../Themes'
 import { ItemSeparator } from '../Components/ItemSeparator'
 
@@ -25,7 +28,10 @@ class UserListScreen extends Component {
   }
 
   onPressUser(user) {
-    createOrgetChannel(user, CHANNEL_TYPE.single, undefined, (channel) => console.log(channel))
+    const { navigation } = this.props
+    createOrgetChannel(user, CHANNEL_TYPE.single, undefined, (channel) => {
+      navigation.navigate('ChatScreen', channel)
+    })
   }
 
   render() {

@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 // Styles
 import styles from './Styles/LoginScreenStyle'
-import { setUser } from '../Services/ChatEngine'
+import { setUser } from '../Services/firestore-chat-engine/chat-engine'
 
 class LoginScreen extends Component {
   constructor(props) {
