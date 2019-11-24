@@ -12,8 +12,8 @@ class LoginScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      email: 'me@rahmatzulfikri.xyz',
-      fullname: 'Rahmat Zulfikri',
+      email: 'me@zul.xyz',
+      fullname: 'zul',
       photo: 'http://rahmatzulfikri.xyz/images/avatar.jpg'
     }
     this.onPressLogin = this.onPressLogin.bind(this)
@@ -23,7 +23,6 @@ class LoginScreen extends Component {
     const { email, fullname, photo } = this.state
 
     setUser({ email, fullname, photo }, (currentUser) => {
-      console.log({ currentUser })
       this.props.navigation.navigate('ChannelScreen')
     })
   }
