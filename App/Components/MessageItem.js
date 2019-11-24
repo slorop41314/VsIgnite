@@ -9,7 +9,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     minWidth: '30%',
-    maxWidth: '80%',
+    maxWidth: '90%',
     marginTop: 5,
   },
   leftContainer: {

@@ -8,13 +8,14 @@ import { connect } from 'react-redux'
 import styles from './Styles/ChatScreenStyle'
 import { createOrGetMessageList, sendMessage } from '../Services/firestore-chat-engine/modules/message'
 import { MessageItem } from '../Components/MessageItem'
+import MessageInput from '../Components/MessageInput'
 
 class ChatScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
       messages: [],
-      message: 'Hello',
+      message: '',
       attachments: ['http://rahmatzulfikri.xyz/images/avatar.jpg']
     }
     this.onPressSend = this.onPressSend.bind(this)
@@ -30,12 +31,15 @@ class ChatScreen extends Component {
     const { navigation } = this.props
     const { message, attachments } = this.state
     const channel = navigation.getParam('channel')
-    sendMessage(channel, { message, attachments }, (msg) => console.log('MESSAGE SENT'))
+    this.setState({
+      message: '',
+    }, () => {
+      sendMessage(channel, { message, attachments }, (msg) => console.log('MESSAGE SENT'))
+    })
   }
 
   render() {
-    const { messages } = this.state
-    console.log({ messages })
+    const { messages, message } = this.state
     return (
       <View style={{ flex: 1 }}>
         <FlatList
@@ -44,9 +48,10 @@ class ChatScreen extends Component {
           renderItem={({ item }) => <MessageItem data={item} />}
           contentContainerStyle={{ padding: 10 }}
         />
-        <Button
-          title='SEND MESSAGE'
+        <MessageInput
           onPress={this.onPressSend}
+          onChangeText={(message) => this.setState({ message })}
+          value={message}
         />
       </View>
     )
