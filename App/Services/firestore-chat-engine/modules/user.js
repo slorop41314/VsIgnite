@@ -2,6 +2,7 @@ import firebase from "react-native-firebase"
 import { equals } from 'ramda'
 import { channelListCallback, channelList } from "./channel"
 import { currentUser } from "../chat-engine"
+import { messageList, messageListCallback } from "./message"
 
 export async function getUserDetail(userUUID) {
   const user = firebase.firestore().collection('user').doc(userUUID)
@@ -24,6 +25,23 @@ export async function getUserDetail(userUUID) {
             channelList.splice(userIndex, 1, newUserChannel)
             channelListCallback(channelList)
           }
+        }
+      }
+
+      if (messageList.length > 0) {
+        const newMessageList = messageList.map(message => {
+          if (message.sender === userData.uuid) {
+            return {
+              ...message,
+              user: userData
+            }
+          } else {
+            return message
+          }
+        })
+
+        if (!equals(newMessageList, messageList)) {
+          messageListCallback(newMessageList)
         }
       }
       resolve(userData)

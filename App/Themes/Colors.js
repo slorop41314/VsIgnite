@@ -23,7 +23,9 @@ const colors = {
   banner: '#5F3E63',
   text: '#E0D7E5',
 
-  grey: '#f5f5f5'
+  grey: '#f5f5f5',
+  messageRight: '#0C87F2',
+  messageLeft: '#D0E5F2'
 }
 
 export default colors

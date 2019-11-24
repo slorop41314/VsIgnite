@@ -33,7 +33,7 @@ class ChannelScreen extends Component {
 
   onPressItem(channel) {
     const { navigation } = this.props
-    navigation.navigate('ChatScreen', channel)
+    navigation.navigate('ChatScreen', { channel })
   }
 
   render() {

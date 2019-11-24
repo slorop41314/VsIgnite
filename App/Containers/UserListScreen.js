@@ -30,7 +30,7 @@ class UserListScreen extends Component {
   onPressUser(user) {
     const { navigation } = this.props
     createOrgetChannel(user, CHANNEL_TYPE.single, undefined, (channel) => {
-      navigation.navigate('ChatScreen', channel)
+      navigation.navigate('ChatScreen', { channel })
     })
   }
 
