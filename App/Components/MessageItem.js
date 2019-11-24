@@ -5,10 +5,10 @@ import {Colors} from '../Themes/'
 
 const styles = StyleSheet.create({
   messageContainer: {
-    borderRadius: 25,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    minWidth: '30%',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    minWidth: '40%',
     maxWidth: '90%',
     marginTop: 5,
   },
