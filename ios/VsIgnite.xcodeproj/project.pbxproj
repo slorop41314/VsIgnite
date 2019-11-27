@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* VsIgniteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VsIgniteTests.m */; };
 		09F41F8DB36A0C739979E5CD /* Pods_VsIgnite_tvOSTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */; };
@@ -41,6 +40,7 @@
 		D923056DA80945D390889E61 /* FontAwesome5_Brands.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CF6E4B8A14A24FBA83540DF0 /* FontAwesome5_Brands.ttf */; };
 		ED2971652150620600B7C4FE /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED2971642150620600B7C4FE /* JavaScriptCore.framework */; };
 		FA6B4192E63E43E7A31B400D /* Octicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D4776E227AB84204B96513AB /* Octicons.ttf */; };
+		7FD61B60018E4A3EAC872FB9 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D68B30224758459FB278B66D /* Fontisto.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +111,7 @@
 		EF18E96DAC104DABB59074AF /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		F2B715A6205BA34685F57EC0 /* Pods-VsIgnite-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgnite-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-VsIgnite-tvOSTests/Pods-VsIgnite-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		F6A8B2C194DCA1A2923DD9BF /* Pods-VsIgnite-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgnite-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-VsIgnite-tvOSTests/Pods-VsIgnite-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D68B30224758459FB278B66D /* Fontisto.ttf */ = {isa = PBXFileReference; name = "Fontisto.ttf"; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -204,6 +205,7 @@
 				D4776E227AB84204B96513AB /* Octicons.ttf */,
 				0B8F0D8B0D7F4CF0BFC5E97B /* SimpleLineIcons.ttf */,
 				EF18E96DAC104DABB59074AF /* Zocial.ttf */,
+				D68B30224758459FB278B66D /* Fontisto.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -445,6 +447,7 @@
 				FA6B4192E63E43E7A31B400D /* Octicons.ttf in Resources */,
 				7A73F80BC9414C4ABA92BF3A /* SimpleLineIcons.ttf in Resources */,
 				29C43FAAE0194AFB869378D9 /* Zocial.ttf in Resources */,
+				7FD61B60018E4A3EAC872FB9 /* Fontisto.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
