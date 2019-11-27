@@ -22,6 +22,20 @@
 		2DCD954D1E0B4F2C00145EB5 /* VsIgniteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VsIgniteTests.m */; };
 		2E6370A0A085446FBB7EC6EE /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E8B359F645C4CF8B49B1428 /* Ionicons.ttf */; };
 		37BA7122B17D4F56AD9C07E1 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E622A22D4BDC47438F696A84 /* FontAwesome5_Regular.ttf */; };
+		445822D0238E3E9800BBAE14 /* RNVideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445822C8238E3E9700BBAE14 /* RNVideoPlayer.swift */; };
+		445822D1238E3E9800BBAE14 /* RNVideoProcessingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445822C9238E3E9700BBAE14 /* RNVideoProcessingManager.swift */; };
+		445822D2238E3E9800BBAE14 /* RNVideoProcessingBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 445822CA238E3E9700BBAE14 /* RNVideoProcessingBridge.m */; };
+		445822D3238E3E9800BBAE14 /* RNVideoTrimmer in Resources */ = {isa = PBXBuildFile; fileRef = 445822CB238E3E9700BBAE14 /* RNVideoTrimmer */; };
+		445822D4238E3E9800BBAE14 /* VideoProcessingGPUFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 445822CD238E3E9800BBAE14 /* VideoProcessingGPUFilters.swift */; };
+		445822D5238E3E9800BBAE14 /* RNTrimmerView in Resources */ = {isa = PBXBuildFile; fileRef = 445822CF238E3E9800BBAE14 /* RNTrimmerView */; };
+		445822E2238E3F2C00BBAE14 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822E0238E3F2C00BBAE14 /* CoreMedia.framework */; };
+		445822E3238E3F2D00BBAE14 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822E1238E3F2C00BBAE14 /* CoreVideo.framework */; };
+		445822E5238E3F3500BBAE14 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822E4238E3F3500BBAE14 /* OpenGLES.framework */; };
+		445822E7238E3F3C00BBAE14 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822E6238E3F3C00BBAE14 /* AVFoundation.framework */; };
+		445822E9238E3F4500BBAE14 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822E8238E3F4500BBAE14 /* QuartzCore.framework */; };
+		445822EB238E3F4C00BBAE14 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822EA238E3F4C00BBAE14 /* MobileCoreServices.framework */; };
+		445822EC238E3F5400BBAE14 /* GPUImage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 445822DF238E3EF600BBAE14 /* GPUImage.framework */; };
+		445822ED238E3F5400BBAE14 /* GPUImage.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 445822DF238E3EF600BBAE14 /* GPUImage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		472345244B4F48698B14EEA2 /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE3CADE5542142A2B7A95273 /* libRNVectorIcons-tvOS.a */; };
 		4CC3FA6B8F314A6B98E7066B /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EE1DF93DC0C48C7819349E8 /* MaterialIcons.ttf */; };
 		52B68FFA187B4ECF9C162BA0 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C1765F0BDF04C478A1C155E /* MaterialCommunityIcons.ttf */; };
@@ -57,7 +71,35 @@
 			remoteGlobalIDString = 2D02E47A1E0B4A5D006451C7;
 			remoteInfo = "VsIgnite-tvOS";
 		};
+		445822DC238E3EF600BBAE14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 445822D6238E3EF600BBAE14 /* GPUImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BCF1A33414DDB1EC00852800;
+			remoteInfo = GPUImage;
+		};
+		445822DE238E3EF600BBAE14 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 445822D6238E3EF600BBAE14 /* GPUImage.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = BCE209E51943F20C002FEED8;
+			remoteInfo = GPUImageFramework;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		445822EE238E3F5400BBAE14 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				445822ED238E3F5400BBAE14 /* GPUImage.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
@@ -79,6 +121,22 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VsIgnite_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
+		445822C7238E3E9700BBAE14 /* VsIgnite-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VsIgnite-Bridging-Header.h"; sourceTree = "<group>"; };
+		445822C8238E3E9700BBAE14 /* RNVideoPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNVideoPlayer.swift; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoPlayer.swift"; sourceTree = "<group>"; };
+		445822C9238E3E9700BBAE14 /* RNVideoProcessingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RNVideoProcessingManager.swift; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessingManager.swift"; sourceTree = "<group>"; };
+		445822CA238E3E9700BBAE14 /* RNVideoProcessingBridge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = RNVideoProcessingBridge.m; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessingBridge.m"; sourceTree = "<group>"; };
+		445822CB238E3E9700BBAE14 /* RNVideoTrimmer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNVideoTrimmer; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoTrimmer"; sourceTree = "<group>"; };
+		445822CC238E3E9700BBAE14 /* RNVideoProcessing-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "RNVideoProcessing-Bridging-Header.h"; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessing-Bridging-Header.h"; sourceTree = "<group>"; };
+		445822CD238E3E9800BBAE14 /* VideoProcessingGPUFilters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = VideoProcessingGPUFilters.swift; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/VideoProcessingGPUFilters.swift"; sourceTree = "<group>"; };
+		445822CE238E3E9800BBAE14 /* RNVideoProcessing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RNVideoProcessing.h; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNVideoProcessing.h"; sourceTree = "<group>"; };
+		445822CF238E3E9800BBAE14 /* RNTrimmerView */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RNTrimmerView; path = "../../node_modules/react-native-video-processing/ios/RNVideoProcessing/RNTrimmerView"; sourceTree = "<group>"; };
+		445822D6238E3EF600BBAE14 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = "../node_modules/react-native-video-processing/ios/GPUImage/framework/GPUImage.xcodeproj"; sourceTree = "<group>"; };
+		445822E0238E3F2C00BBAE14 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		445822E1238E3F2C00BBAE14 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		445822E4238E3F3500BBAE14 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		445822E6238E3F3C00BBAE14 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		445822E8238E3F4500BBAE14 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		445822EA238E3F4C00BBAE14 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		6380B111BA2D49A7B36CD135 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		6C085DA9CCEA255461679048 /* Pods-VsIgniteTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgniteTests.release.xcconfig"; path = "Target Support Files/Pods-VsIgniteTests/Pods-VsIgniteTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -124,7 +182,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				445822E2238E3F2C00BBAE14 /* CoreMedia.framework in Frameworks */,
+				445822EB238E3F4C00BBAE14 /* MobileCoreServices.framework in Frameworks */,
 				6E92CCCB7968E5D08015388E /* libPods-VsIgnite.a in Frameworks */,
+				445822E9238E3F4500BBAE14 /* QuartzCore.framework in Frameworks */,
+				445822E7238E3F3C00BBAE14 /* AVFoundation.framework in Frameworks */,
+				445822EC238E3F5400BBAE14 /* GPUImage.framework in Frameworks */,
+				445822E3238E3F2D00BBAE14 /* CoreVideo.framework in Frameworks */,
+				445822E5238E3F3500BBAE14 /* OpenGLES.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,6 +273,12 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				445822EA238E3F4C00BBAE14 /* MobileCoreServices.framework */,
+				445822E8238E3F4500BBAE14 /* QuartzCore.framework */,
+				445822E6238E3F3C00BBAE14 /* AVFoundation.framework */,
+				445822E4238E3F3500BBAE14 /* OpenGLES.framework */,
+				445822E0238E3F2C00BBAE14 /* CoreMedia.framework */,
+				445822E1238E3F2C00BBAE14 /* CoreVideo.framework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
 				2D16E6891FA4F8E400B85C8A /* libReact.a */,
@@ -217,6 +288,31 @@
 				8A2DE95CC91609D13203FAB3 /* libPods-VsIgniteTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		445822C6238E3E2F00BBAE14 /* RNVideoProcessing */ = {
+			isa = PBXGroup;
+			children = (
+				445822CF238E3E9800BBAE14 /* RNTrimmerView */,
+				445822C8238E3E9700BBAE14 /* RNVideoPlayer.swift */,
+				445822CC238E3E9700BBAE14 /* RNVideoProcessing-Bridging-Header.h */,
+				445822CE238E3E9800BBAE14 /* RNVideoProcessing.h */,
+				445822CA238E3E9700BBAE14 /* RNVideoProcessingBridge.m */,
+				445822C9238E3E9700BBAE14 /* RNVideoProcessingManager.swift */,
+				445822CB238E3E9700BBAE14 /* RNVideoTrimmer */,
+				445822CD238E3E9800BBAE14 /* VideoProcessingGPUFilters.swift */,
+				445822C7238E3E9700BBAE14 /* VsIgnite-Bridging-Header.h */,
+			);
+			path = RNVideoProcessing;
+			sourceTree = "<group>";
+		};
+		445822D7238E3EF600BBAE14 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				445822DD238E3EF600BBAE14 /* libGPUImage.a */,
+				445822DF238E3EF600BBAE14 /* GPUImage.framework */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		446A0DDF2349100D0085C9A0 /* Recovered References */ = {
@@ -242,6 +338,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				445822D6238E3EF600BBAE14 /* GPUImage.xcodeproj */,
+				445822C6238E3E2F00BBAE14 /* RNVideoProcessing */,
 				13B07FAE1A68108700A75B9A /* VsIgnite */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* VsIgniteTests */,
@@ -314,6 +412,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				445822EE238E3F5400BBAE14 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -375,6 +474,9 @@
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
+					13B07F861A680F5B00A75B9A = {
+						LastSwiftMigration = 1120;
+					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
@@ -398,6 +500,12 @@
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 445822D7238E3EF600BBAE14 /* Products */;
+					ProjectRef = 445822D6238E3EF600BBAE14 /* GPUImage.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* VsIgnite */,
@@ -407,6 +515,23 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		445822DD238E3EF600BBAE14 /* libGPUImage.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libGPUImage.a;
+			remoteRef = 445822DC238E3EF600BBAE14 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		445822DF238E3EF600BBAE14 /* GPUImage.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = GPUImage.framework;
+			remoteRef = 445822DE238E3EF600BBAE14 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		00E356EC1AD99517003FC87E /* Resources */ = {
@@ -427,7 +552,9 @@
 				6B42A06CEF0C45E880DF0470 /* EvilIcons.ttf in Resources */,
 				6AD281B91CED4C99A2082CA9 /* Feather.ttf in Resources */,
 				D796D68FC3C941A2B2AB02EC /* FontAwesome.ttf in Resources */,
+				445822D3238E3E9800BBAE14 /* RNVideoTrimmer in Resources */,
 				D923056DA80945D390889E61 /* FontAwesome5_Brands.ttf in Resources */,
+				445822D5238E3E9800BBAE14 /* RNTrimmerView in Resources */,
 				37BA7122B17D4F56AD9C07E1 /* FontAwesome5_Regular.ttf in Resources */,
 				583AD5AC7BF347BA8CC8300E /* FontAwesome5_Solid.ttf in Resources */,
 				7917A09CF63D4B61B722186E /* Foundation.ttf in Resources */,
@@ -608,7 +735,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				445822D1238E3E9800BBAE14 /* RNVideoProcessingManager.swift in Sources */,
+				445822D4238E3E9800BBAE14 /* VideoProcessingGPUFilters.swift in Sources */,
+				445822D0238E3E9800BBAE14 /* RNVideoPlayer.swift in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
+				445822D2238E3E9800BBAE14 /* RNVideoProcessingBridge.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -662,6 +793,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0DAF21AE273BBF136EF5E3DC /* Pods-VsIgniteTests.debug.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -699,6 +831,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6C085DA9CCEA255461679048 /* Pods-VsIgniteTests.release.xcconfig */;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				HEADER_SEARCH_PATHS = (
@@ -734,6 +867,7 @@
 			baseConfigurationReference = ED9153BE33B317ACCC2E2799 /* Pods-VsIgnite.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				HEADER_SEARCH_PATHS = "$(inherited)";
@@ -746,6 +880,9 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = VsIgnite;
+				SWIFT_OBJC_BRIDGING_HEADER = "RNVideoProcessing/VsIgnite-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -755,6 +892,7 @@
 			baseConfigurationReference = 96948AB7017D38C35E0791F1 /* Pods-VsIgnite.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
 				HEADER_SEARCH_PATHS = "$(inherited)";
@@ -767,6 +905,8 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = VsIgnite;
+				SWIFT_OBJC_BRIDGING_HEADER = "RNVideoProcessing/VsIgnite-Bridging-Header.h";
+				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
