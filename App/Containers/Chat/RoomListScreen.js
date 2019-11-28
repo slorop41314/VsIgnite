@@ -49,7 +49,7 @@ export default class RoomListScreen extends React.Component {
         AsyncStorage.setItem("lastNotificationId", notification.notificationId);
 
         const roomId = notification.data.qiscus_room_id;
-        this.props.navigation.push("Chat", {
+        this.props.navigation.push("ChatScreen", {
           roomId
         });
       }
@@ -64,7 +64,7 @@ export default class RoomListScreen extends React.Component {
         if (lastNotificationId !== notification.notificationId) {
           AsyncStorage.setItem("lastNotificationId", notification.notificationId);
           const roomId = data.notification.data.qiscus_room_id;
-          this.props.navigation.push("Chat", { roomId });
+          this.props.navigation.push("ChatScreen", { roomId });
         }
       } catch (error) {
         console.tron.error("error getting last notif id", error);
@@ -95,12 +95,12 @@ export default class RoomListScreen extends React.Component {
     this.props.navigation.push("Profile");
   };
   _onClickRoom = roomId => {
-    this.props.navigation.push("Chat", {
+    this.props.navigation.push("ChatScreen", {
       roomId
     });
   };
   _openUserList = () => {
-    this.props.navigation.push("UserList");
+    this.props.navigation.push("UserListScreen");
   };
 
   render() {
@@ -150,7 +150,7 @@ export default class RoomListScreen extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%"
+    height: 250,
   },
   btnAvatar: {
     height: 30,

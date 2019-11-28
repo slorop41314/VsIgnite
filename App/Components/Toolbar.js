@@ -29,14 +29,18 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: 'row',
-    height: 48,
-    overflow: 'hidden',
+    padding: 15,
     justifyContent: 'center',
-    alignItems: 'center',
-    padding: 5,
     backgroundColor: 'white',
-    // border-bottom-width: 1px,
-    // border-bottom-color: #e8e8e8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    
+    elevation: 5,
   },
   titleButton: {
     flex: 1,

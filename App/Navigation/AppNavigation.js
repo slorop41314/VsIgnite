@@ -1,8 +1,10 @@
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack';
 import LaunchScreen from '../Containers/LaunchScreen'
-import RoomListScreen from '../Containers/Chat/RoomListScreen'
 import LoginScreen from '../Containers/Login/LoginScreen'
+import RoomListScreen from '../Containers/Chat/RoomListScreen'
+import UserListScreen from '../Containers/Chat/UserListScreen'
+import ChatScreen from '../Containers/Chat/ChatScreen'
 
 import styles from './Styles/NavigationStyles'
 
@@ -13,6 +15,8 @@ const PrimaryNav = createStackNavigator({
   LoginScreen: { screen: LoginScreen },
 
   RoomListScreen: { screen: RoomListScreen },
+  UserListScreen: { screen: UserListScreen },
+  ChatScreen: { screen: ChatScreen },
 }, {
   // Default config for all screens
   headerMode: 'none',
