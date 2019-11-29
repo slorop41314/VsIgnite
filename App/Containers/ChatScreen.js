@@ -3,10 +3,10 @@ import { ScrollView, Text, KeyboardAvoidingView, FlatList, Button, View } from '
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import FireEngineActions from '../Redux/FireEngineRedux'
 
 // Styles
 import styles from './Styles/ChatScreenStyle'
-import { createOrGetMessageList, sendMessage } from '../Services/firestore-chat-engine/modules/message'
 import { MessageItem } from '../Components/MessageItem'
 import MessageInput from '../Components/MessageInput'
 
@@ -24,17 +24,18 @@ class ChatScreen extends Component {
   componentDidMount() {
     const { navigation } = this.props
     const channel = navigation.getParam('channel')
-    createOrGetMessageList(channel, (messages) => this.setState({ messages }))
+    // createOrGetMessageList(channel, (messages) => this.setState({ messages }))
   }
 
   onPressSend() {
-    const { navigation } = this.props
+    const { navigation, sendMessageRequest } = this.props
     const { message, attachments } = this.state
     const channel = navigation.getParam('channel')
+    console.tron.error({ navigation })
     this.setState({
       message: '',
     }, () => {
-      sendMessage(channel, { message, attachments }, (msg) => console.log('MESSAGE SENT'))
+      sendMessageRequest({ channel, message: { message, attachments } })
     })
   }
 
@@ -65,6 +66,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    sendMessageRequest: (params) => dispatch(FireEngineActions.sendMessageRequest(params))
   }
 }
 

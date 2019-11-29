@@ -35,7 +35,7 @@ export const UserItem = (props) => {
           <View style={[styles.photoContainer]} />
         )}
       <View style={[styles.infoContainer]}>
-        <Text style={[styles.textName]}>{data.name}</Text>
+        <Text style={[styles.textName]}>{data.fullname}</Text>
         <Text style={[styles.textEmail]}>{data.email}</Text>
       </View>
     </TouchableOpacity>

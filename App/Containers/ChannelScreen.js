@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { ScrollView, Text, KeyboardAvoidingView, FlatList, View } from 'react-native'
+import { FlatList, View } from 'react-native'
 import { connect } from 'react-redux'
 import ActionButton from 'react-native-action-button';
 
@@ -8,7 +8,6 @@ import ActionButton from 'react-native-action-button';
 
 // Styles
 import styles from './Styles/ChannelScreenStyle'
-import { getChannelList } from '../Services/firestore-chat-engine/modules/channel'
 import { ChannelItem } from '../Components/ChannelItem'
 import { ItemSeparator } from '../Components/ItemSeparator';
 
@@ -23,7 +22,6 @@ class ChannelScreen extends Component {
   }
 
   componentDidMount() {
-    getChannelList(channels => this.setState({ channels }))
   }
 
   onPressFAB() {
@@ -37,11 +35,11 @@ class ChannelScreen extends Component {
   }
 
   render() {
-    const { channels } = this.state
+    const { channelList } = this.props
     return (
       <View style={{ flex: 1 }}>
         <FlatList
-          data={channels}
+          data={channelList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => <ChannelItem data={item} onPress={() => this.onPressItem(item)} />}
           ItemSeparatorComponent={() => <ItemSeparator />}
@@ -58,6 +56,7 @@ class ChannelScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    channelList: state.fireEngine.channelList
   }
 }
 

@@ -3,28 +3,29 @@ import { ScrollView, Text, View, KeyboardAvoidingView, TextInput, Button, SafeAr
 import { connect } from 'react-redux'
 // Add Actions - replace 'Your' with whatever your reducer is called :)
 // import YourActions from '../Redux/YourRedux'
+import FEActions from '../Redux/FireEngineRedux'
 
 // Styles
 import styles from './Styles/LoginScreenStyle'
 import { setUser } from '../Services/firestore-chat-engine/chat-engine'
 
+import FireEngine from '../Services/firestore-chat-engine'
+import FireEngineManager from '../Services/FireEngineManager'
+
 class LoginScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      email: 'me@rahmat.xyz',
-      fullname: 'rahmat',
+      email: 'me@zul.xyz',
+      fullname: 'zul',
       photo: 'http://rahmatzulfikri.xyz/images/avatar.jpg'
     }
     this.onPressLogin = this.onPressLogin.bind(this)
   }
 
-  onPressLogin() {
-    const { email, fullname, photo } = this.state
-
-    setUser({ email, fullname, photo }, (currentUser) => {
-      this.props.navigation.navigate('ChannelScreen')
-    })
+  async onPressLogin() {
+    const user = this.state
+    this.props.fireEngineInit(user)
   }
 
   render() {
@@ -61,6 +62,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    fireEngineInit: (params) => dispatch(FEActions.initRequest(params))
   }
 }
 

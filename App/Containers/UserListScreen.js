@@ -7,12 +7,8 @@ import { connect } from 'react-redux'
 // Styles
 import styles from './Styles/UserListScreenStyle'
 import { UserItem } from '../Components/UserItem'
-import { CHANNEL_TYPE } from '../Services/firestore-chat-engine/modules/helper'
-import { getUserList } from '../Services/firestore-chat-engine/modules/user'
-import { createOrgetChannel } from '../Services/firestore-chat-engine/modules/channel'
-
-import { Colors } from '../Themes'
 import { ItemSeparator } from '../Components/ItemSeparator'
+import FireEngineManager from '../Services/FireEngineManager'
 
 class UserListScreen extends Component {
   constructor(props) {
@@ -24,18 +20,17 @@ class UserListScreen extends Component {
   }
 
   componentDidMount() {
-    getUserList(userList => this.setState({ userList }))
   }
 
-  onPressUser(user) {
+  async onPressUser(user) {
     const { navigation } = this.props
-    createOrgetChannel(user, CHANNEL_TYPE.single, undefined, (channel) => {
-      navigation.navigate('ChatScreen', { channel })
-    })
+    const fireInstance = FireEngineManager.getInstance()
+    const channel = await fireInstance.getChannelFromuser(user)
+    navigation.navigate('ChatScreen', { channel })
   }
 
   render() {
-    const { userList } = this.state
+    const { userList } = this.props
     return (
       <FlatList
         data={userList}
@@ -50,6 +45,7 @@ class UserListScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    userList: state.fireEngine.userList
   }
 }
 
