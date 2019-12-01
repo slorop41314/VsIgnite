@@ -4,6 +4,7 @@ import { Colors } from '../Themes/'
 import { connect } from 'react-redux'
 import Icons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { arrayEqual } from '../Services/firestore-chat-engine/helper'
+import FireEngineActions from '../Redux/FireEngineRedux'
 
 const styles = StyleSheet.create({
   messageContainer: {
@@ -33,10 +34,13 @@ const styles = StyleSheet.create({
 
 const MessageItem = (props) => {
   const moment = require('moment');
-
-  const { data, currentUser, } = props
-  const { timestamp, sender, members, receive_ids } = data
+  const { data, currentUser, channel, readMessageRequest } = props
+  const { timestamp, sender, members, receive_ids, read_ids } = data
   const dateTime = moment(timestamp)
+
+  if (!read_ids.includes(currentUser.uuid)) {
+    readMessageRequest({ channel, message: data })
+  }
 
   if (currentUser.uuid === sender) {
     return (
@@ -44,7 +48,7 @@ const MessageItem = (props) => {
         <View style={[styles.rightContainer, styles.messageContainer]}>
           <Text style={[styles.textMessage]}>{data.message}</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
-            <Icons name={arrayEqual(members, receive_ids) ? 'check-all' : 'check'} />
+            <Icons name={arrayEqual(members, receive_ids) ? 'check-all' : 'check'} color={arrayEqual(members, read_ids) && arrayEqual(members, receive_ids) ? Colors.snow : Colors.coal} />
             <Text style={[styles.textTime, { textAlign: 'right', marginLeft: 5 }]}>{dateTime.format('HH:mm')}</Text>
           </View>
         </View>
@@ -70,7 +74,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-
+    readMessageRequest: (params) => dispatch(FireEngineActions.readMessageRequest(params))
   }
 }
 

@@ -25,7 +25,7 @@ class UserListScreen extends Component {
   async onPressUser(user) {
     const { navigation } = this.props
     const fireInstance = FireEngineManager.getInstance()
-    const channel = await fireInstance.getChannelFromuser(user)
+    const channel = await fireInstance.getChannelFromUser(user)
     navigation.navigate('ChatScreen', { channel })
   }
 

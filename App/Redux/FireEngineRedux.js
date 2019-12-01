@@ -13,6 +13,9 @@ const { Types, Creators } = createActions({
   sendMessageRequest: ['data'],
   sendMessageSuccess: ['payload'],
   sendMessageFailure: null,
+  readMessageRequest: ['data'],
+  readMessageSuccess: ['payload'],
+  readMessageFailure: null,
 })
 
 export const FireEngineTypes = Types
@@ -25,7 +28,8 @@ export const INITIAL_STATE = Immutable({
   userList: [],
   channelList: [],
   messageList: {},
-  sendMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined }
+  sendMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
+  readMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined},
 })
 
 /* ------------- Selectors ------------- */
@@ -79,6 +83,16 @@ export const sendMessageFailure = (state) => {
   return state.merge({ ...state, sendMessage: { ...state.sendMessage, loading: false, error: true, payload: undefined } })
 }
 
+export const readMessageRequest = (state, { data }) => {
+  return state.merge({ ...state, readMessage: { loading: true, error: undefined, data } })
+}
+export const readMessageSuccess = (state, { payload }) => {
+  return state.merge({ ...state, readMessage: { ...state.readMessage, loading: false, error: undefined, payload } })
+}
+export const readMessageFailure = (state) => {
+  return state.merge({ ...state, readMessage: { ...state.readMessage, loading: false, error: true } })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -90,5 +104,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SAVE_CHANNEL_LIST]: saveChannelList,
   [Types.SEND_MESSAGE_REQUEST]: sendMessageRequest,
   [Types.SEND_MESSAGE_SUCCESS]: sendMessageSuccess,
-  [Types.SEND_MESSAGE_FAILURE]: sendMessageFailure
+  [Types.SEND_MESSAGE_FAILURE]: sendMessageFailure,
+  [Types.READ_MESSAGE_REQUEST]: readMessageRequest,
+  [Types.READ_MESSAGE_SUCCESS]: readMessageSuccess,
+  [Types.READ_MESSAGE_FAILURE]: readMessageFailure,
 })

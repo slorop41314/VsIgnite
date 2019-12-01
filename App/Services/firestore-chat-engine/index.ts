@@ -49,8 +49,9 @@ class FireEngine {
     this.onReceiveMessage = this.onReceiveMessage.bind(this)
     this.onSendMessage = this.onSendMessage.bind(this)
     // METHOD
-    this.getChannelFromuser = this.getChannelFromuser.bind(this)
+    this.getChannelFromUser = this.getChannelFromUser.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
+    this.readMessage = this.readMessage.bind(this)
 
     this.init().then((user: IUser) => {
       this.user = user
@@ -290,7 +291,7 @@ class FireEngine {
     this.sendMessageCallback = callback
   }
 
-  async getChannelFromuser(recipient: IUser) {
+  async getChannelFromUser(recipient: IUser) {
     const channel = await this.getChannel(recipient)
     return channel
   }
@@ -313,6 +314,28 @@ class FireEngine {
         }
         ref.set({ ...storeMessage })
         resolve(storeMessage)
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  readMessage(channel: IChannel, message: IMessage) {
+    const { members, sender, read_ids } = message
+    return new Promise(async (resolve, reject) => {
+      try {
+        if ((this.user.uuid !== sender) && !arrayEqual(members, read_ids)) {
+          const messageRef = firebase.firestore().collection(`message.${channel.uuid}`).doc(message.uuid)
+          messageRef.update({ read_ids: [...read_ids, this.user.uuid] })
+            .then((message) => {
+              resolve(message)
+            })
+            .catch(error => {
+              reject(error)
+            })
+        } else {
+          reject({ error: 'cannot read message or user already read this message' })
+        }
       } catch (error) {
         reject(error)
       }

@@ -9,6 +9,7 @@ import FireEngineActions from '../Redux/FireEngineRedux'
 import styles from './Styles/ChatScreenStyle'
 import MessageItem from '../Components/MessageItem'
 import MessageInput from '../Components/MessageInput'
+import { arrayEqual } from '../Services/firestore-chat-engine/helper'
 
 class ChatScreen extends Component {
   constructor(props) {
@@ -18,19 +19,19 @@ class ChatScreen extends Component {
       attachments: ['http://rahmatzulfikri.xyz/images/avatar.jpg']
     }
     this.onPressSend = this.onPressSend.bind(this)
+    this.channel = props.navigation.getParam('channel')
   }
 
   componentDidMount() {
   }
 
   onPressSend() {
-    const { navigation, sendMessageRequest } = this.props
+    const { sendMessageRequest } = this.props
     const { message, attachments } = this.state
-    const channel = navigation.getParam('channel')
     this.setState({
       message: '',
     }, () => {
-      sendMessageRequest({ channel, message: { message, attachments } })
+      sendMessageRequest({ channel: this.channel, message: { message, attachments } })
     })
   }
 
@@ -42,7 +43,7 @@ class ChatScreen extends Component {
         <FlatList
           data={messages}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <MessageItem data={item} />}
+          renderItem={({ item }) => <MessageItem data={item} channel={this.channel} />}
           contentContainerStyle={{ padding: 10 }}
         />
         <MessageInput

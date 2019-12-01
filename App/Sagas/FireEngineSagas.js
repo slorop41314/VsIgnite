@@ -123,3 +123,17 @@ export function* sendMessageSaga(action) {
     yield put(FireEngineActions.sendMessageFailure())
   }
 }
+
+
+export function* readMessageSaga(action) {
+  const { data } = action
+  const { channel, message } = data
+
+  try {
+    const fireInstance = FireEngineManager.getInstance()
+    const messageRes = yield fireInstance.readMessage(channel, message)
+    yield put(FireEngineActions.readMessageSuccess(messageRes))
+  } catch (error) {
+    yield put(FireEngineActions.readMessageFailure())
+  }
+}
