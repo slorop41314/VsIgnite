@@ -128,7 +128,7 @@ export default class RoomListScreen extends React.Component {
             >
               <Image
                 style={styles.iconStartChat}
-                source={Images.hamburger}
+                source={Images.qiscusNewChat}
               />
             </TouchableOpacity>
           )}

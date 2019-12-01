@@ -24,7 +24,7 @@ export default class MessageUpload extends React.PureComponent {
             <View>
               <Image
                 style={styles.icon}
-                source={Images.launch}
+                source={Images.qiscusFileAttachment}
               />
               <Text style={styles.filename}>{filename}</Text>
             </View>

@@ -12,7 +12,7 @@ import { Images } from '../Themes'
 export default function EmptyChat() {
   return (
     <View style={styles.container}>
-      <Image source={Images.chevronRight}
+      <Image source={Images.qiscusImgSendMessage}
              style={styles.image}/>
       <Text style={styles.title}>
         Send a message!

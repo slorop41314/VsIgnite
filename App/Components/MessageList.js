@@ -37,7 +37,7 @@ class AnimatedSending extends React.Component {
     });
     return (
       <Animated.Image
-        source={Images.deviceInfo}
+        source={Images.qiscusSending}
         style={[
           styles.iconStatus,
           {
@@ -148,28 +148,28 @@ export default class MessageList extends React.Component {
       return (
         <Image
           style={styles.iconStatus}
-          source={Images.chevronRight}
+          source={Images.qiscusDelivered}
         />
       );
     if (status === "delivered")
       return (
         <Image
           style={styles.iconStatus}
-          source={Images.chevronRight}
+          source={Images.qiscusDelivered}
         />
       );
     if (status === "read")
       return (
         <Image
           style={styles.iconStatus}
-          source={Images.ready}
+          source={Images.qiscusRead}
         />
       );
     if (status === "failed")
       return (
         <Image
           style={styles.iconStatus}
-          source={Images.hamburger}
+          source={Images.qiscusFailed}
         />
       );
   };

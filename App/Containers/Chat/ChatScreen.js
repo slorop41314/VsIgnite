@@ -19,7 +19,7 @@ import Toolbar from '../../Components/Toolbar';
 import MessageList from '../../Components/MessageList';
 import Form from '../../Components/Form';
 import EmptyChat from '../../Components/EmptyChat';
-import {Images} from '../../Themes';
+import { Images } from '../../Themes';
 
 export default class ChatScreen extends React.Component {
   state = {
@@ -109,7 +109,7 @@ export default class ChatScreen extends React.Component {
                 flex: 0,
               }}>
               <Image
-                source={Images.backButton}
+                source={Images.qiscusBack}
                 style={{
                   width: 50,
                   height: 50,

@@ -25,7 +25,7 @@ export default class Form extends React.Component {
         <TouchableOpacity style={styles.formButton}
           onPress={this.props.onSelectFile}>
           <Image style={styles.formIcon}
-                 source={Images.ignite}/>
+                 source={Images.qiscusAttachment}/>
         </TouchableOpacity>
         <TextInput style={styles.formTextField}
                    placeholder="Type your message"
@@ -37,7 +37,7 @@ export default class Form extends React.Component {
         <TouchableOpacity onPress={this._onSubmit}
                           style={styles.formButton}>
           <Image style={styles.formIcon}
-                 source={Images.chevronRight}/>
+                 source={Images.qiscusSend}/>
         </TouchableOpacity>
       </View>
     );

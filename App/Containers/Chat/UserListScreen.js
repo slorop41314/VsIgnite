@@ -76,7 +76,7 @@ export default class UserListScreen extends React.Component {
           title="Choose Contacts"
           renderLeftButton={() => (
             <TouchableOpacity onPress={this._onBack}>
-              <Image source={Images.backButton} />
+              <Image source={Images.qiscusBack} />
             </TouchableOpacity>
           )}
         />
@@ -87,7 +87,7 @@ export default class UserListScreen extends React.Component {
           >
             <Image
               style={styles.createGroupIcon}
-              source={Images.ignite}
+              source={Images.qiscusNewChatGroup}
             />
             <Text style={styles.createGroupBtnText}>Create Group Chat</Text>
           </TouchableOpacity>
