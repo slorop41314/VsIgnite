@@ -302,7 +302,7 @@ class FireEngine {
         const uuid = generateUUID(channel.uuid)
         const ref = firebase.firestore().collection(`message.${channel.uuid}`).doc(uuid)
         const members = channel.members.map(u => u.uuid)
-        ref.set({
+        const storeMessage = {
           message: message.message,
           attachments: message.attachments,
           sender: this.user.uuid,
@@ -310,8 +310,9 @@ class FireEngine {
           read_ids: [this.user.uuid],
           receive_ids: [this.user.uuid],
           timestamp: new Date().valueOf()
-        })
-        resolve()
+        }
+        ref.set({ ...storeMessage })
+        resolve(storeMessage)
       } catch (error) {
         reject(error)
       }
