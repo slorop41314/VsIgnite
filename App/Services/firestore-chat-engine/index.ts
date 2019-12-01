@@ -4,7 +4,7 @@ import { generateUUID } from "./modules/helper";
 import strings from "./strings";
 import { IUser, IChannel, IMessage, IChannelStore, IMessageListR, IMessageStore, QueryDirection, IMessageR } from "./interface";
 import { CHANNEL_TYPE, ORDER_TYPE } from "./const";
-import { arrayEqual } from "./helper";
+import { arrayEqual, compareValues } from "./helper";
 
 class FireEngine {
   private user: IUser = {};
@@ -12,14 +12,15 @@ class FireEngine {
   private users: Record<string, IUser> = {}
   private channels: Record<string, IChannel> = {}
   private messages: Record<string, IMessage> = {}
+  private initChannelListener = false
+  private messageListenerList = {}
 
   private onReadyCallback: (user: IUser) => void;
   private onInitFailureCallback: (error: string) => void;
   private onErrorCallback: (error: string) => void;
   private userListCallback: (userList: IUser[]) => void;
-  private channelListCallback: (channelList: IChannel[]) => void;
+  private updateChannelCallback: (channel: IChannel) => void;
   private receiveMessageCallback: (payload: IMessageR) => void;
-  private sendMessageCallback: (channel: IChannel, message: IMessage) => void;
 
   constructor(user) {
     this.user = user
@@ -30,12 +31,11 @@ class FireEngine {
     this.init = this.init.bind(this)
     this.getUserList = this.getUserList.bind(this)
     this.getUserByIds = this.getUserByIds.bind(this)
-    this.getChannelList = this.getChannelList.bind(this)
     this.getChannel = this.getChannel.bind(this)
     this.createChannel = this.createChannel.bind(this)
-    this.getMessageList = this.getMessageList.bind(this)
     this.updateReceiveMessage = this.updateReceiveMessage.bind(this)
     this.addMessageListener = this.addMessageListener.bind(this)
+    this.addChannelListener = this.addChannelListener.bind(this)
 
     /*
     * PUBLIC FUNCTION 
@@ -45,10 +45,11 @@ class FireEngine {
     this.onReady = this.onReady.bind(this)
     this.onError = this.onError.bind(this)
     this.onUserList = this.onUserList.bind(this)
-    this.onChannelList = this.onChannelList.bind(this)
+    this.onUpdateChannel = this.onUpdateChannel.bind(this)
     this.onReceiveMessage = this.onReceiveMessage.bind(this)
-    this.onSendMessage = this.onSendMessage.bind(this)
     // METHOD
+    this.getChannelList = this.getChannelList.bind(this)
+    this.getMessageList = this.getMessageList.bind(this)
     this.getChannelFromUser = this.getChannelFromUser.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
     this.readMessage = this.readMessage.bind(this)
@@ -60,7 +61,7 @@ class FireEngine {
       this.isReady = true
       if (this.onReadyCallback) this.onReadyCallback(this.user)
       this.getUserList()
-      this.getChannelList()
+      this.addChannelListener()
     }).catch((error) => {
       if (this.onInitFailureCallback) this.onInitFailureCallback(strings.error.init)
     })
@@ -166,7 +167,6 @@ class FireEngine {
   private async getUserByIds(uuids) {
     return await Promise.all(uuids.map(async uuid => {
       const userListRef = firebase.firestore().collection('user').doc(uuid)
-      const users = await userListRef.get()
       return new Promise((resolve, reject) => {
         userListRef.onSnapshot(snapshot => {
           const user = snapshot.data()
@@ -176,38 +176,97 @@ class FireEngine {
     }))
   }
 
-  private async getChannelList() {
+  private async addChannelListener() {
     if (this.isReady) {
       const channelRef = firebase.firestore().collection('channels').where(`member_ids.${this.user.uuid}`, '==', true)
-      channelRef.onSnapshot((snapshot) => {
-        if (snapshot.empty) {
-          if (this.channelListCallback) this.channelListCallback([])
+      channelRef.limit(1).onSnapshot((snapshot) => {
+        if (!this.initChannelListener) {
+          this.initChannelListener = true
         } else {
-          Promise.all(snapshot.docs.map(async doc => {
-            const channel = doc.data() as IChannelStore
-            const localChannel = {
-              uuid: channel.uuid,
-              last_message: channel.last_message,
-              timestamp: channel.timestamp,
-              type: channel.type,
-              members: await this.getUserByIds(keys(channel.member_ids)),
-              update_at: channel.update_at,
-            } as IChannel
-            this.addMessageListener(localChannel)
-            if (this.channels[localChannel.uuid]) {
-              this.channels[localChannel.uuid] = {
-                ...this.channels[channel.uuid],
-                ...localChannel
+          if (!snapshot.empty) {
+            Promise.all(snapshot.docs.map(async doc => {
+              const channel = doc.data() as IChannelStore
+              const localChannel = {
+                uuid: channel.uuid,
+                last_message: channel.last_message,
+                timestamp: channel.timestamp,
+                type: channel.type,
+                members: await this.getUserByIds(keys(channel.member_ids)),
+                update_at: channel.update_at,
+              } as IChannel
+              if (this.messageListenerList[localChannel.uuid] === undefined) {
+                this.messageListenerList = {
+                  ...this.messageListenerList,
+                  [localChannel.uuid]: false
+                }
+                this.addMessageListener(localChannel)
               }
-            } else {
-              this.channels[localChannel.uuid] = localChannel
-            }
-          })).then(() => {
-            if (this.channelListCallback) this.channelListCallback(values(this.channels))
-          })
+
+              if (this.channels[localChannel.uuid]) {
+                this.channels[localChannel.uuid] = {
+                  ...this.channels[channel.uuid],
+                  ...localChannel
+                }
+              } else {
+                this.channels[localChannel.uuid] = localChannel
+              }
+              return localChannel
+            })).then((res) => {
+              if (this.updateChannelCallback) this.updateChannelCallback(res[0])
+            })
+          }
         }
       }, (error) => {
         if (this.onErrorCallback) this.onErrorCallback(strings.error.userlist_failure)
+      })
+    } else {
+      if (this.onErrorCallback) this.onErrorCallback(strings.error.not_ready)
+    }
+  }
+
+  private async getChannelList(limit: number = 50, nextId?: string, order: QueryDirection = 'DESC') {
+    if (this.isReady) {
+      const channelRef = firebase.firestore().collection('channels').where(`member_ids.${this.user.uuid}`, '==', true)
+      return new Promise(async (resolve, reject) => {
+        try {
+          if (nextId) {
+            channelRef.startAt({ id: nextId })
+          } else {
+            const channelList = await channelRef.limit(limit).get()
+            Promise.all(channelList.docs.map(async doc => {
+              const channel = doc.data() as IChannelStore
+              const localChannel = {
+                uuid: channel.uuid,
+                last_message: channel.last_message,
+                timestamp: channel.timestamp,
+                type: channel.type,
+                members: await this.getUserByIds(keys(channel.member_ids)),
+                update_at: channel.update_at,
+              } as IChannel
+
+              if (this.messageListenerList[localChannel.uuid] === undefined) {
+                this.messageListenerList = {
+                  ...this.messageListenerList,
+                  [localChannel.uuid]: false
+                }
+                this.addMessageListener(localChannel)
+              }
+
+              if (this.channels[localChannel.uuid]) {
+                this.channels[localChannel.uuid] = {
+                  ...this.channels[channel.uuid],
+                  ...localChannel
+                }
+              } else {
+                this.channels[localChannel.uuid] = localChannel
+              }
+            })).then(() => {
+              resolve(values(values(this.channels)).sort(compareValues('update_at', 'desc', true)))
+            })
+          }
+        } catch (error) {
+          reject(error)
+        }
       })
     } else {
       if (this.onErrorCallback) this.onErrorCallback(strings.error.not_ready)
@@ -263,31 +322,38 @@ class FireEngine {
     if (this.isReady) {
       const messageListRef = firebase.firestore().collection(`message.${channel.uuid}`)
       messageListRef.orderBy('update_at', 'DESC').limit(1).onSnapshot((snapshot) => {
-        if (!snapshot.empty) {
-          Promise.all(snapshot.docs.map(doc => {
-            const message = {
-              uuid: doc.id,
-              ...doc.data(),
-            } as IMessage
-            this.messages = {
-              ...this.messages,
-              [channel.uuid]: {
-                ...this.messages[channel.uuid],
-                [doc.id]: {
-                  ...message
+        if (!this.messageListenerList[channel.uuid]) {
+          this.messageListenerList = {
+            ...this.messageListenerList,
+            [channel.uuid]: true,
+          }
+        } else {
+          if (!snapshot.empty) {
+            Promise.all(snapshot.docs.map(doc => {
+              const message = {
+                uuid: doc.id,
+                ...doc.data(),
+              } as IMessage
+              this.messages = {
+                ...this.messages,
+                [channel.uuid]: {
+                  ...this.messages[channel.uuid],
+                  [doc.id]: {
+                    ...message
+                  }
                 }
               }
-            }
 
-            const { sender } = message
-            if (sender !== this.user.uuid) {
-              this.updateReceiveMessage(channel, message)
-            }
+              const { sender } = message
+              if (sender !== this.user.uuid) {
+                this.updateReceiveMessage(channel, message)
+              }
 
-            return message
-          })).then((res) => {
-            if (this.receiveMessageCallback) this.receiveMessageCallback({ channel, message: res[0] as IMessage })
-          })
+              return message
+            })).then((res) => {
+              if (this.receiveMessageCallback) this.receiveMessageCallback({ channel, message: res[0] as IMessage })
+            })
+          }
         }
       }, (error) => {
         if (this.onErrorCallback) this.onErrorCallback(strings.error.receive_message_failure)
@@ -365,16 +431,12 @@ class FireEngine {
     this.userListCallback = callback
   }
 
-  onChannelList(callback) {
-    this.channelListCallback = callback
+  onUpdateChannel(callback) {
+    this.updateChannelCallback = callback
   }
 
   onReceiveMessage(callback) {
     this.receiveMessageCallback = callback
-  }
-
-  onSendMessage(callback) {
-    this.sendMessageCallback = callback
   }
 
   async getChannelFromUser(recipient: IUser) {

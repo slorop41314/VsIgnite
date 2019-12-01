@@ -9,7 +9,10 @@ const { Types, Creators } = createActions({
   initFireEngineSuccess: ['payload'],
   initFireEngineFailure: null,
   saveUserList: ['data'],
-  saveChannelList: ['data'],
+  getChannelRequest: ['data'],
+  getChannelSuccess: ['payload'],
+  getChannelFailure: null,
+  updateChannels: ['data'],
   getMessageRequest: ['data'],
   getMessageSuccess: ['payload'],
   getMessageFailure: null,
@@ -32,6 +35,7 @@ export const INITIAL_STATE = Immutable({
   userList: [],
   channelList: [],
   messageList: {},
+  getChannel: { loading: undefined, error: undefined, data: undefined, payload: undefined },
   getMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
   sendMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
   readMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
@@ -58,8 +62,9 @@ export const initFireEngineFailureSaga = (state) => {
 export const saveUserList = (state, { data }) => {
   return state.merge({ ...state, userList: data })
 }
-export const saveChannelList = (state, { data }) => {
-  return state.merge({ ...state, channelList: data })
+export const updateChannels = (state, { data }) => {
+  let newChannelList = mergeAndReplace([...state.channelList], [data], 'uuid', 'update_at', 'dest', true)
+  return state.merge({ ...state, channelList: newChannelList })
 }
 export const updateMessages = (state, { data }) => {
   const { channel, message } = data
@@ -76,6 +81,18 @@ export const updateMessages = (state, { data }) => {
     }
   }
   return state.merge({ ...state, messageList: newMessages })
+}
+
+
+export const getChannelRequest = (state, { data }) => {
+  return state.merge({ ...state, getChannel: { ...state.getChannel, loading: true, error: undefined, data } })
+}
+export const getChannelSuccess = (state, { payload }) => {
+  let newChannelList = mergeAndReplace([...state.channelList], payload, 'uuid', 'update_at', 'dest', true)
+  return state.merge({ ...state, getChannel: { ...state.getChannel, loading: false, error: undefined, payload }, channelList: newChannelList })
+}
+export const getChannelFailure = (state) => {
+  return state.merge({ ...state, getChannel: { ...state.getChannel, loading: false, error: true } })
 }
 
 export const getMessageRequest = (state, { data }) => {
@@ -128,7 +145,10 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.INIT_FIRE_ENGINE_SUCCESS]: initFireEngineSuccessSaga,
   [Types.INIT_FIRE_ENGINE_FAILURE]: initFireEngineFailureSaga,
   [Types.SAVE_USER_LIST]: saveUserList,
-  [Types.SAVE_CHANNEL_LIST]: saveChannelList,
+  [Types.UPDATE_CHANNELS]: updateChannels,
+  [Types.GET_CHANNEL_REQUEST]: getChannelRequest,
+  [Types.GET_CHANNEL_SUCCESS]: getChannelSuccess,
+  [Types.GET_CHANNEL_FAILURE]: getChannelFailure,
   [Types.UPDATE_MESSAGES]: updateMessages,
   [Types.GET_MESSAGE_REQUEST]: getMessageRequest,
   [Types.GET_MESSAGE_SUCCESS]: getMessageSuccess,

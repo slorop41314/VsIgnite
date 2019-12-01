@@ -33,8 +33,8 @@ export function handleEventListener(fireEngine) {
     const getUserList = (payload) => {
       emit({ type: FIRE_ENGINE_EVENT.user_list, payload })
     }
-    const getChannelList = (payload) => {
-      emit({ type: FIRE_ENGINE_EVENT.channel_list, payload })
+    const updateChannel = (payload) => {
+      emit({ type: FIRE_ENGINE_EVENT.channel_update, payload })
     }
     const receiveMessage = (payload) => {
       emit({ type: FIRE_ENGINE_EVENT.receive_message, payload })
@@ -44,7 +44,7 @@ export function handleEventListener(fireEngine) {
     fireEngine.onInitFailure(initFailure)
     fireEngine.onError(engineError)
     fireEngine.onUserList(getUserList)
-    fireEngine.onChannelList(getChannelList)
+    fireEngine.onUpdateChannel(updateChannel)
     fireEngine.onReceiveMessage(receiveMessage)
 
     const unsubscribe = () => {
@@ -69,7 +69,10 @@ export function* initFireEngine(action) {
         const { type, payload } = eventPayload;
         switch (type) {
           case FIRE_ENGINE_EVENT.ready: {
-            yield put(FireEngineActions.initFireEngineSuccess(payload))
+            yield all([
+              put(FireEngineActions.initFireEngineSuccess(payload)),
+              put(FireEngineActions.getChannelRequest())
+            ])
             NavigationService.navigate('ChannelScreen')
             break;
           }
@@ -84,8 +87,8 @@ export function* initFireEngine(action) {
             break;
           }
 
-          case FIRE_ENGINE_EVENT.channel_list: {
-            yield put(FireEngineActions.saveChannelList(payload));
+          case FIRE_ENGINE_EVENT.channel_update: {
+            yield put(FireEngineActions.updateChannels(payload));
             break;
           }
 
@@ -140,7 +143,10 @@ export function* readMessageSaga(action) {
 
 export function* getMessageSaga(action) {
   const { data } = action
-  const { channel, limit, nextId, order } = data
+  const channel = data ? data.channel : undefined
+  const limit = data ? data.limit : undefined
+  const nextId = data ? data.nextId : undefined
+  const order = data ? data.order : undefined
 
   try {
     const fireInstance = FireEngineManager.getInstance()
@@ -148,5 +154,20 @@ export function* getMessageSaga(action) {
     yield put(FireEngineActions.getMessageSuccess({ channel, messages: messageRes }))
   } catch (error) {
     yield put(FireEngineActions.getMessageFailure())
+  }
+}
+
+export function* getChannelSaga(action) {
+  const { data } = action
+  const limit = data ? data.limit : undefined
+  const nextId = data ? data.nextId : undefined
+  const order = data ? data.order : undefined
+
+  try {
+    const fireInstance = FireEngineManager.getInstance()
+    const channelRes = yield fireInstance.getChannelList(limit, nextId, order)
+    yield put(FireEngineActions.getChannelSuccess(channelRes))
+  } catch (error) {
+    yield put(FireEngineActions.getChannelFailure())
   }
 }
