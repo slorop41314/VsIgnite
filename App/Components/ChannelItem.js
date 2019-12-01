@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import { Colors } from '../Themes'
 import { CHANNEL_TYPE } from '../Services/firestore-chat-engine/const'
 import { connect } from 'react-redux'
+import moment from 'moment'
 
 const styles = StyleSheet.create({
   photoContainer: {
@@ -16,6 +17,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10
   },
   infoContainer: {
+    flex: 1, 
     marginLeft: 10,
     justifyContent: 'center'
   },
@@ -42,7 +44,10 @@ const ChannelItem = (props) => {
         <View style={[styles.infoContainer]}>
           <Text style={[styles.textName]}>{user.fullname}</Text>
           {data.last_message && (
-          <Text style={[styles.testMessage]}>{data.last_message.message}</Text>
+            <View style={{flex: 1, flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={[styles.testMessage]}>{data.last_message.message}</Text>
+              <Text style={[styles.testMessage]}>{moment(data.last_message.timestamp).format('DD/MM/YYYY')}</Text>
+            </View>
           )}
         </View>
       </TouchableOpacity>
