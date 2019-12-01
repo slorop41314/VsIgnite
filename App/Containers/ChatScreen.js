@@ -23,6 +23,8 @@ class ChatScreen extends Component {
   }
 
   componentDidMount() {
+    const {getMessageRequest} = this.props
+    getMessageRequest({channel: this.channel, limit: 20})
   }
 
   onPressSend() {
@@ -71,6 +73,7 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    getMessageRequest: (params) => dispatch(FireEngineActions.getMessageRequest(params)),
     sendMessageRequest: (params) => dispatch(FireEngineActions.sendMessageRequest(params))
   }
 }

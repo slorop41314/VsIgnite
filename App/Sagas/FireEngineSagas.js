@@ -36,8 +36,8 @@ export function handleEventListener(fireEngine) {
     const getChannelList = (payload) => {
       emit({ type: FIRE_ENGINE_EVENT.channel_list, payload })
     }
-    const getMessageList = (payload) => {
-      emit({ type: FIRE_ENGINE_EVENT.message_list, payload })
+    const receiveMessage = (payload) => {
+      emit({ type: FIRE_ENGINE_EVENT.receive_message, payload })
     }
 
     fireEngine.onReady(engineReady)
@@ -45,7 +45,7 @@ export function handleEventListener(fireEngine) {
     fireEngine.onError(engineError)
     fireEngine.onUserList(getUserList)
     fireEngine.onChannelList(getChannelList)
-    fireEngine.onMessageList(getMessageList)
+    fireEngine.onReceiveMessage(receiveMessage)
 
     const unsubscribe = () => {
       // unsubscribe later
@@ -89,8 +89,8 @@ export function* initFireEngine(action) {
             break;
           }
 
-          case FIRE_ENGINE_EVENT.message_list: {
-            yield put(FireEngineActions.saveMessageList(payload));
+          case FIRE_ENGINE_EVENT.receive_message: {
+            yield put(FireEngineActions.updateMessages(payload));
             break;
           }
         }
@@ -135,5 +135,18 @@ export function* readMessageSaga(action) {
     yield put(FireEngineActions.readMessageSuccess(messageRes))
   } catch (error) {
     yield put(FireEngineActions.readMessageFailure())
+  }
+}
+
+export function* getMessageSaga(action) {
+  const { data } = action
+  const { channel, limit, nextId, order } = data
+
+  try {
+    const fireInstance = FireEngineManager.getInstance()
+    const messageRes = yield fireInstance.getMessageList(channel, limit, nextId, order)
+    yield put(FireEngineActions.getMessageSuccess({ channel, messages: messageRes }))
+  } catch (error) {
+    yield put(FireEngineActions.getMessageFailure())
   }
 }

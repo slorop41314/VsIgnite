@@ -1,5 +1,6 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
+import { mergeAndReplace } from '../Services/firestore-chat-engine/helper'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -9,7 +10,10 @@ const { Types, Creators } = createActions({
   initFireEngineFailure: null,
   saveUserList: ['data'],
   saveChannelList: ['data'],
-  saveMessageList: ['data'],
+  getMessageRequest: ['data'],
+  getMessageSuccess: ['payload'],
+  getMessageFailure: null,
+  updateMessages: ['data'],
   sendMessageRequest: ['data'],
   sendMessageSuccess: ['payload'],
   sendMessageFailure: null,
@@ -28,8 +32,9 @@ export const INITIAL_STATE = Immutable({
   userList: [],
   channelList: [],
   messageList: {},
+  getMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
   sendMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
-  readMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined},
+  readMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined },
 })
 
 /* ------------- Selectors ------------- */
@@ -53,24 +58,47 @@ export const initFireEngineFailureSaga = (state) => {
 export const saveUserList = (state, { data }) => {
   return state.merge({ ...state, userList: data })
 }
-export const saveMessageList = (state, { data }) => {
-  const { channel, messages } = data
+export const saveChannelList = (state, { data }) => {
+  return state.merge({ ...state, channelList: data })
+}
+export const updateMessages = (state, { data }) => {
+  const { channel, message } = data
   let newMessages = { ...state.messageList }
   if (newMessages[channel.uuid]) {
     newMessages = {
       ...newMessages,
-      [channel.uuid]: messages
+      [channel.uuid]: mergeAndReplace(newMessages[channel.uuid], [message], 'uuid', 'timestamp', 'desc', true)
     }
   } else {
     newMessages = {
       ...newMessages,
-      [channel.uuid]: messages
+      [channel.uuid]: mergeAndReplace([], [message], 'uuid', 'timestamp', 'desc', true)
     }
   }
   return state.merge({ ...state, messageList: newMessages })
 }
-export const saveChannelList = (state, { data }) => {
-  return state.merge({ ...state, channelList: data })
+
+export const getMessageRequest = (state, { data }) => {
+  return state.merge({ ...state, getMessage: { ...state.getMessage, loading: true, error: undefined, data } })
+}
+export const getMessageSuccess = (state, { payload }) => {
+  const { channel, messages } = payload
+  let newMessages = { ...state.messageList }
+  if (newMessages[channel.uuid]) {
+    newMessages = {
+      ...newMessages,
+      [channel.uuid]: mergeAndReplace(newMessages[channel.uuid], messages, 'uuid', 'timestamp', 'desc', true)
+    }
+  } else {
+    newMessages = {
+      ...newMessages,
+      [channel.uuid]: mergeAndReplace([], messages, 'uuid', 'timestamp', 'desc', true)
+    }
+  }
+  return state.merge({ ...state, getMessage: { ...state.getMessage, loading: false, error: undefined, payload }, messageList: newMessages })
+}
+export const getMessageFailure = (state) => {
+  return state.merge({ ...state, getMessage: { ...state.getMessage, loading: false, error: true } })
 }
 
 export const sendMessageRequest = (state, { data }) => {
@@ -100,8 +128,11 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.INIT_FIRE_ENGINE_SUCCESS]: initFireEngineSuccessSaga,
   [Types.INIT_FIRE_ENGINE_FAILURE]: initFireEngineFailureSaga,
   [Types.SAVE_USER_LIST]: saveUserList,
-  [Types.SAVE_MESSAGE_LIST]: saveMessageList,
   [Types.SAVE_CHANNEL_LIST]: saveChannelList,
+  [Types.UPDATE_MESSAGES]: updateMessages,
+  [Types.GET_MESSAGE_REQUEST]: getMessageRequest,
+  [Types.GET_MESSAGE_SUCCESS]: getMessageSuccess,
+  [Types.GET_MESSAGE_FAILURE]: getMessageFailure,
   [Types.SEND_MESSAGE_REQUEST]: sendMessageRequest,
   [Types.SEND_MESSAGE_SUCCESS]: sendMessageSuccess,
   [Types.SEND_MESSAGE_FAILURE]: sendMessageFailure,

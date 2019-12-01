@@ -1,4 +1,5 @@
 export type ChannelType = "single" | "group"
+export type QueryDirection = 'asc' | 'ASC' | 'desc' | 'DESC';
 
 export interface IUser {
   email?: string,
@@ -12,7 +13,8 @@ export interface IChannel {
   members: IUser[];
   type: ChannelType;
   last_message: IMessage;
-  timestamp: string,
+  timestamp: number;
+  update_at: number;
 }
 
 export interface IChannelStore {
@@ -20,14 +22,15 @@ export interface IChannelStore {
   member_ids: Record<string, boolean>;
   type: ChannelType;
   last_message: IMessageStore;
-  timestamp: string,
+  timestamp: number;
+  update_at: number;
 }
 
 export interface IAttachment {
   uuid: string;
   create_by: string;
   url: string;
-  timestamp: string;
+  timestamp: number;
 }
 
 export interface IMessage {
@@ -38,11 +41,18 @@ export interface IMessage {
   members: string[];
   read_ids?: string[];
   receive_ids?: string[];
+  timestamp: number;
+  update_at: number;
 }
 
 export interface IMessageListR {
   channel: IChannel;
   messages: IMessage[];
+}
+
+export interface IMessageR {
+  channel: IChannel;
+  message: IMessage;
 }
 
 export interface IMessageStore {
@@ -54,6 +64,8 @@ export interface IMessageStore {
   read_ids: string[];
   receive_ids: string[];
   deleted: boolean;
+  timestamp: number;
+  update_at: number;
 }
 
 export interface IcChannelType {

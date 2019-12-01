@@ -2,8 +2,8 @@ import firebase from "react-native-firebase";
 import { includes, equals, values, keys } from 'ramda'
 import { generateUUID } from "./modules/helper";
 import strings from "./strings";
-import { IUser, IChannel, IMessage, IChannelStore, IMessageListR, IMessageStore } from "./interface";
-import { CHANNEL_TYPE } from "./const";
+import { IUser, IChannel, IMessage, IChannelStore, IMessageListR, IMessageStore, QueryDirection, IMessageR } from "./interface";
+import { CHANNEL_TYPE, ORDER_TYPE } from "./const";
 import { arrayEqual } from "./helper";
 
 class FireEngine {
@@ -18,8 +18,7 @@ class FireEngine {
   private onErrorCallback: (error: string) => void;
   private userListCallback: (userList: IUser[]) => void;
   private channelListCallback: (channelList: IChannel[]) => void;
-  private messageListCallback: (payload: IMessageListR) => void;
-  private receiveMessageCallback: (channel: IChannel, message: IMessage) => void;
+  private receiveMessageCallback: (payload: IMessageR) => void;
   private sendMessageCallback: (channel: IChannel, message: IMessage) => void;
 
   constructor(user) {
@@ -36,6 +35,7 @@ class FireEngine {
     this.createChannel = this.createChannel.bind(this)
     this.getMessageList = this.getMessageList.bind(this)
     this.updateReceiveMessage = this.updateReceiveMessage.bind(this)
+    this.addMessageListener = this.addMessageListener.bind(this)
 
     /*
     * PUBLIC FUNCTION 
@@ -190,9 +190,10 @@ class FireEngine {
               last_message: channel.last_message,
               timestamp: channel.timestamp,
               type: channel.type,
-              members: await this.getUserByIds(keys(channel.member_ids))
+              members: await this.getUserByIds(keys(channel.member_ids)),
+              update_at: channel.update_at,
             } as IChannel
-            this.getMessageList(localChannel)
+            this.addMessageListener(localChannel)
             if (this.channels[localChannel.uuid]) {
               this.channels[localChannel.uuid] = {
                 ...this.channels[channel.uuid],
@@ -239,6 +240,7 @@ class FireEngine {
       const channelRef = firebase.firestore().collection('channels')
       const channels = await channelRef.where('type', '==', CHANNEL_TYPE.single).where(`member_ids.${channel.members[0].uuid}`, '==', true).where(`member_ids.${channel.members[1].uuid}`, '==', true).get()
       if (channels.empty) {
+        const timestamp = new Date().valueOf()
         const savedChannel = {
           uuid: channel.uuid,
           member_ids: {
@@ -247,7 +249,8 @@ class FireEngine {
           },
           type: CHANNEL_TYPE.single,
           last_message: undefined,
-          timestamp: new Date().valueOf().toString(),
+          timestamp,
+          update_at: timestamp,
         } as IChannelStore
         channelRef.doc(channel.uuid).set(savedChannel)
       }
@@ -256,13 +259,11 @@ class FireEngine {
     }
   }
 
-  private getMessageList(channel: IChannel) {
+  private addMessageListener(channel: IChannel) {
     if (this.isReady) {
       const messageListRef = firebase.firestore().collection(`message.${channel.uuid}`)
-      messageListRef.orderBy('timestamp', 'DESC').onSnapshot((snapshot) => {
-        if (snapshot.empty) {
-          if (this.messageListCallback) this.messageListCallback({ channel, messages: [] })
-        } else {
+      messageListRef.orderBy('update_at', 'DESC').limit(1).onSnapshot((snapshot) => {
+        if (!snapshot.empty) {
           Promise.all(snapshot.docs.map(doc => {
             const message = {
               uuid: doc.id,
@@ -284,12 +285,56 @@ class FireEngine {
             }
 
             return message
-          })).then(() => {
-            if (this.messageListCallback) this.messageListCallback({ channel, messages: values(this.messages[channel.uuid]) as IMessage[] })
+          })).then((res) => {
+            if (this.receiveMessageCallback) this.receiveMessageCallback({ channel, message: res[0] as IMessage })
           })
         }
       }, (error) => {
-        if (this.onErrorCallback) this.onErrorCallback(strings.error.messagelist_failure)
+        if (this.onErrorCallback) this.onErrorCallback(strings.error.receive_message_failure)
+      })
+    } else {
+      if (this.onErrorCallback) this.onErrorCallback(strings.error.not_ready)
+    }
+  }
+
+  private async getMessageList(channel: IChannel, limit: number = 50, nextId?: string, order: QueryDirection = 'DESC') {
+    if (this.isReady) {
+      const messageListRef = firebase.firestore().collection(`message.${channel.uuid}`)
+      return new Promise(async (resolve, reject) => {
+        try {
+          if (nextId) {
+            messageListRef.startAt({ id: nextId })
+          } else {
+            const messageList = await messageListRef.orderBy('timestamp', order).limit(limit).get()
+            Promise.all(messageList.docs.map(doc => {
+              const message = {
+                uuid: doc.id,
+                ...doc.data(),
+              } as IMessage
+              this.messages = {
+                ...this.messages,
+                [channel.uuid]: {
+                  ...this.messages[channel.uuid],
+                  [doc.id]: {
+                    ...message
+                  }
+                }
+              }
+
+              const { sender } = message
+              if (sender !== this.user.uuid) {
+                this.updateReceiveMessage(channel, message)
+              }
+
+              return message
+            }))
+              .then((messages) => {
+                resolve(values(this.messages[channel.uuid]))
+              })
+          }
+        } catch (error) {
+          reject(error)
+        }
       })
     } else {
       if (this.onErrorCallback) this.onErrorCallback(strings.error.not_ready)
@@ -300,7 +345,7 @@ class FireEngine {
     const { members, receive_ids } = message
     if (!arrayEqual(members, receive_ids)) {
       const messageRef = firebase.firestore().collection(`message.${channel.uuid}`).doc(message.uuid)
-      messageRef.update({ receive_ids: [...receive_ids, this.user.uuid] })
+      messageRef.update({ receive_ids: [...receive_ids, this.user.uuid], update_at: new Date().valueOf(), })
     }
   }
 
@@ -324,10 +369,6 @@ class FireEngine {
     this.channelListCallback = callback
   }
 
-  onMessageList(callback) {
-    this.messageListCallback = callback
-  }
-
   onReceiveMessage(callback) {
     this.receiveMessageCallback = callback
   }
@@ -344,10 +385,11 @@ class FireEngine {
   sendMessage(channel: IChannel, message: IMessage) {
     return new Promise(async (resolve, reject) => {
       try {
-        this.createChannel(channel)
+        await this.createChannel(channel)
         const uuid = generateUUID(channel.uuid)
         const ref = firebase.firestore().collection(`message.${channel.uuid}`).doc(uuid)
         const members = channel.members.map(u => u.uuid)
+        const timestamp = new Date().valueOf()
         const storeMessage = {
           message: message.message,
           attachments: message.attachments,
@@ -355,8 +397,9 @@ class FireEngine {
           members,
           read_ids: [this.user.uuid],
           receive_ids: [this.user.uuid],
-          timestamp: new Date().valueOf(),
+          timestamp,
           deleted: false,
+          update_at: timestamp,
         } as IMessageStore
         await ref.set({ ...storeMessage })
         await this.updateChannel(channel.uuid, { last_message: { uuid, ...storeMessage } })
@@ -373,7 +416,7 @@ class FireEngine {
       try {
         if ((this.user.uuid !== sender) && !arrayEqual(members, read_ids)) {
           const messageRef = firebase.firestore().collection(`message.${channel.uuid}`).doc(message.uuid)
-          messageRef.update({ read_ids: [...read_ids, this.user.uuid] })
+          messageRef.update({ read_ids: [...read_ids, this.user.uuid], update_at: new Date().valueOf(), })
             .then((message) => {
               resolve(message)
             })
@@ -410,7 +453,7 @@ class FireEngine {
     return new Promise(async (resolve, reject) => {
       try {
         const userRef = firebase.firestore().collection('channels').doc(uuid)
-        userRef.update({ ...params })
+        userRef.update({ ...params, update_at: new Date().valueOf() })
           .then(() => {
             resolve()
           })

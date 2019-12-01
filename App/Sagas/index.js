@@ -13,7 +13,7 @@ import { FireEngineTypes } from '../Redux/FireEngineRedux'
 
 import { startup } from './StartupSagas'
 import { getUserAvatar } from './GithubSagas'
-import { initFireEngine, sendMessageSaga, readMessageSaga } from './FireEngineSagas'
+import { initFireEngine, sendMessageSaga, readMessageSaga, getMessageSaga } from './FireEngineSagas'
 
 /* ------------- API ------------- */
 
@@ -34,6 +34,7 @@ export default function* root() {
     // new
     takeLatest(FireEngineTypes.INIT_FIRE_ENGINE_REQUEST, initFireEngine),
     takeLatest(FireEngineTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
-    takeLatest(FireEngineTypes.READ_MESSAGE_REQUEST, readMessageSaga)
+    takeLatest(FireEngineTypes.READ_MESSAGE_REQUEST, readMessageSaga),
+    takeLatest(FireEngineTypes.GET_MESSAGE_REQUEST, getMessageSaga),
   ])
 }
