@@ -34,11 +34,10 @@ export interface IMessage {
   uuid?: string;
   message: string;
   attachments: IAttachment[];
-  create_by?: IUser;
+  sender?: IUser;
+  members: string[];
   read_ids?: string[];
   receive_ids?: string[];
-  read_status?: boolean;
-  receive_status?: boolean;
 }
 
 export interface IMessageListR {
@@ -50,11 +49,10 @@ export interface IMessageStore {
   uuid: string;
   message: string;
   attachments: IAttachment[];
-  create_by: string;
+  sender: string;
+  members: string[];
   read_ids: string[];
   receive_ids: string[];
-  read_status: boolean;
-  receive_status: boolean;
 }
 
 export interface IcChannelType {

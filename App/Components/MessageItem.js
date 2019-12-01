@@ -2,6 +2,8 @@ import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { Colors } from '../Themes/'
 import { connect } from 'react-redux'
+import Icons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { arrayEqual } from '../Services/firestore-chat-engine/helper'
 
 const styles = StyleSheet.create({
   messageContainer: {
@@ -21,6 +23,7 @@ const styles = StyleSheet.create({
   textMessage: {
     fontSize: 16,
     color: Colors.coal,
+    marginBottom: 5,
   },
   textTime: {
     fontSize: 10,
@@ -31,15 +34,19 @@ const styles = StyleSheet.create({
 const MessageItem = (props) => {
   const moment = require('moment');
 
-  const { data, currentUser } = props
-  const dateTime = moment(data.timestamp)
+  const { data, currentUser, } = props
+  const { timestamp, sender, members, receive_ids } = data
+  const dateTime = moment(timestamp)
 
-  if (currentUser.uuid === data.sender) {
+  if (currentUser.uuid === sender) {
     return (
       <View style={{ alignItems: 'flex-end' }}>
         <View style={[styles.rightContainer, styles.messageContainer]}>
           <Text style={[styles.textMessage]}>{data.message}</Text>
-          <Text style={[styles.textTime, { textAlign: 'right' }]}>{dateTime.format('HH:mm')}</Text>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+            <Icons name={arrayEqual(members, receive_ids) ? 'check-all' : 'check'} />
+            <Text style={[styles.textTime, { textAlign: 'right', marginLeft: 5 }]}>{dateTime.format('HH:mm')}</Text>
+          </View>
         </View>
       </View>
     )
