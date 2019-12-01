@@ -16,8 +16,8 @@ class LoginScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      email: 'me@zul.xyz',
-      fullname: 'zul',
+      email: 'me@rahmat.xyz',
+      fullname: 'rahmat',
       photo: 'http://rahmatzulfikri.xyz/images/avatar.jpg'
     }
     this.onPressLogin = this.onPressLogin.bind(this)

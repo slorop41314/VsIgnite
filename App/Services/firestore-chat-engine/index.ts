@@ -22,8 +22,8 @@ class FireEngine {
   private receiveMessageCallback: (channel: IChannel, message: IMessage) => void;
   private sendMessageCallback: (channel: IChannel, message: IMessage) => void;
 
-  constructor({ email, fullname }) {
-    this.user = { email, fullname }
+  constructor(user) {
+    this.user = user
 
     /*
     * PRIVATE FUNCTION 
@@ -52,6 +52,7 @@ class FireEngine {
     this.getChannelFromUser = this.getChannelFromUser.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
     this.readMessage = this.readMessage.bind(this)
+    this.updateUser = this.updateUser.bind(this)
 
     this.init().then((user: IUser) => {
       this.user = user
@@ -68,21 +69,64 @@ class FireEngine {
     return new Promise(async (resolve, reject) => {
       if (this.user && this.user.email && this.user.fullname) {
         const getUserRef = firebase.firestore().collection('user')
-        const user = await getUserRef.where('email', '==', this.user.email).get()
+        const user = await getUserRef.where('email', '==', this.user.email.toLowerCase()).get()
 
         if (user.empty) {
           let uuid = generateUUID(this.user.email)
-          const newUser = { uuid, ...this.user, photo: undefined }
+          let newUser = { uuid, email: this.user.email } as IUser
+          if (this.user.fullname) {
+            newUser = {
+              ...newUser,
+              fullname: this.user.fullname,
+            }
+          }
+
+          if (this.user.photo) {
+            newUser = {
+              ...newUser,
+              photo: this.user.photo,
+            }
+          }
+
           const createUserRef = firebase.firestore().collection('user').doc(uuid)
           createUserRef.set(newUser)
           this.user = newUser
+          resolve(this.user)
         } else {
-          this.user = user.docs[0].data() as IUser
-        }
+          const curUser = user.docs[0].data() as IUser
+          let newCompareUser = {
+            photo: curUser.photo,
+            fullname: curUser.fullname
+          }
+          if ((this.user.photo !== undefined) && (curUser.photo !== this.user.photo)) {
+            newCompareUser = {
+              ...newCompareUser,
+              photo: this.user.photo
+            }
+          }
 
-        resolve(this.user)
+          if ((this.user.fullname !== undefined) && (curUser.fullname !== this.user.fullname)) {
+            newCompareUser = {
+              ...newCompareUser,
+              fullname: this.user.fullname
+            }
+          }
+
+          if (equals(newCompareUser, this.user)) {
+            resolve({ ...curUser, ...newCompareUser })
+          } else {
+            this.updateUser(curUser.uuid, newCompareUser)
+              .then(() => {
+                resolve({ ...curUser, ...newCompareUser })
+              })
+              .catch((error) => {
+                reject(error)
+              })
+          }
+        }
       } else {
         if (this.onErrorCallback) this.onErrorCallback(strings.error.init_required)
+        reject()
       }
     })
   }
@@ -336,6 +380,23 @@ class FireEngine {
         } else {
           reject({ error: 'cannot read message or user already read this message' })
         }
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  updateUser(uuid: string, params: any) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const userRef = firebase.firestore().collection('user').doc(uuid)
+        userRef.update({ ...params })
+          .then(() => {
+            resolve()
+          })
+          .catch((error) => {
+            reject(error)
+          })
       } catch (error) {
         reject(error)
       }
