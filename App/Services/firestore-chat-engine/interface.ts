@@ -46,13 +46,14 @@ export interface IMessageListR {
 }
 
 export interface IMessageStore {
-  uuid: string;
+  uuid?: string;
   message: string;
   attachments: IAttachment[];
   sender: string;
   members: string[];
   read_ids: string[];
   receive_ids: string[];
+  deleted: boolean;
 }
 
 export interface IcChannelType {

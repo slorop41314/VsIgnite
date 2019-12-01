@@ -2,7 +2,7 @@ import firebase from "react-native-firebase";
 import { includes, equals, values, keys } from 'ramda'
 import { generateUUID } from "./modules/helper";
 import strings from "./strings";
-import { IUser, IChannel, IMessage, IChannelStore, IMessageListR } from "./interface";
+import { IUser, IChannel, IMessage, IChannelStore, IMessageListR, IMessageStore } from "./interface";
 import { CHANNEL_TYPE } from "./const";
 import { arrayEqual } from "./helper";
 
@@ -53,6 +53,7 @@ class FireEngine {
     this.sendMessage = this.sendMessage.bind(this)
     this.readMessage = this.readMessage.bind(this)
     this.updateUser = this.updateUser.bind(this)
+    this.updateChannel = this.updateChannel.bind(this)
 
     this.init().then((user: IUser) => {
       this.user = user
@@ -354,9 +355,11 @@ class FireEngine {
           members,
           read_ids: [this.user.uuid],
           receive_ids: [this.user.uuid],
-          timestamp: new Date().valueOf()
-        }
-        ref.set({ ...storeMessage })
+          timestamp: new Date().valueOf(),
+          deleted: false,
+        } as IMessageStore
+        await ref.set({ ...storeMessage })
+        await this.updateChannel(channel.uuid, { last_message: { uuid, ...storeMessage } })
         resolve(storeMessage)
       } catch (error) {
         reject(error)
@@ -390,6 +393,23 @@ class FireEngine {
     return new Promise(async (resolve, reject) => {
       try {
         const userRef = firebase.firestore().collection('user').doc(uuid)
+        userRef.update({ ...params })
+          .then(() => {
+            resolve()
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      } catch (error) {
+        reject(error)
+      }
+    })
+  }
+
+  updateChannel(uuid: string, params: any) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const userRef = firebase.firestore().collection('channels').doc(uuid)
         userRef.update({ ...params })
           .then(() => {
             resolve()

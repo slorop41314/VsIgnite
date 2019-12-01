@@ -19,8 +19,9 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     justifyContent: 'center'
   },
-  textEmail: {
-    fontSize: 15
+  testMessage: {
+    fontSize: 15,
+    color: Colors.charcoal
   },
   textName: {
     fontSize: 18
@@ -40,6 +41,9 @@ const ChannelItem = (props) => {
           )}
         <View style={[styles.infoContainer]}>
           <Text style={[styles.textName]}>{user.fullname}</Text>
+          {data.last_message && (
+          <Text style={[styles.testMessage]}>{data.last_message.message}</Text>
+          )}
         </View>
       </TouchableOpacity>
     )
