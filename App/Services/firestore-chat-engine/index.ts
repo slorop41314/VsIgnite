@@ -2,7 +2,7 @@ import firebase from "react-native-firebase";
 import { includes, equals, values, keys } from 'ramda'
 import { generateUUID } from "./modules/helper";
 import strings from "./strings";
-import { IUser, IChannel, IMessage, IChannelStore } from "./interface";
+import { IUser, IChannel, IMessage, IChannelStore, IMessageListR } from "./interface";
 import { CHANNEL_TYPE } from "./const";
 
 class FireEngine {
@@ -17,7 +17,7 @@ class FireEngine {
   private onErrorCallback: (error: string) => void;
   private userListCallback: (userList: IUser[]) => void;
   private channelListCallback: (channelList: IChannel[]) => void;
-  private messageListCallback: (messageList: IMessage[]) => void;
+  private messageListCallback: (payload: IMessageListR) => void;
   private receiveMessageCallback: (channel: IChannel, message: IMessage) => void;
   private sendMessageCallback: (channel: IChannel, message: IMessage) => void;
 
@@ -139,7 +139,7 @@ class FireEngine {
               type: channel.type,
               members: await this.getUserByIds(keys(channel.member_ids))
             } as IChannel
-
+            this.getMessageList(localChannel)
             if (this.channels[localChannel.uuid]) {
               this.channels[localChannel.uuid] = {
                 ...this.channels[channel.uuid],
@@ -205,15 +205,26 @@ class FireEngine {
 
   private getMessageList(channel: IChannel) {
     if (this.isReady) {
-      const messageListRef = firebase.firestore().collection(`messages-${channel.uuid}`)
+      const messageListRef = firebase.firestore().collection(`message.${channel.uuid}`)
       messageListRef.orderBy('timestamp', 'DESC').onSnapshot((snapshot) => {
         if (snapshot.empty) {
-          if (this.messageListCallback) this.messageListCallback([])
+          if (this.messageListCallback) this.messageListCallback({channel, messages: []})
         } else {
           Promise.all(snapshot.docs.map(doc => {
-            // do something
+            const message = doc.data() as IMessage
+            this.messages = {
+              ...this.messages,
+              [channel.uuid]: {
+                ...this.messages[channel.uuid],
+                [doc.id]: {
+                  uuid: doc.id,
+                  ...message
+                }
+              }
+            }
+            return message
           })).then(() => {
-            if (this.messageListCallback) this.messageListCallback([])
+            if (this.messageListCallback) this.messageListCallback({channel, messages: values(this.messages[channel.uuid]) as IMessage[]})
           })
         }
       }, (error) => {

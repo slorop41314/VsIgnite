@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, StyleSheet } from 'react-native'
-import { currentUser } from '../Services/firestore-chat-engine/chat-engine'
-import {Colors} from '../Themes/'
+import { Colors } from '../Themes/'
+import { connect } from 'react-redux'
 
 const styles = StyleSheet.create({
   messageContainer: {
@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.messageLeft,
   },
   rightContainer: {
-    backgroundColor: Colors.messageRight,    
+    backgroundColor: Colors.messageRight,
   },
   textMessage: {
     fontSize: 16,
@@ -28,10 +28,10 @@ const styles = StyleSheet.create({
   }
 })
 
-export const MessageItem = (props) => {
+const MessageItem = (props) => {
   const moment = require('moment');
 
-  const { data } = props
+  const { data, currentUser } = props
   const dateTime = moment(data.timestamp)
 
   if (currentUser.uuid === data.sender) {
@@ -54,3 +54,17 @@ export const MessageItem = (props) => {
     )
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.fireEngine.currentUser
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessageItem)

@@ -1,6 +1,8 @@
 import React from 'react'
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native'
 import { Colors } from '../Themes'
+import { CHANNEL_TYPE } from '../Services/firestore-chat-engine/const'
+import { connect } from 'react-redux'
 
 const styles = StyleSheet.create({
   photoContainer: {
@@ -25,19 +27,19 @@ const styles = StyleSheet.create({
   }
 })
 
-export const ChannelItem = (props) => {
-  const { data, onPress } = props
-  if (data && data.meta) {
-    const { meta } = data
+const ChannelItem = (props) => {
+  const { data, onPress, currentUser } = props
+  if (data && data.type === CHANNEL_TYPE.single) {
+    const user = data.members.filter(u => u.uuid !== currentUser.uuid)[0]
     return (
       <TouchableOpacity activeOpacity={0.8} style={[styles.rowContainer]} onPress={onPress}>
-        {meta.photo ? (
-          <Image source={{ uri: meta.photo }} style={[styles.photoContainer]} resizeMethod='resize' resizeMode='cover' />
+        {user.photo ? (
+          <Image source={{ uri: user.photo }} style={[styles.photoContainer]} resizeMethod='resize' resizeMode='cover' />
         ) : (
             <View style={[styles.photoContainer]} />
           )}
         <View style={[styles.infoContainer]}>
-          <Text style={[styles.textName]}>{meta.name}</Text>
+          <Text style={[styles.textName]}>{user.fullname}</Text>
         </View>
       </TouchableOpacity>
     )
@@ -45,3 +47,17 @@ export const ChannelItem = (props) => {
     return <View />
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    currentUser: state.fireEngine.currentUser
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChannelItem)

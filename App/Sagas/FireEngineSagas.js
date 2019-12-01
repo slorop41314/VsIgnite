@@ -10,7 +10,7 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, take, cancelled } from 'redux-saga/effects'
+import { call, put, take, cancelled, all, fork } from 'redux-saga/effects'
 import FireEngineActions from '../Redux/FireEngineRedux'
 import FireEngine from '../Services/firestore-chat-engine'
 import { FIRE_ENGINE_EVENT } from '../Services/firestore-chat-engine/const';
@@ -69,13 +69,13 @@ export function* initFireEngine(action) {
         const { type, payload } = eventPayload;
         switch (type) {
           case FIRE_ENGINE_EVENT.ready: {
+            yield put(FireEngineActions.initFireEngineSuccess(payload))
             NavigationService.navigate('ChannelScreen')
-            yield put(FireEngineActions.initSuccess(payload))
             break;
           }
 
           case FIRE_ENGINE_EVENT.init_failure: {
-            yield put(FireEngineActions.initFailure())
+            yield put(FireEngineActions.initFireEngineFailure())
             break;
           }
 
@@ -103,6 +103,12 @@ export function* initFireEngine(action) {
       console.log('ENGINE CANCEL')
     }
   }
+}
+
+export function* handleInitListener(payload) {
+  yield all([
+    put(FireEngineActions.initSuccess(payload)),
+  ])
 }
 
 export function* sendMessageSaga(action) {

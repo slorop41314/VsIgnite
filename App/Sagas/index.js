@@ -32,7 +32,7 @@ export default function* root() {
     takeLatest(GithubTypes.USER_REQUEST, getUserAvatar, api),
 
     // new
-    takeLatest(FireEngineTypes.INIT_REQUEST, initFireEngine),
+    takeLatest(FireEngineTypes.INIT_FIRE_ENGINE_REQUEST, initFireEngine),
     takeLatest(FireEngineTypes.SEND_MESSAGE_REQUEST, sendMessageSaga)
   ])
 }

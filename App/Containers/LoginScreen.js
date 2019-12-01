@@ -62,7 +62,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    fireEngineInit: (params) => dispatch(FEActions.initRequest(params))
+    fireEngineInit: (params) => dispatch(FEActions.initFireEngineRequest(params))
   }
 }
 

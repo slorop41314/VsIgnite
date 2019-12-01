@@ -41,6 +41,11 @@ export interface IMessage {
   receive_status?: boolean;
 }
 
+export interface IMessageListR {
+  channel: IChannel;
+  messages: IMessage[];
+}
+
 export interface IMessageStore {
   uuid: string;
   message: string;

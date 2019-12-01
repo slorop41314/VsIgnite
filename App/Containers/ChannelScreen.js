@@ -8,7 +8,7 @@ import ActionButton from 'react-native-action-button';
 
 // Styles
 import styles from './Styles/ChannelScreenStyle'
-import { ChannelItem } from '../Components/ChannelItem'
+import ChannelItem from '../Components/ChannelItem'
 import { ItemSeparator } from '../Components/ItemSeparator';
 
 class ChannelScreen extends Component {

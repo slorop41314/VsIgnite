@@ -4,9 +4,9 @@ import Immutable from 'seamless-immutable'
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
-  initRequest: ['data'],
-  initSuccess: ['payload'],
-  initFailure: null,
+  initFireEngineRequest: ['data'],
+  initFireEngineSuccess: ['payload'],
+  initFireEngineFailure: null,
   saveUserList: ['data'],
   saveChannelList: ['data'],
   saveMessageList: ['data'],
@@ -24,7 +24,7 @@ export const INITIAL_STATE = Immutable({
   init: { loading: undefined, error: undefined, data: undefined },
   userList: [],
   channelList: [],
-  messageList: [],
+  messageList: {},
   sendMessage: { loading: undefined, error: undefined, data: undefined, payload: undefined }
 })
 
@@ -37,24 +37,36 @@ export const FireEngineSelectors = {
 /* ------------- Reducers ------------- */
 
 // request the data from an api
-export const initRequest = (state, { data }) => {
+export const initFireEngineRequestSaga = (state, { data }) => {
   return state.merge({ ...state, init: { loading: true, error: false, data } })
 }
-export const initSuccess = (state, { payload }) => {
-  return state.merge({ ...state, init: { ...init, loading: false, error: false } })
+export const initFireEngineSuccessSaga = (state, { payload }) => {
+  return state.merge({ ...state, init: { loading: false, error: false }, currentUser: payload })
 }
-export const initFailure = (state) => {
-  return state.merge({ ...state, init: { ...init, loading: false, error: true } })
+export const initFireEngineFailureSaga = (state) => {
+  return state.merge({ ...state, init: { loading: false, error: true } })
 }
-
 export const saveUserList = (state, { data }) => {
   return state.merge({ ...state, userList: data })
 }
 export const saveMessageList = (state, { data }) => {
-  return state.merge({ ...state, messageList: data })
+  const { channel, messages } = data
+  let newMessages = { ...state.messageList }
+  if (newMessages[channel.uuid]) {
+    newMessages = {
+      ...newMessages,
+      [channel.uuid]: messages
+    }
+  } else {
+    newMessages = {
+      ...newMessages,
+      [channel.uuid]: messages
+    }
+  }
+  return state.merge({ ...state, messageList: newMessages })
 }
 export const saveChannelList = (state, { data }) => {
-  return state.merge({ ...state, messageList: data })
+  return state.merge({ ...state, channelList: data })
 }
 
 export const sendMessageRequest = (state, { data }) => {
@@ -70,9 +82,9 @@ export const sendMessageFailure = (state) => {
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
-  [Types.INIT_REQUEST]: initRequest,
-  [Types.INIT_SUCCESS]: initSuccess,
-  [Types.INIT_FAILURE]: initFailure,
+  [Types.INIT_FIRE_ENGINE_REQUEST]: initFireEngineRequestSaga,
+  [Types.INIT_FIRE_ENGINE_SUCCESS]: initFireEngineSuccessSaga,
+  [Types.INIT_FIRE_ENGINE_FAILURE]: initFireEngineFailureSaga,
   [Types.SAVE_USER_LIST]: saveUserList,
   [Types.SAVE_MESSAGE_LIST]: saveMessageList,
   [Types.SAVE_CHANNEL_LIST]: saveChannelList,

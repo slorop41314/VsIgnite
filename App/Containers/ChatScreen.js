@@ -7,14 +7,13 @@ import FireEngineActions from '../Redux/FireEngineRedux'
 
 // Styles
 import styles from './Styles/ChatScreenStyle'
-import { MessageItem } from '../Components/MessageItem'
+import MessageItem from '../Components/MessageItem'
 import MessageInput from '../Components/MessageInput'
 
 class ChatScreen extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      messages: [],
       message: '',
       attachments: ['http://rahmatzulfikri.xyz/images/avatar.jpg']
     }
@@ -22,16 +21,12 @@ class ChatScreen extends Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props
-    const channel = navigation.getParam('channel')
-    // createOrGetMessageList(channel, (messages) => this.setState({ messages }))
   }
 
   onPressSend() {
     const { navigation, sendMessageRequest } = this.props
     const { message, attachments } = this.state
     const channel = navigation.getParam('channel')
-    console.tron.error({ navigation })
     this.setState({
       message: '',
     }, () => {
@@ -40,7 +35,8 @@ class ChatScreen extends Component {
   }
 
   render() {
-    const { messages, message } = this.state
+    const { message } = this.state
+    const { messages } = this.props
     return (
       <View style={{ flex: 1 }}>
         <FlatList
@@ -59,8 +55,16 @@ class ChatScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  const { navigation } = props
+  const channel = navigation.getParam('channel')
+  let messages = []
+  const stateMessages = state.fireEngine.messageList
+  if (stateMessages[channel.uuid]) {
+    messages = stateMessages[channel.uuid]
+  }
   return {
+    messages,
   }
 }
 
