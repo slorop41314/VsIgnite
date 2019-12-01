@@ -5,6 +5,11 @@ export const CHANNEL_TYPE: IcChannelType = {
   group: "group",
 }
 
+export const ORDER_TYPE = {
+  DESC: 'desc',
+  ASC: 'asc',
+}
+
 export const FIRE_ENGINE_EVENT = {
   ready: 'ready',
   init_failure: 'init-failure',
