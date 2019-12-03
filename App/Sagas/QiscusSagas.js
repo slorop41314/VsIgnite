@@ -137,3 +137,13 @@ export function* setUserSaga(action) {
 
   yield QiscusManager.setUser(userId, userKey, userName, avatarUrl, extras)
 }
+
+export function* getRoomsSaga(action) {
+  const { data } = action
+  try {
+    const rooms = yield QiscusManager.getChatRoomList(data)
+    yield put(QiscusActions.getRoomsSuccess(rooms))
+  } catch (error) {
+    yield put(QiscusActions.getRoomsFailure())
+  }
+}

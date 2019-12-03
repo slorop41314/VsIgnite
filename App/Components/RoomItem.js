@@ -22,9 +22,6 @@ export default class RoomItem extends React.PureComponent {
 
   render() {
     const room = this.props.room;
-    console.tron.log({
-      room: room
-    });
 
     const lastComment = room.last_comment_message.startsWith('[file]')
       ? 'File attachment'

@@ -1,5 +1,6 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
+import { DEFAULT_REDUCER_STATE } from '../Utils/Const'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -18,9 +19,12 @@ const { Types, Creators } = createActions({
   newMessagesCallback: ['data'],
   roomClearedCallback: ['data'],
   // auth action
-  setUser: ['data']
+  setUser: ['data'],
 
   // rooms action
+  getRoomsRequest: ['data'],
+  getRoomsSuccess: ['payload'],
+  getRoomsFailure: null,
 
   // messages action
 
@@ -34,7 +38,10 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
   init: undefined,
-  currentUser: undefined
+  currentUser: undefined,
+  rooms: [],
+
+  getRooms: DEFAULT_REDUCER_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -45,14 +52,17 @@ export const QiscusSelectors = {
 
 /* ------------- Reducers ------------- */
 
+// MAIN ACTION
 export const qiscusInitReducer = (state) => {
   return state.merge({ ...state, init: true })
 }
 export const qiscusDestroyReducer = (state) => {
   return state.merge({ INITIAL_STATE })
 }
+
+// LISTENER
 export const loginSuccessCallbackReducer = (state, { data }) => {
-  const {user} = data
+  const { user } = data
   return state.merge({ ...state, currentUser: user })
 }
 export const messageDeletedCallbackReducer = (state, { data }) => {
@@ -80,16 +90,30 @@ export const roomClearedCallbacReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
 
-
+// AUTH
 export const setUserReducer = (state, { data }) => {
   return state.merge({ ...state, })
+}
+
+// ROOMS
+export const getRoomsRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: true, data } })
+}
+export const getRoomsSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: undefined }, rooms: payload })
+}
+export const getRoomsFailureReducer = (state) => {
+  return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: true } })
 }
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
+  // MAIN
   [Types.QISCUS_INIT]: qiscusInitReducer,
   [Types.QISCUS_DESTROY]: qiscusDestroyReducer,
+
+  // LISTENER
   [Types.LOGIN_SUCCESS_CALLBACK]: loginSuccessCallbackReducer,
   [Types.MESSAGE_DELETED_CALLBACK]: messageDeletedCallbackReducer,
   [Types.MESSAGE_DELIVERED_CALLBACK]: messageDeliveredCallbackReducer,
@@ -100,5 +124,11 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.NEW_MESSAGES_CALLBACK]: newMessagesCallbackReducer,
   [Types.ROOM_CLEARED_CALLBACK]: roomClearedCallbacReducer,
 
+  // AUTH
   [Types.SET_USER]: setUserReducer,
+
+  // ROOMS
+  [Types.GET_ROOMS_REQUEST]: getRoomsRequestReducer,
+  [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
+  [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
 })

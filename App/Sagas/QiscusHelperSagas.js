@@ -11,7 +11,7 @@ export function* errorCallbackSaga(error) {
 export function* loginSuccessCallbackSaga(data) {
   NavigationServices.navigate('RoomListScreen')
   yield all([
-    put(QiscusActions.loginSuccessCallback(data))
+    put(QiscusActions.loginSuccessCallback(data)),
   ])
 }
 

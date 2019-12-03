@@ -10,6 +10,7 @@ import RoomItem from "../../Components/RoomItem";
 import Toolbar from "../../Components/Toolbar";
 import { Images } from '../../Themes'
 
+import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 
 class RoomListScreen extends React.Component {
@@ -18,12 +19,19 @@ class RoomListScreen extends React.Component {
   }
 
   componentDidMount() {
+    const { getRoomsRequest } = this.props
+    const params = {
+      page: 1,
+      limit: 100,
+      show_participants: false,
+      show_empty: false
+    }
 
+    getRoomsRequest(params)
   }
 
   render() {
-    const { qiscusUser } = this.props
-    const rooms = []
+    const { qiscusUser, rooms } = this.props
     return (
       <View style={styles.container}>
         <Toolbar
@@ -52,11 +60,11 @@ class RoomListScreen extends React.Component {
         <FlatList
           data={rooms}
           keyExtractor={it => `key-${it.id}`}
-          contentContainerStyle={{ flexGrow: 1, backgroundColor: 'red' }}
+          contentContainerStyle={{ flexGrow: 1, }}
           renderItem={({ item }) => (
             <RoomItem
               room={item}
-              onClick={roomId => this._onClickRoom(roomId)}
+              // onClick={roomId => this._onClickRoom(roomId)}
             />
           )}
         />
@@ -67,13 +75,14 @@ class RoomListScreen extends React.Component {
 
 const mapStateToProps = (state) => {
   return {
-    qiscusUser: state.qiscus.currentUser
+    qiscusUser: state.qiscus.currentUser,
+    rooms: state.qiscus.rooms,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-
+    getRoomsRequest: (params) => dispatch(QiscusActions.getRoomsRequest(params))
   }
 }
 
@@ -81,7 +90,7 @@ export default connect(mapStateToProps, mapDispatchToProps)(RoomListScreen)
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, 
+    flex: 1,
   },
   btnAvatar: {
     height: 30,
