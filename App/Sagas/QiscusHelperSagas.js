@@ -1,6 +1,7 @@
 import { call, put, fork, all } from 'redux-saga/effects'
 import QiscusActions from '../Redux/QiscusRedux'
 import QiscusManager from '../Qiscus/QiscusManager'
+import NavigationServices from '../Services/NavigationServices'
 
 export function* errorCallbackSaga(error) {
   console.tron.warn('QISCUS ERROR CALLBACK')
@@ -8,6 +9,7 @@ export function* errorCallbackSaga(error) {
 }
 
 export function* loginSuccessCallbackSaga(data) {
+  NavigationServices.navigate('RoomListScreen')
   yield all([
     put(QiscusActions.loginSuccessCallback(data))
   ])

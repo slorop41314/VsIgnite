@@ -6,109 +6,24 @@ import {
   TouchableOpacity,
   FlatList
 } from "react-native";
-import xs from "xstream";
-import AsyncStorage from "@react-native-community/async-storage";
-
-import * as Qiscus from "../../Qiscus";
-import * as Firebase from "../../Utils/Firebase";
-
 import RoomItem from "../../Components/RoomItem";
 import Toolbar from "../../Components/Toolbar";
 import { Images } from '../../Themes'
 
-export default class RoomListScreen extends React.Component {
-  state = {
-    rooms: [],
-    avatarURI: null
-  };
+import { connect } from 'react-redux'
+
+class RoomListScreen extends React.Component {
+  constructor(props) {
+    super(props)
+  }
 
   componentDidMount() {
-    this.setState({
-      avatarURI: Qiscus.currentUser().avatar_url
-    });
-    const subscription = Qiscus.isLogin$()
-      .filter(isLogin => isLogin === true)
-      .take(1)
-      .map(() => xs.from(Qiscus.qiscus.loadRoomList()))
-      .flatten()
-      .subscribe({
-        next: rooms => {
-          this.setState({ rooms });
-          subscription.unsubscribe();
-        }
-      });
-    this.subscription = Qiscus.newMessage$().subscribe({
-      next: message => {
-        this._onNewMessage$(message);
-      }
-    });
 
-    this.subscription2 = Firebase.onNotificationOpened$().subscribe({
-      next: data => {
-        const notification = data.notification;
-        AsyncStorage.setItem("lastNotificationId", notification.notificationId);
-
-        const roomId = notification.data.qiscus_room_id;
-        this.props.navigation.push("ChatScreen", {
-          roomId
-        });
-      }
-    });
-    Firebase.getInitialNotification().then(async data => {
-      if (data == null) return;
-      const notification = data.notification;
-
-      try {
-        const lastNotificationId = await AsyncStorage.getItem("lastNotificationId")
-  
-        if (lastNotificationId !== notification.notificationId) {
-          AsyncStorage.setItem("lastNotificationId", notification.notificationId);
-          const roomId = data.notification.data.qiscus_room_id;
-          this.props.navigation.push("ChatScreen", { roomId });
-        }
-      } catch (error) {
-        console.tron.error("error getting last notif id", error);
-      }
-    });
   }
-
-  componentWillUnmount() {
-    if (this.subscription) this.subscription.unsubscribe();
-    if (this.subscription2) this.subscription2.unsubscribe();
-  }
-
-  _onNewMessage$ = message => {
-    const roomId = message.room_id;
-    const room = this.state.rooms.find(r => r.id === roomId);
-    if (room == null) return;
-    room.count_notif = (Number(room.count_notif) || 0) + 1;
-    room.last_comment_message = message.message;
-
-    const rooms = this.state.rooms.filter(r => r.id !== roomId);
-    this.setState({
-      rooms: [room, ...rooms]
-    });
-    return `Success updating room ${room.id}`;
-  };
-
-  _openProfile = () => {
-    this.props.navigation.push("Profile");
-  };
-  _onClickRoom = roomId => {
-    this.props.navigation.push("ChatScreen", {
-      roomId
-    });
-  };
-  _openUserList = () => {
-    this.props.navigation.push("UserListScreen");
-  };
 
   render() {
-    const avatarURL =
-      this.state.avatarURI != null
-        ? this.state.avatarURI
-        : "https://via.placeholder.com/120x120";
-    const { rooms } = this.state;
+    const { qiscusUser } = this.props
+    const rooms = []
     return (
       <View style={styles.container}>
         <Toolbar
@@ -116,15 +31,16 @@ export default class RoomListScreen extends React.Component {
           renderLeftButton={() => (
             <TouchableOpacity
               style={styles.btnAvatar}
-              onPress={this._openProfile}
+              // onPress={this._openProfile}
+              disabled={qiscusUser ? false : true}
             >
-              <Image style={styles.avatar} source={{ uri: avatarURL }} />
+              {qiscusUser && qiscusUser.avatar_url && <Image style={styles.avatar} source={{ uri: qiscusUser.avatar_url }} />}
             </TouchableOpacity>
           )}
           renderRightButton={() => (
             <TouchableOpacity
               style={styles.btnAvatar}
-              onPress={this._openUserList}
+            // onPress={this._openUserList}
             >
               <Image
                 style={styles.iconStartChat}
@@ -136,6 +52,7 @@ export default class RoomListScreen extends React.Component {
         <FlatList
           data={rooms}
           keyExtractor={it => `key-${it.id}`}
+          contentContainerStyle={{ flexGrow: 1, backgroundColor: 'red' }}
           renderItem={({ item }) => (
             <RoomItem
               room={item}
@@ -148,9 +65,23 @@ export default class RoomListScreen extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    qiscusUser: state.qiscus.currentUser
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RoomListScreen)
+
 const styles = StyleSheet.create({
   container: {
-    height: 250,
+    flex: 1, 
   },
   btnAvatar: {
     height: 30,

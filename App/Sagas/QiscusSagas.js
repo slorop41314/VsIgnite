@@ -22,32 +22,32 @@ export function qiscusCallbackHandler() {
     const errorCallback = (error) => {
       emit(new Error({ type: QiscusStrings.errors.loginFailure, error }));
     }
-    const loginSuccessCallback = (authData) => {
-      emit({ type: QiscusStrings.events.loginSuccess, payload: { authData } });
+    const loginSuccessCallback = (payload) => {
+      emit({ type: QiscusStrings.events.loginSuccess, payload });
     };
-    const messageDeletedCallback = (data) => {
-      emit({ type: QiscusStrings.events.commentDeleted, payload: { data } });
+    const messageDeletedCallback = (payload) => {
+      emit({ type: QiscusStrings.events.commentDeleted, payload });
     }
-    const messageDeliveredCallback = (data) => {
-      emit({ type: QiscusStrings.events.commentDelivered, payload: { data } });
+    const messageDeliveredCallback = (payload) => {
+      emit({ type: QiscusStrings.events.commentDelivered, payload });
     }
-    const messageReadCallback = (data) => {
-      emit({ type: QiscusStrings.events.commentRead, payload: { data } });
+    const messageReadCallback = (payload) => {
+      emit({ type: QiscusStrings.events.commentRead, payload });
     }
     const presenceCallback = (data, userId) => {
       emit({ type: QiscusStrings.events.onlinePresence, payload: { data, userId } });
     }
-    const typingCallback = (data) => {
-      emit({ type: QiscusStrings.events.typing, payload: { data } });
+    const typingCallback = (payload) => {
+      emit({ type: QiscusStrings.events.typing, payload });
     }
-    const reconnectCallback = (data) => {
-      emit({ type: QiscusStrings.events.onReconnect, payload: { data } });
+    const reconnectCallback = (payload) => {
+      emit({ type: QiscusStrings.events.onReconnect, payload });
     }
     const newMessageCallback = (messages) => {
       emit({ type: QiscusStrings.events.newMessage, payload: { messages } });
     }
-    const roomClearedCallback = (data) => {
-      emit({ type: QiscusStrings.events.chatRoomCreated, payload: { data } });
+    const roomClearedCallback = (payload) => {
+      emit({ type: QiscusStrings.events.chatRoomCreated, payload });
     }
 
     QiscusManager.init({

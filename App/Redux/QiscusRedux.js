@@ -34,6 +34,7 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
   init: undefined,
+  currentUser: undefined
 })
 
 /* ------------- Selectors ------------- */
@@ -51,7 +52,8 @@ export const qiscusDestroyReducer = (state) => {
   return state.merge({ INITIAL_STATE })
 }
 export const loginSuccessCallbackReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const {user} = data
+  return state.merge({ ...state, currentUser: user })
 }
 export const messageDeletedCallbackReducer = (state, { data }) => {
   return state.merge({ ...state, })

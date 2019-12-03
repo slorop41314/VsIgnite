@@ -19,7 +19,7 @@ const PrimaryNav = createStackNavigator({
   ChatScreen: { screen: ChatScreen },
 }, {
   // Default config for all screens
-  headerMode: 'none',
+  // headerMode: 'none',
   initialRouteName: 'LoginScreen',
   navigationOptions: {
     headerStyle: styles.header
