@@ -10,11 +10,11 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity
 } from "react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import * as Qiscus from "../../Qiscus";
 import { Images } from '../../Themes'
+import QiscusActions from '../../Redux/QiscusRedux'
+import { connect } from 'react-redux'
 
-export default class LoginScreen extends React.Component {
+class LoginScreen extends React.Component {
   state = {
     userId: "guest-101",
     userKey: "passkey",
@@ -22,82 +22,88 @@ export default class LoginScreen extends React.Component {
   };
 
   componentDidMount() {
-    this.subscription = Qiscus.login$()
-      .map(data => data.user)
-      .take(1)
-      .subscribe({
-        next: data => {
-          AsyncStorage.setItem("qiscus", JSON.stringify(data))
-            .then(() => {
-              this.setState({ isLogin: true });
-            })
-            .catch(() => {});
-        }
-      });
+
   }
 
   componentWillUnmount() {
-    this.subscription.unsubscribe();
   }
 
   onSubmit = () => {
-    Qiscus.qiscus
-      .setUser(this.state.userId, this.state.userKey)
-      .catch(() => console.tron.error("Failed login"));
+    const { setQiscusUser } = this.props
+    const params = {
+      userId: this.state.userId,
+      userKey: this.state.userKey,
+    }
+
+    setQiscusUser(params)
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (this.state.isLogin && prevState.isLogin !== this.state.isLogin) {
-      this.props.navigation.replace("RoomListScreen");
-    }
-  }
+  // componentDidUpdate(prevProps, prevState) {
+  //   if (this.state.isLogin && prevState.isLogin !== this.state.isLogin) {
+  //     // this.props.navigation.replace("RoomListScreen");
+  //   }
+  // }
 
   render() {
     return (
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ height: "100%", width: "100%" }}>
-          <KeyboardAvoidingView enabled>
-          <ImageBackground
-            source={Images.background}
-            style={styles.background}
-          >
-            <View style={styles.container}>
-              <Image source={Images.logo} style={styles.logo} />
-              <View style={styles.form}>
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>User ID</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={text => this.setState({ userId: text })}
-                    value={this.state.userId}
-                  />
-                </View>
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>User Key</Text>
-                  <TextInput
-                    style={styles.input}
-                    onChangeText={text => this.setState({ userKey: text })}
-                    value={this.state.userKey}
-                    secureTextEntry={true}
-                  />
-                </View>
-                <View style={styles.formGroup}>
-                  <TouchableOpacity
-                    style={styles.submitButton}
-                    onPress={() => this.onSubmit()}
-                  >
-                    <Text style={styles.submitText}>Start</Text>
-                  </TouchableOpacity>
+          <KeyboardAvoidingView enabled style={{ flex: 1 }}>
+            <ImageBackground
+              source={Images.background}
+              style={styles.background}
+            >
+              <View style={styles.container}>
+                <Image source={Images.logo} style={styles.logo} />
+                <View style={styles.form}>
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>User ID</Text>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={text => this.setState({ userId: text })}
+                      value={this.state.userId}
+                    />
+                  </View>
+                  <View style={styles.formGroup}>
+                    <Text style={styles.label}>User Key</Text>
+                    <TextInput
+                      style={styles.input}
+                      onChangeText={text => this.setState({ userKey: text })}
+                      value={this.state.userKey}
+                      secureTextEntry={true}
+                    />
+                  </View>
+                  <View style={styles.formGroup}>
+                    <TouchableOpacity
+                      style={styles.submitButton}
+                      onPress={() => this.onSubmit()}
+                    >
+                      <Text style={styles.submitText}>Start</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
-            </View>
-          </ImageBackground>
+            </ImageBackground>
           </KeyboardAvoidingView>
         </View>
       </ScrollView>
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    setQiscusUser: (params) => dispatch(QiscusActions.setUser(params))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen)
 
 const styles = StyleSheet.create({
   background: {
