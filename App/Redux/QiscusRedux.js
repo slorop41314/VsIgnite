@@ -27,6 +27,9 @@ const { Types, Creators } = createActions({
   getRoomsFailure: null,
 
   // messages action
+  getMessagesRequest: ['data'],
+  getMessagesSuccess: ['payload'],
+  getMessagesFailure: null,
 
   // users action
 })
@@ -40,8 +43,10 @@ export const INITIAL_STATE = Immutable({
   init: undefined,
   currentUser: undefined,
   rooms: [],
+  messages: [],
 
   getRooms: DEFAULT_REDUCER_STATE,
+  getMessages: DEFAULT_REDUCER_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -106,6 +111,18 @@ export const getRoomsFailureReducer = (state) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: true } })
 }
 
+// MESSAGES
+export const getMessagesRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: true, data } })
+}
+export const getMessagesSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: false, error: undefined }, messages: payload })
+}
+export const getMessagesFailureReducer = (state) => {
+  return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: false, error: true } })
+}
+
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -127,8 +144,13 @@ export const reducer = createReducer(INITIAL_STATE, {
   // AUTH
   [Types.SET_USER]: setUserReducer,
 
-  // ROOMS
+  // MESSAGES
   [Types.GET_ROOMS_REQUEST]: getRoomsRequestReducer,
   [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
   [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
+
+  // ROOMS
+  [Types.GET_MESSAGES_REQUEST]: getMessagesRequestReducer,
+  [Types.GET_MESSAGES_SUCCESS]: getMessagesSuccessReducer,
+  [Types.GET_MESSAGES_FAILURE]: getMessagesFailureReducer,
 })

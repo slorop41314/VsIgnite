@@ -21,7 +21,10 @@ import Form from '../../Components/Form';
 import EmptyChat from '../../Components/EmptyChat';
 import { Images } from '../../Themes';
 
-export default class ChatScreen extends React.Component {
+import QiscusActions from '../../Redux/QiscusRedux'
+import { connect } from 'react-redux'
+
+class ChatScreen extends React.Component {
   state = {
     room: null,
     messages: {},
@@ -33,54 +36,85 @@ export default class ChatScreen extends React.Component {
   };
 
   componentDidMount() {
-    const roomId = this.props.navigation.getParam('roomId', null);
-    if (roomId == null) return this.props.navigation.replace('RoomList');
-    const subscription1 = Qiscus.isLogin$()
-      .take(1)
-      .map(() => xs.from(Qiscus.qiscus.getRoomById(roomId)))
-      .flatten()
-      .subscribe({
-        next: room => this.setState({room}),
-      });
-    const subscription2 = Qiscus.isLogin$()
-      .take(1)
-      .map(() => xs.from(Qiscus.qiscus.loadComments(roomId)))
-      .flatten()
-      .subscribe({
-        next: messages => {
-          const message = messages[0] || {};
-          const isLoadMoreable = message.comment_before_id !== 0;
-          const formattedMessages = messages.reduce((result, message) => {
-            result[message.unique_temp_id] = message;
-            return result;
-          }, {});
-          this.setState({
-            messages: formattedMessages,
-            isLoadMoreable,
-          });
-        },
-      });
+    const room = this.props.navigation.getParam('room', null);
+    console.tron.log({'componentDidMount': room})
+    if (room == null) return this.props.navigation.replace('RoomListScreen');
+    this.setState({room})
 
-    this.subscription = xs
-      .merge(
-        Qiscus.newMessage$().map(this._onNewMessage),
-        Qiscus.messageRead$().map(this._onMessageRead),
-        Qiscus.messageDelivered$().map(this._onMessageDelivered),
-        Qiscus.onlinePresence$().map(this._onOnline),
-        Qiscus.typing$()
-          .filter(it => Number(it.room_id) === this.state.room.id)
-          .map(this._onTyping),
-      )
-      .subscribe({
-        next: () => {},
-        error: error => console.tron.error('subscription error', error),
+    this.props.getMessagesRequest({
+      roomId: room.id, 
+      options: {
+        last_comment_id: room.last_comment_id,
+        limit: 100,
+      },
+    })
+
+    // const subscription1 = Qiscus.isLogin$()
+    //   .take(1)
+    //   .map(() => xs.from(Qiscus.qiscus.getRoomById(roomId)))
+    //   .flatten()
+    //   .subscribe({
+    //     next: room => this.setState({room}),
+    //   });
+    // const subscription2 = Qiscus.isLogin$()
+    //   .take(1)
+    //   .map(() => xs.from(Qiscus.qiscus.loadComments(roomId)))
+    //   .flatten()
+    //   .subscribe({
+    //     next: messages => {
+    //       const message = messages[0] || {};
+    //       const isLoadMoreable = message.comment_before_id !== 0;
+    //       const formattedMessages = messages.reduce((result, message) => {
+    //         result[message.unique_temp_id] = message;
+    //         return result;
+    //       }, {});
+    //       this.setState({
+    //         messages: formattedMessages,
+    //         isLoadMoreable,
+    //       });
+    //     },
+    //   });
+
+    // this.subscription = xs
+    //   .merge(
+    //     Qiscus.newMessage$().map(this._onNewMessage),
+    //     Qiscus.messageRead$().map(this._onMessageRead),
+    //     Qiscus.messageDelivered$().map(this._onMessageDelivered),
+    //     Qiscus.onlinePresence$().map(this._onOnline),
+    //     Qiscus.typing$()
+    //       .filter(it => Number(it.room_id) === this.state.room.id)
+    //       .map(this._onTyping),
+    //   )
+    //   .subscribe({
+    //     next: () => {},
+    //     error: error => console.tron.error('subscription error', error),
+    //   });
+  }
+
+  componentDidUpdate(prevProps) {
+    console.tron.log({ prevProps });
+    console.tron.log({ 'this.props': this.props });
+    const { messages, getMessages } = this.props
+
+    if(!getMessages.fetching && prevProps.getMessages.fetching) {
+      console.tron.log({ 'this.state.messages': this.state.messages });
+      const message = messages[0] || {};
+      const isLoadMoreable = message.comment_before_id !== 0;
+      const formattedMessages = messages.reduce((result, message) => {
+        result[message.unique_temp_id] = message;
+        return result;
+      }, {});
+      this.setState({
+        messages: formattedMessages,
+        isLoadMoreable,
       });
+    }
   }
 
   componentWillUnmount() {
-    Qiscus.qiscus.exitChatRoom();
+    // Qiscus.qiscus.exitChatRoom();
 
-    this.subscription && this.subscription.unsubscribe();
+    // this.subscription && this.subscription.unsubscribe();
   }
 
   render() {
@@ -102,7 +136,7 @@ export default class ChatScreen extends React.Component {
           onPress={this._onToolbarClick}
           renderLeftButton={() => (
             <TouchableOpacity
-              onPress={() => this.props.navigation.replace('RoomList')}
+              // onPress={() => this.props.navigation.replace('RoomListScreen')}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -146,7 +180,7 @@ export default class ChatScreen extends React.Component {
         {messages.length === 0 && <EmptyChat />}
         {messages.length > 0 && (
           <MessageList
-            isLoadMoreable={this.state.isLoadMoreable}
+            isLoadMoreable={messages[0].comment_before_id !== 0}
             messages={messages}
             scroll={this.state.scroll}
             onLoadMore={this._loadMore}
@@ -453,6 +487,22 @@ export default class ChatScreen extends React.Component {
     return this._sortMessage(Object.values(this.state.messages));
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    qiscusUser: state.qiscus.currentUser,
+    messages: state.qiscus.messages,
+    getMessages: state.qiscus.getMessages,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params))
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen)
 
 const styles = StyleSheet.create({
   container: {

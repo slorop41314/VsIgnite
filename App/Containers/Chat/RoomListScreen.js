@@ -30,6 +30,13 @@ class RoomListScreen extends React.Component {
     getRoomsRequest(params)
   }
 
+  onClickRoom(room) {
+    console.tron.log({room})
+    this.props.navigation.push("ChatScreen", {
+      room,
+    });
+  };
+
   render() {
     const { qiscusUser, rooms } = this.props
     return (
@@ -64,7 +71,7 @@ class RoomListScreen extends React.Component {
           renderItem={({ item }) => (
             <RoomItem
               room={item}
-              // onClick={roomId => this._onClickRoom(roomId)}
+              onClick={() => this.onClickRoom(item)}
             />
           )}
         />

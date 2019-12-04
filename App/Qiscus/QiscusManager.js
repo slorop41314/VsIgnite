@@ -263,6 +263,7 @@ class QiscusManager {
     return new Promise(async (resolve, reject) => {
       try {
         const rooms = await this.qiscus.getRoomById(roomId)
+        // console.tron.log({rooms})
         const { comments } = rooms
         resolve(comments)
       } catch (error) {
@@ -441,8 +442,10 @@ class QiscusManager {
     return new Promise(async (resolve, reject) => {
       try {
         const messages = await this.qiscus.loadComments(roomId, options)
+        console.tron.log({messages})
         resolve(messages)
       } catch (error) {
+        console.tron.error({getMessages: error})
         reject({ type: QiscusStrings.errors.getMessagesFailure, error })
       }
     })

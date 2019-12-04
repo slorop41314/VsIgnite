@@ -12,7 +12,7 @@ import { QiscusTypes } from '../Redux/QiscusRedux'
 /* ------------- Sagas ------------- */
 
 import { startup } from './StartupSagas'
-import { qiscusInitSaga, setUserSaga, getRoomsSaga } from './QiscusSagas'
+import { qiscusInitSaga, setUserSaga, getRoomsSaga, getMessagesSaga } from './QiscusSagas'
 
 /* ------------- API ------------- */
 
@@ -30,5 +30,6 @@ export default function* root() {
     takeLatest(QiscusTypes.QISCUS_INIT, qiscusInitSaga),
     takeLatest(QiscusTypes.SET_USER, setUserSaga),
     takeLatest(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
+    takeLatest(QiscusTypes.GET_MESSAGES_REQUEST, getMessagesSaga),
   ])
 }

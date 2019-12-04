@@ -147,3 +147,15 @@ export function* getRoomsSaga(action) {
     yield put(QiscusActions.getRoomsFailure())
   }
 }
+
+export function* getMessagesSaga(action) {
+  console.tron.log({action})
+  const { data } = action
+  try {
+    const comments = yield QiscusManager.getMessages(data.roomId, data.options)
+    yield put(QiscusActions.getMessagesSuccess(comments))
+  } catch (error) {
+    console.tron.error({error})
+    yield put(QiscusActions.getMessagesFailure())
+  }
+}
