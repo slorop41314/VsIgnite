@@ -159,3 +159,15 @@ export function* getMessagesSaga(action) {
     yield put(QiscusActions.getMessagesFailure())
   }
 }
+
+export function* sendMessageSaga(action) {
+  console.tron.log({action})
+  const { data } = action
+  try {
+    const message = yield QiscusManager.sendMessage(data.roomId, data.text, data.uniqueId, data.type)
+    yield put(QiscusActions.sendMessageSuccess(message))
+  } catch (error) {
+    console.tron.error({error})
+    yield put(QiscusActions.sendMessageFailure())
+  }
+}

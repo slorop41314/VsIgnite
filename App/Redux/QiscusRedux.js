@@ -30,6 +30,10 @@ const { Types, Creators } = createActions({
   getMessagesRequest: ['data'],
   getMessagesSuccess: ['payload'],
   getMessagesFailure: null,
+  
+  sendMessageRequest: ['data'],
+  sendMessageSuccess: ['payload'],
+  sendMessageFailure: null,
 
   // users action
 })
@@ -47,6 +51,7 @@ export const INITIAL_STATE = Immutable({
 
   getRooms: DEFAULT_REDUCER_STATE,
   getMessages: DEFAULT_REDUCER_STATE,
+  sendMessage: DEFAULT_REDUCER_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -116,10 +121,37 @@ export const getMessagesRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: true, data } })
 }
 export const getMessagesSuccessReducer = (state, { payload }) => {
-  return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: false, error: undefined }, messages: payload })
+  const formattedMessages = payload.reduce((result, message) => {
+    result[message.unique_temp_id] = message;
+    return result;
+  }, {});
+
+  return state.merge({ 
+    ...state, 
+    getMessages: { ...state.getMessages, fetching: false, error: undefined }, 
+    messages: formattedMessages, 
+  })
 }
 export const getMessagesFailureReducer = (state) => {
   return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: false, error: true } })
+}
+
+export const sendMessageRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, sendMessage: { ...state.sendMessage, fetching: true, data } })
+}
+export const sendMessageSuccessReducer = (state, { payload }) => {
+  console.tron.log({ 'state.sendMessage': state.sendMessage })
+  return state.merge({ 
+    ...state, 
+    sendMessage: { ...state.sendMessage, fetching: false, error: undefined }, 
+    messages: {
+      ...state.messages,
+      [state.sendMessage.uniqueId]: payload,
+    },
+  })
+}
+export const sendMessageFailureReducer = (state) => {
+  return state.merge({ ...state, sendMessage: { ...state.sendMessage, fetching: false, error: true } })
 }
 
 
@@ -144,13 +176,17 @@ export const reducer = createReducer(INITIAL_STATE, {
   // AUTH
   [Types.SET_USER]: setUserReducer,
 
-  // MESSAGES
+  // ROOMS
   [Types.GET_ROOMS_REQUEST]: getRoomsRequestReducer,
   [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
   [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
 
-  // ROOMS
+  // MESSAGES
   [Types.GET_MESSAGES_REQUEST]: getMessagesRequestReducer,
   [Types.GET_MESSAGES_SUCCESS]: getMessagesSuccessReducer,
   [Types.GET_MESSAGES_FAILURE]: getMessagesFailureReducer,
+  
+  [Types.SEND_MESSAGE_REQUEST]: sendMessageRequestReducer,
+  [Types.SEND_MESSAGE_SUCCESS]: sendMessageSuccessReducer,
+  [Types.SEND_MESSAGE_FAILURE]: sendMessageFailureReducer,
 })

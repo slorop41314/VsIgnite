@@ -27,8 +27,8 @@ import { connect } from 'react-redux'
 class ChatScreen extends React.Component {
   state = {
     room: null,
-    messages: {},
-    isLoadMoreable: true,
+    // messages: {},
+    // isLoadMoreable: true,
     isOnline: false,
     isTyping: false,
     lastOnline: null,
@@ -44,8 +44,8 @@ class ChatScreen extends React.Component {
     this.props.getMessagesRequest({
       roomId: room.id, 
       options: {
-        last_comment_id: room.last_comment_id,
-        limit: 100,
+        // last_comment_id: room.last_comment_id,
+        limit: 20,
       },
     })
 
@@ -91,25 +91,25 @@ class ChatScreen extends React.Component {
     //   });
   }
 
-  componentDidUpdate(prevProps) {
-    console.tron.log({ prevProps });
-    console.tron.log({ 'this.props': this.props });
-    const { messages, getMessages } = this.props
+  // componentDidUpdate(prevProps) {
+  //   console.tron.log({ prevProps });
+  //   console.tron.log({ 'this.props': this.props });
+  //   const { messages, getMessages } = this.props
 
-    if(!getMessages.fetching && prevProps.getMessages.fetching) {
-      console.tron.log({ 'this.state.messages': this.state.messages });
-      const message = messages[0] || {};
-      const isLoadMoreable = message.comment_before_id !== 0;
-      const formattedMessages = messages.reduce((result, message) => {
-        result[message.unique_temp_id] = message;
-        return result;
-      }, {});
-      this.setState({
-        messages: formattedMessages,
-        isLoadMoreable,
-      });
-    }
-  }
+  //   if(!getMessages.fetching && prevProps.getMessages.fetching) {
+  //     console.tron.log({ 'this.state.messages': this.state.messages });
+  //     const message = messages[0] || {};
+  //     const isLoadMoreable = messages[0].comment_before_id !== 0;
+  //     const formattedMessages = messages.reduce((result, message) => {
+  //       result[message.unique_temp_id] = message;
+  //       return result;
+  //     }, {});
+  //     this.setState({
+  //       messages: formattedMessages,
+  //       isLoadMoreable,
+  //     });
+  //   }
+  // }
 
   componentWillUnmount() {
     // Qiscus.qiscus.exitChatRoom();
@@ -302,7 +302,7 @@ class ChatScreen extends React.Component {
       type: 'text',
       status: 'sending',
       message: message,
-      email: Qiscus.currentUser().email,
+      // email: Qiscus.currentUser().email,
     };
   };
 
@@ -317,12 +317,21 @@ class ChatScreen extends React.Component {
   _submitMessage = async text => {
     const message = this._prepareMessage(text);
     await this._addMessage(message, true);
-    const resp = await Qiscus.qiscus.sendComment(
-      this.state.room.id,
-      text,
-      message.unique_temp_id,
-    );
-    this._updateMessage(message, resp);
+
+    this.props.sendMessageRequest({
+      roomId: this.state.room.id, 
+      text: text, 
+      uniqueId: message.unique_temp_id, 
+      type: message.type,
+    })
+
+    // const resp = await Qiscus.qiscus.sendComment(
+    //   this.state.room.id,
+    //   text,
+    //   message.unique_temp_id,
+    // );
+    // this._updateMessage(message, resp);
+    
     // toast("Success sending message!");
   };
 
@@ -399,14 +408,9 @@ class ChatScreen extends React.Component {
 
   _addMessage = (message, scroll = false) =>
     new Promise(resolve => {
-      this.setState(
-        state => ({
-          messages: {
-            ...state.messages,
-            [message.unique_temp_id]: message,
-          },
+      this.setState({
           scroll,
-        }),
+        },
         () => {
           if (scroll === false) return;
           const timeoutId = setTimeout(() => {
@@ -419,18 +423,20 @@ class ChatScreen extends React.Component {
       );
     });
 
-  _updateMessage = (message, newMessage) => {
-    this.setState(state => ({
-      messages: {
-        ...state.messages,
-        [message.unique_temp_id]: newMessage,
-      },
-    }));
-  };
+  // _updateMessage = (message, newMessage) => {
+  //   this.setState(state => ({
+  //     messages: {
+  //       ...state.messages,
+  //       [message.unique_temp_id]: newMessage,
+  //     },
+  //   }));
+  // };
 
   _loadMore = () => {
-    if (!this.state.isLoadMoreable) return;
-    const roomId = this.props.navigation.getParam('roomId', null);
+    const { messages, navigation } = this.props;
+
+    if (messages[0].comment_before_id === 0) return;
+    const roomId = navigation.getParam('roomId', null);
     if (roomId == null) return;
 
     const lastCommentId = this.messages[0].id;
@@ -440,7 +446,7 @@ class ChatScreen extends React.Component {
       .loadComments(roomId, {last_comment_id: lastCommentId})
       .then(messages => {
         // toast("Done loading message");
-        const isLoadMoreable = messages[0].comment_before_id !== 0;
+        // const isLoadMoreable = messages[0].comment_before_id !== 0;
         this.setState(state => ({
           messages: {
             ...state.messages,
@@ -449,7 +455,7 @@ class ChatScreen extends React.Component {
               {},
             ),
           },
-          isLoadMoreable,
+          // isLoadMoreable,
         }));
       })
       .catch(error =>
@@ -484,7 +490,7 @@ class ChatScreen extends React.Component {
   }
 
   get messages() {
-    return this._sortMessage(Object.values(this.state.messages));
+    return this._sortMessage(Object.values(this.props.messages));
   }
 }
 
@@ -492,13 +498,13 @@ const mapStateToProps = (state) => {
   return {
     qiscusUser: state.qiscus.currentUser,
     messages: state.qiscus.messages,
-    getMessages: state.qiscus.getMessages,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params))
+    getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
+    sendMessageRequest: (params) => dispatch(QiscusActions.sendMessageRequest(params)),
   }
 }
 
