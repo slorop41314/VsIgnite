@@ -37,6 +37,10 @@ class RoomListScreen extends React.Component {
     });
   };
 
+  openUserList() {
+    this.props.navigation.push("UserListScreen");
+  };
+
   render() {
     const { qiscusUser, rooms } = this.props
     return (
@@ -55,7 +59,7 @@ class RoomListScreen extends React.Component {
           renderRightButton={() => (
             <TouchableOpacity
               style={styles.btnAvatar}
-            // onPress={this._openUserList}
+              onPress={() => this.openUserList()}
             >
               <Image
                 style={styles.iconStartChat}

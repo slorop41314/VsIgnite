@@ -36,6 +36,13 @@ const { Types, Creators } = createActions({
   sendMessageFailure: null,
 
   // users action
+  getUsersRequest: ['data'],
+  getUsersSuccess: ['payload'],
+  getUsersFailure: null,
+
+  openRoomRequest: ['data'],
+  openRoomSuccess: ['payload'],
+  openRoomFailure: null,
 })
 
 export const QiscusTypes = Types
@@ -48,10 +55,14 @@ export const INITIAL_STATE = Immutable({
   currentUser: undefined,
   rooms: [],
   messages: [],
+  users: [],
 
   getRooms: DEFAULT_REDUCER_STATE,
   getMessages: DEFAULT_REDUCER_STATE,
   sendMessage: DEFAULT_REDUCER_STATE,
+  getUsers: DEFAULT_REDUCER_STATE,
+  openRoom: DEFAULT_REDUCER_STATE,
+  
 })
 
 /* ------------- Selectors ------------- */
@@ -146,12 +157,40 @@ export const sendMessageSuccessReducer = (state, { payload }) => {
     sendMessage: { ...state.sendMessage, fetching: false, error: undefined }, 
     messages: {
       ...state.messages,
-      [state.sendMessage.uniqueId]: payload,
+      [state.sendMessage.data.uniqueId]: payload,
     },
   })
 }
 export const sendMessageFailureReducer = (state) => {
   return state.merge({ ...state, sendMessage: { ...state.sendMessage, fetching: false, error: true } })
+}
+
+// USERS
+export const getUsersRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getUsers: { ...state.getUsers, fetching: true, data } })
+}
+export const getUsersSuccessReducer = (state, { payload }) => {
+  return state.merge({ 
+    ...state, 
+    getUsers: { ...state.getUsers, fetching: false, error: undefined }, 
+    users: payload, 
+  })
+}
+export const getUsersFailureReducer = (state) => {
+  return state.merge({ ...state, getUsers: { ...state.getUsers, fetching: false, error: true } })
+}
+
+export const openRoomRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, openRoom: { ...state.openRoom, fetching: true, data } })
+}
+export const openRoomSuccessReducer = (state, { payload }) => {
+  return state.merge({ 
+    ...state, 
+    openRoom: { ...state.openRoom, fetching: false, error: undefined }, 
+  })
+}
+export const openRoomFailureReducer = (state) => {
+  return state.merge({ ...state, openRoom: { ...state.openRoom, fetching: false, error: true } })
 }
 
 
@@ -189,4 +228,13 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SEND_MESSAGE_REQUEST]: sendMessageRequestReducer,
   [Types.SEND_MESSAGE_SUCCESS]: sendMessageSuccessReducer,
   [Types.SEND_MESSAGE_FAILURE]: sendMessageFailureReducer,
+
+  // USERS
+  [Types.GET_USERS_REQUEST]: getUsersRequestReducer,
+  [Types.GET_USERS_SUCCESS]: getUsersSuccessReducer,
+  [Types.GET_USERS_FAILURE]: getUsersFailureReducer,
+
+  [Types.OPEN_ROOM_REQUEST]: openRoomRequestReducer,
+  [Types.OPEN_ROOM_SUCCESS]: openRoomSuccessReducer,
+  [Types.OPEN_ROOM_FAILURE]: openRoomFailureReducer,
 })

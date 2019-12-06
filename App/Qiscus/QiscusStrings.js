@@ -15,6 +15,7 @@ const QiscusStrings = {
     loginFailure: 'login-failure',
     updateProfileFailure: 'update-profile-failure',
     blockUserFailure: 'block-user-failure',
+    getUsersFailure: 'get-user-failure',
     getBlockUsersFailure: 'get-block-user-failure',
     getUnreadCountFailure: 'get-unread-count-failure',
     removeParticipantsFailure: 'remove-participants-failure',

@@ -25,6 +25,7 @@ import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 
 class ChatScreen extends React.Component {
+  perPage = 20;
   state = {
     room: null,
     // messages: {},
@@ -45,7 +46,7 @@ class ChatScreen extends React.Component {
       roomId: room.id, 
       options: {
         // last_comment_id: room.last_comment_id,
-        limit: 20,
+        limit: this.perPage,
       },
     })
 

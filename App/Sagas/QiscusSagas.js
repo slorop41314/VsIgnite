@@ -171,3 +171,31 @@ export function* sendMessageSaga(action) {
     yield put(QiscusActions.sendMessageFailure())
   }
 }
+
+export function* getUsersSaga(action) {
+  console.tron.log({ 'AAAAA': action})
+  const { data } = action
+  try {
+    const users = yield QiscusManager.getUsers(data.searchQuery, data.page, data.limit)
+    // const users = yield QiscusManager.getBlockUser(data.page, data.limit)  //no error
+    yield put(QiscusActions.getUsersSuccess(users))
+  } catch (error) {
+    console.tron.error({error})
+    yield put(QiscusActions.getUsersFailure())
+  }
+}
+
+export function* openRoomSaga(action) {
+  console.tron.log({action})
+  const { data } = action
+  try {
+    const room = yield QiscusManager.createOrGetSingleRoom(data)
+    this.props.navigation.push("ChatScreen", {
+      room
+    });
+    yield put(QiscusActions.openRoomSuccess(room))
+  } catch (error) {
+    console.tron.error({error})
+    yield put(QiscusActions.openRoomFailure())
+  }
+}

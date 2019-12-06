@@ -14,32 +14,35 @@ import Toolbar from "../../Components/Toolbar";
 import UserItem from "../../Components/UserItem";
 import { Images } from '../../Themes'
 
-export default class UserListScreen extends React.Component {
-  state = { users: [] };
-  perPage = 100;
+import QiscusActions from '../../Redux/QiscusRedux'
+import { connect } from 'react-redux'
 
-  _onUserClick = async userId => {
-    try {
-      const room = await Qiscus.qiscus.chatTarget(userId);
+class UserListScreen extends React.Component {
+  perPage = 20;
 
-      this.props.navigation.push("ChatScreen", {
-        roomId: room.id
-      });
-    } catch (error) {
-      console.tron.error("error when getting room", error);
-    }
-  };
+  // _onUserClick = async userId => {
+  //   try {
+  //     const room = await Qiscus.qiscus.chatTarget(userId);
+  //     console.tron.log({room})
 
-  _loadUsers = (query = null) => {
-    Qiscus.qiscus
-      .getUsers(query, 1, this.perPage)
-      .then(resp => {
-        this.setState({ users: resp.users });
-      })
-      .catch(error => {
-        console.tron.error("Error when getting user list", error);
-      });
-  };
+  //     this.props.navigation.push("ChatScreen", {
+  //       room
+  //     });
+  //   } catch (error) {
+  //     console.tron.error("error when getting room", error);
+  //   }
+  // };
+
+  // _loadUsers = (query = null) => {
+  //   Qiscus.qiscus
+  //     .getUsers(query, 1, this.perPage)
+  //     .then(resp => {
+  //       this.setState({ users: resp.users });
+  //     })
+  //     .catch(error => {
+  //       console.tron.error("Error when getting user list", error);
+  //     });
+  // };
 
   _onBack = () => {
     this.props.navigation.goBack();
@@ -50,26 +53,22 @@ export default class UserListScreen extends React.Component {
   };
 
   componentDidMount() {
-    const subscription = Qiscus.isLogin$()
-      .take(1)
-      .subscribe({
-        next: () => {
-          if (subscription && subscription.unsubscribe)
-            subscription.unsubscribe();
-          this._loadUsers();
-        }
-      });
+    this.props.getUsersRequest({
+      searchQuery: null,
+      page: 1,
+      limit: this.perPage,
+    })
   }
 
   _renderItem = item => {
     if (item.type === "load-more") return this._loadMore();
     return (
-      <UserItem user={item} onPress={() => this._onUserClick(item.email)} />
+      <UserItem user={item} onPress={() => this.props.openRoomRequest(item.email)} />
     );
   };
 
   render() {
-    const users = this.state.users;
+    const { users } = this.props;
     return (
       <View style={styles.container}>
         <Toolbar
@@ -81,16 +80,16 @@ export default class UserListScreen extends React.Component {
           )}
         />
         <View>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.createGroupBtn}
-            onPress={this._onCreateGroup}
+            // onPress={this._onCreateGroup}
           >
             <Image
               style={styles.createGroupIcon}
               source={Images.qiscusNewChatGroup}
             />
             <Text style={styles.createGroupBtnText}>Create Group Chat</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={styles.separator}>
           <Text style={styles.separatorText}>Contact</Text>
@@ -105,10 +104,26 @@ export default class UserListScreen extends React.Component {
     );
   }
 
-  _onCreateGroup = () => {
-    this.props.navigation.navigate("CreateGroup");
-  };
+  // _onCreateGroup = () => {
+  //   this.props.navigation.navigate("CreateGroup");
+  // };
 }
+
+const mapStateToProps = (state) => {
+  return {
+    qiscusUser: state.qiscus.currentUser,
+    users: state.qiscus.users,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    getUsersRequest: (params) => dispatch(QiscusActions.getUsersRequest(params)),
+    openRoomRequest: (userId) => dispatch(QiscusActions.openRoomRequest(userId)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(UserListScreen)
 
 const styles = StyleSheet.create({
   container: {
