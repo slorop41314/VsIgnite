@@ -1,55 +1,69 @@
 /* ***********************************************************
-* A short word on how to use this automagically generated file.
-* We're often asked in the ignite gitter channel how to connect
-* to a to a third party api, so we thought we'd demonstrate - but
-* you should know you can use sagas for other flow control too.
-*
-* Other points:
-*  - You'll need to add this saga to sagas/index.js
-*  - This template uses the api declared in sagas/index.js, so
-*    you'll need to define a constant in that file.
-*************************************************************/
+ * A short word on how to use this automagically generated file.
+ * We're often asked in the ignite gitter channel how to connect
+ * to a to a third party api, so we thought we'd demonstrate - but
+ * you should know you can use sagas for other flow control too.
+ *
+ * Other points:
+ *  - You'll need to add this saga to sagas/index.js
+ *  - This template uses the api declared in sagas/index.js, so
+ *    you'll need to define a constant in that file.
+ *************************************************************/
 
-import { call, put, fork, take, cancelled } from 'redux-saga/effects'
-import QiscusActions, { QiscusTypes } from '../Redux/QiscusRedux'
-import QiscusManager from '../Qiscus/QiscusManager'
-import { loginSuccessCallbackSaga, messageDeletedCallbackSaga, messageDeliveredCallbackSaga, messageReadCallbackSaga, presenceCallbackSaga, typingCallbackSaga, onReconnectCallbackSaga, roomClearedCallbackSaga, errorCallbackSaga, newMessagesCallbackSaga } from './QiscusHelperSagas'
-import { eventChannel } from 'redux-saga';
+import {call, put, fork, take, cancelled} from 'redux-saga/effects';
+import QiscusActions, {QiscusTypes} from '../Redux/QiscusRedux';
+import QiscusManager from '../Qiscus/QiscusManager';
+import {
+  loginSuccessCallbackSaga,
+  messageDeletedCallbackSaga,
+  messageDeliveredCallbackSaga,
+  messageReadCallbackSaga,
+  presenceCallbackSaga,
+  typingCallbackSaga,
+  onReconnectCallbackSaga,
+  roomClearedCallbackSaga,
+  errorCallbackSaga,
+  newMessagesCallbackSaga,
+} from './QiscusHelperSagas';
+import {eventChannel} from 'redux-saga';
 import QiscusStrings from '../Qiscus/QiscusStrings';
 import NavigationServices from '../Services/NavigationServices';
 
 export function qiscusCallbackHandler() {
-  return eventChannel((emit) => {
-    const errorCallback = (error) => {
-      emit(new Error({ type: QiscusStrings.errors.loginFailure, error }));
-    }
-    const loginSuccessCallback = (payload) => {
-      emit({ type: QiscusStrings.events.loginSuccess, payload });
+  return eventChannel(emit => {
+    const errorCallback = error => {
+      emit(new Error({type: QiscusStrings.errors.loginFailure, error}));
     };
-    const messageDeletedCallback = (payload) => {
-      emit({ type: QiscusStrings.events.commentDeleted, payload });
-    }
-    const messageDeliveredCallback = (payload) => {
-      emit({ type: QiscusStrings.events.commentDelivered, payload });
-    }
-    const messageReadCallback = (payload) => {
-      emit({ type: QiscusStrings.events.commentRead, payload });
-    }
+    const loginSuccessCallback = payload => {
+      emit({type: QiscusStrings.events.loginSuccess, payload});
+    };
+    const messageDeletedCallback = payload => {
+      emit({type: QiscusStrings.events.commentDeleted, payload});
+    };
+    const messageDeliveredCallback = payload => {
+      emit({type: QiscusStrings.events.commentDelivered, payload});
+    };
+    const messageReadCallback = payload => {
+      emit({type: QiscusStrings.events.commentRead, payload});
+    };
     const presenceCallback = (data, userId) => {
-      emit({ type: QiscusStrings.events.onlinePresence, payload: { data, userId } });
-    }
-    const typingCallback = (payload) => {
-      emit({ type: QiscusStrings.events.typing, payload });
-    }
-    const reconnectCallback = (payload) => {
-      emit({ type: QiscusStrings.events.onReconnect, payload });
-    }
-    const newMessageCallback = (messages) => {
-      emit({ type: QiscusStrings.events.newMessage, payload: { messages } });
-    }
-    const roomClearedCallback = (payload) => {
-      emit({ type: QiscusStrings.events.chatRoomCreated, payload });
-    }
+      emit({
+        type: QiscusStrings.events.onlinePresence,
+        payload: {data, userId},
+      });
+    };
+    const typingCallback = payload => {
+      emit({type: QiscusStrings.events.typing, payload});
+    };
+    const reconnectCallback = payload => {
+      emit({type: QiscusStrings.events.onReconnect, payload});
+    };
+    const newMessageCallback = messages => {
+      emit({type: QiscusStrings.events.newMessage, payload: {messages}});
+    };
+    const roomClearedCallback = payload => {
+      emit({type: QiscusStrings.events.chatRoomCreated, payload});
+    };
 
     QiscusManager.init({
       errorCallback: errorCallback,
@@ -62,7 +76,7 @@ export function qiscusCallbackHandler() {
       onReconnect: reconnectCallback,
       newMessages: newMessageCallback,
       roomCleared: roomClearedCallback,
-    })
+    });
 
     const unsubscribe = () => {
       // unsubscribe
@@ -79,7 +93,7 @@ export function* qiscusInitSaga(action) {
       try {
         // An error from socketChannel will cause the saga jump to the catch block
         const eventPayload = yield take(qiscusEvent);
-        const { type, payload } = eventPayload;
+        const {type, payload} = eventPayload;
         switch (type) {
           case QiscusStrings.events.loginSuccess: {
             yield* loginSuccessCallbackSaga(payload);
@@ -124,7 +138,7 @@ export function* qiscusInitSaga(action) {
     }
   } finally {
     if (yield cancelled()) {
-      console.tron.error('QISCUS CANCELED')
+      console.tron.error('QISCUS CANCELED');
     }
   }
 
@@ -133,63 +147,100 @@ export function* qiscusInitSaga(action) {
 }
 
 export function* setUserSaga(action) {
-  const { data } = action
-  const { userId, userKey, userName, avatarUrl, extras } = data
+  const {data} = action;
+  const {userId, userKey, userName, avatarUrl, extras} = data;
 
-  yield QiscusManager.setUser(userId, userKey, userName, avatarUrl, extras)
+  yield QiscusManager.setUser(userId, userKey, userName, avatarUrl, extras);
 }
 
 export function* getRoomsSaga(action) {
-  const { data } = action
+  const {data} = action;
   try {
-    const rooms = yield QiscusManager.getChatRoomList(data)
-    yield put(QiscusActions.getRoomsSuccess(rooms))
+    const rooms = yield QiscusManager.getChatRoomList(data);
+    yield put(QiscusActions.getRoomsSuccess(rooms));
   } catch (error) {
-    yield put(QiscusActions.getRoomsFailure())
+    yield put(QiscusActions.getRoomsFailure());
   }
 }
 
 export function* getMessagesSaga(action) {
-  console.tron.log({action})
-  const { data } = action
+  console.tron.log({action});
+  const {data} = action;
   try {
-    const comments = yield QiscusManager.getMessages(data.roomId, data.options)
-    yield put(QiscusActions.getMessagesSuccess(comments))
+    const comments = yield QiscusManager.getMessages(data.roomId, data.options);
+    yield put(QiscusActions.getMessagesSuccess(comments));
   } catch (error) {
-    console.tron.error({error})
-    yield put(QiscusActions.getMessagesFailure())
+    console.tron.error({error});
+    yield put(QiscusActions.getMessagesFailure());
   }
 }
 
 export function* sendMessageSaga(action) {
-  console.tron.log({action})
-  const { data } = action
+  console.tron.log({action});
+  const { data } = action;
   try {
-    const message = yield QiscusManager.sendMessage(data.roomId, data.text, data.uniqueId, data.type)
-    yield put(QiscusActions.sendMessageSuccess(message))
+    if (data.needToUpload) {
+      const name = data.toUpload.name;
+      const obj = {
+        uri: data.toUpload.uri,
+        type: data.toUpload.type,
+        name: data.toUpload.fileName,
+      };
+
+      // yield QiscusManager.uploadFile(obj, 
+      //   throw, 
+      //   progress, 
+      //   fileURL
+      // )
+        // if (error) return console.tron.error('error when uploading', error);
+        // if (progress) return console.tron.log(progress.percent);
+        // if (fileURL != null) {
+        //   data.payload = JSON.stringify({
+        //     type: 'image',
+        //     content: {
+        //       url: fileURL,
+        //       file_name: name,
+        //       caption: '',
+        //     },
+        //   });
+        // }
+    } else {
+      const message = yield QiscusManager.sendMessage(
+        data.roomId,
+        data.text,
+        data.uniqueId,
+        data.type,
+        data.payload,
+      );
+      yield put(QiscusActions.sendMessageSuccess(message));
+    }
   } catch (error) {
-    console.tron.error({error})
-    yield put(QiscusActions.sendMessageFailure())
+    console.tron.error({error});
+    yield put(QiscusActions.sendMessageFailure());
   }
 }
 
 export function* getUsersSaga(action) {
-  const { data } = action
+  const {data} = action;
   try {
-    const users = yield QiscusManager.getUsers(data.searchQuery, data.page, data.limit)
-    yield put(QiscusActions.getUsersSuccess(users))
+    const users = yield QiscusManager.getUsers(
+      data.searchQuery,
+      data.page,
+      data.limit,
+    );
+    yield put(QiscusActions.getUsersSuccess(users));
   } catch (error) {
-    yield put(QiscusActions.getUsersFailure())
+    yield put(QiscusActions.getUsersFailure());
   }
 }
 
 export function* openRoomSaga(action) {
-  const { data } = action
+  const {data} = action;
   try {
-    const room = yield QiscusManager.createOrGetSingleRoom(data)
-    NavigationServices.navigate('ChatScreen', {room})
-    yield put(QiscusActions.openRoomSuccess(room))
+    const room = yield QiscusManager.createOrGetSingleRoom(data);
+    NavigationServices.navigate('ChatScreen', {room});
+    yield put(QiscusActions.openRoomSuccess(room));
   } catch (error) {
-    yield put(QiscusActions.openRoomFailure())
+    yield put(QiscusActions.openRoomFailure());
   }
 }

@@ -45,7 +45,7 @@ class ChatScreen extends React.Component {
       roomId: this.state.room.id, 
       options: {
         // last_comment_id: room.last_comment_id,
-        limit: this.perPage,
+        limit: this.itemPerPage,
       },
     })
 
@@ -189,7 +189,7 @@ class ChatScreen extends React.Component {
 
         <Form
           onSubmit={this._submitMessage}
-          onSelectFile={() => this.getCameraPermission()}
+          onSelectFile={() => this.openCamera()}
         />
       </View>
     );
@@ -350,6 +350,16 @@ class ChatScreen extends React.Component {
           return console.tron.error('error when getting file', resp.error);
 
         const message = this._prepareFileMessage('File attachment', resp.uri);
+
+        this.props.sendMessageRequest({
+          roomId: this.state.room.id, 
+          text: message.message, 
+          uniqueId: message.uniqueId, 
+          type: 'custom', // message type
+          needToUpload: true,
+          toUpload: resp,
+        })
+
         this._addMessage(message, true)
           .then(() => {
             const name = resp.name;
@@ -359,30 +369,30 @@ class ChatScreen extends React.Component {
               name: resp.fileName,
             };
 
-            return Qiscus.qiscus.upload(obj, (error, progress, fileURL) => {
-              if (error)
-                return console.tron.error('error when uploading', error);
-              if (progress) return console.tron.error(progress.percent);
-              if (fileURL != null) {
-                const payload = JSON.stringify({
-                  type: 'image',
-                  content: {
-                    url: fileURL,
-                    file_name: name,
-                    caption: '',
-                  },
-                });
-                Qiscus.qiscus
-                  .sendComment(
-                    this.state.room.id,
-                    message.message,
-                    message.uniqueId,
-                    'custom', // message type
-                    payload,
-                  )
-                  .then(resp => {});
-              }
-            });
+            // return Qiscus.qiscus.upload(obj, (error, progress, fileURL) => {
+            //   if (error)
+            //     return console.tron.error('error when uploading', error);
+            //   if (progress) return console.tron.error(progress.percent);
+            //   if (fileURL != null) {
+            //     const payload = JSON.stringify({
+            //       type: 'image',
+            //       content: {
+            //         url: fileURL,
+            //         file_name: name,
+            //         caption: '',
+            //       },
+            //     });
+            //     Qiscus.qiscus
+            //       .sendComment(
+            //         this.state.room.id,
+            //         message.message,
+            //         message.uniqueId,
+            //         'custom', // message type
+            //         payload,
+            //       )
+            //       .then(resp => {});
+            //   }
+            // });
           })
           .catch(error => {
             console.tron.error('Catch me if you can', error);
@@ -391,7 +401,7 @@ class ChatScreen extends React.Component {
     );
   };
 
-  async getCameraPermission() {
+  async openCamera() {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
