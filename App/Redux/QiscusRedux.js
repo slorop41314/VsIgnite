@@ -192,7 +192,7 @@ export const openRoomRequestReducer = (state, { data }) => {
 export const openRoomSuccessReducer = (state, { payload }) => {
   return state.merge({
     ...state,
-    openRoom: { ...state.openRoom, fetching: false, error: undefined },
+    openRoom: { ...state.openRoom, fetching: false, error: undefined, payload },
   })
 }
 export const openRoomFailureReducer = (state) => {

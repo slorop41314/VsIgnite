@@ -16,6 +16,7 @@ import QiscusManager from '../Qiscus/QiscusManager'
 import { loginSuccessCallbackSaga, messageDeletedCallbackSaga, messageDeliveredCallbackSaga, messageReadCallbackSaga, presenceCallbackSaga, typingCallbackSaga, onReconnectCallbackSaga, roomClearedCallbackSaga, errorCallbackSaga, newMessagesCallbackSaga } from './QiscusHelperSagas'
 import { eventChannel } from 'redux-saga';
 import QiscusStrings from '../Qiscus/QiscusStrings';
+import NavigationServices from '../Services/NavigationServices';
 
 export function qiscusCallbackHandler() {
   return eventChannel((emit) => {
@@ -183,16 +184,12 @@ export function* getUsersSaga(action) {
 }
 
 export function* openRoomSaga(action) {
-  console.tron.log({action})
   const { data } = action
   try {
     const room = yield QiscusManager.createOrGetSingleRoom(data)
-    this.props.navigation.push("ChatScreen", {
-      room
-    });
+    NavigationServices.navigate('ChatScreen', {room})
     yield put(QiscusActions.openRoomSuccess(room))
   } catch (error) {
-    console.tron.error({error})
     yield put(QiscusActions.openRoomFailure())
   }
 }

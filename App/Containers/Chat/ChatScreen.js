@@ -25,25 +25,24 @@ import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 
 class ChatScreen extends React.Component {
-  perPage = 20;
-  state = {
-    room: null,
-    // messages: {},
-    // isLoadMoreable: true,
-    isOnline: false,
-    isTyping: false,
-    lastOnline: null,
-    typingUsername: null,
-  };
+  itemPerPage = 50;
+
+  constructor(props) {
+    super(props)
+    const room = props.navigation.getParam('room');
+
+    this.state = {
+      room,
+      isOnline: false,
+      isTyping: false,
+      lastOnline: undefined,
+      typingUsername: undefined,
+    }
+  }
 
   componentDidMount() {
-    const room = this.props.navigation.getParam('room', null);
-    console.tron.log({'componentDidMount': room})
-    if (room == null) return this.props.navigation.replace('RoomListScreen');
-    this.setState({room})
-
     this.props.getMessagesRequest({
-      roomId: room.id, 
+      roomId: this.state.room.id, 
       options: {
         // last_comment_id: room.last_comment_id,
         limit: this.perPage,
@@ -137,7 +136,7 @@ class ChatScreen extends React.Component {
           onPress={this._onToolbarClick}
           renderLeftButton={() => (
             <TouchableOpacity
-              // onPress={() => this.props.navigation.replace('RoomListScreen')}
+              onPress={() => this.props.navigation.goBack()}
               style={{
                 display: 'flex',
                 flexDirection: 'row',
@@ -146,8 +145,8 @@ class ChatScreen extends React.Component {
               <Image
                 source={Images.qiscusBack}
                 style={{
-                  width: 50,
-                  height: 50,
+                  width: 20,
+                  height: 20,
                   resizeMode: 'contain',
                 }}
               />
@@ -163,19 +162,19 @@ class ChatScreen extends React.Component {
               />
             </TouchableOpacity>
           )}
-          renderMeta={() => (
-            <View style={styles.onlineStatus}>
-              {this._renderOnlineStatus()}
-              {showTyping && (
-                <Text style={styles.typingText}>
-                  {typingUsername} is typing...
-                </Text>
-              )}
-              {this.isGroup && (
-                <Text style={styles.typingText}>{this.participants}</Text>
-              )}
-            </View>
-          )}
+          // renderMeta={() => (
+          //   <View style={styles.onlineStatus}>
+          //     {this._renderOnlineStatus()}
+          //     {showTyping && (
+          //       <Text style={styles.typingText}>
+          //         {typingUsername} is typing...
+          //       </Text>
+          //     )}
+          //     {this.isGroup && (
+          //       <Text style={styles.typingText}>{this.participants}</Text>
+          //     )}
+          //   </View>
+          // )}
         />
 
         {messages.length === 0 && <EmptyChat />}
