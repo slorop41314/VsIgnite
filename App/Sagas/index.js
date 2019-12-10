@@ -1,4 +1,4 @@
-import { takeLatest, all } from 'redux-saga/effects'
+import { takeLatest, all, takeEvery } from 'redux-saga/effects'
 import API from '../Services/Api'
 import FixtureAPI from '../Services/FixtureApi'
 import DebugConfig from '../Config/DebugConfig'
@@ -39,7 +39,7 @@ export default function* root() {
     takeLatest(QiscusTypes.SET_USER, setUserSaga),
     takeLatest(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
     takeLatest(QiscusTypes.GET_MESSAGES_REQUEST, getMessagesSaga),
-    takeLatest(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
+    takeEvery(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
     takeLatest(QiscusTypes.GET_USERS_REQUEST, getUsersSaga),
     takeLatest(QiscusTypes.OPEN_ROOM_REQUEST, openRoomSaga),
   ])

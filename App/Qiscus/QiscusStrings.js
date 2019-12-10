@@ -37,6 +37,19 @@ const QiscusStrings = {
   },
   isOnlineStatus: '1',
   delimiter: ':',
+  upload: {
+    type: {
+      image: 'image'
+    },
+    success: 'upload-success',
+    failure: 'upload-failure',
+    progress: 'upload-progress'
+  },
+  message_type: {
+    text: 'text', 
+    file_attachment: 'file-attachment',
+    custom: 'custom',
+  }
 }
 
 export default QiscusStrings

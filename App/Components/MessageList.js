@@ -16,6 +16,7 @@ import MessageUpload from "./MessageUpload";
 import MessageCustom from "./MessageCustom";
 
 import { Images } from "../Themes";
+import QiscusStrings from "../Qiscus/QiscusStrings";
 
 class AnimatedSending extends React.Component {
   animation = new Animated.Value(0);
@@ -80,7 +81,7 @@ export default class MessageList extends React.Component {
     const isLoadMore = type === "load-more";
     const isDate = type === "date";
     const isCustomMessage =
-      type === "custom" && typeof message.payload.content !== "string";
+      type === QiscusStrings.message_type.custom && typeof message.payload.content !== "string";
 
     const containerStyle = [styles.container];
     if (isMe) containerStyle.push(styles.containerMe);

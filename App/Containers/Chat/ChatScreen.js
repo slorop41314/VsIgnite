@@ -23,6 +23,7 @@ import { Images } from '../../Themes';
 
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
+import QiscusStrings from '../../Qiscus/QiscusStrings';
 
 class ChatScreen extends React.Component {
   itemPerPage = 50;
@@ -42,83 +43,16 @@ class ChatScreen extends React.Component {
 
   componentDidMount() {
     this.props.getMessagesRequest({
-      roomId: this.state.room.id, 
+      roomId: this.state.room.id,
       options: {
         // last_comment_id: room.last_comment_id,
         limit: this.itemPerPage,
       },
     })
-
-    // const subscription1 = Qiscus.isLogin$()
-    //   .take(1)
-    //   .map(() => xs.from(Qiscus.qiscus.getRoomById(roomId)))
-    //   .flatten()
-    //   .subscribe({
-    //     next: room => this.setState({room}),
-    //   });
-    // const subscription2 = Qiscus.isLogin$()
-    //   .take(1)
-    //   .map(() => xs.from(Qiscus.qiscus.loadComments(roomId)))
-    //   .flatten()
-    //   .subscribe({
-    //     next: messages => {
-    //       const message = messages[0] || {};
-    //       const isLoadMoreable = message.comment_before_id !== 0;
-    //       const formattedMessages = messages.reduce((result, message) => {
-    //         result[message.unique_temp_id] = message;
-    //         return result;
-    //       }, {});
-    //       this.setState({
-    //         messages: formattedMessages,
-    //         isLoadMoreable,
-    //       });
-    //     },
-    //   });
-
-    // this.subscription = xs
-    //   .merge(
-    //     Qiscus.newMessage$().map(this._onNewMessage),
-    //     Qiscus.messageRead$().map(this._onMessageRead),
-    //     Qiscus.messageDelivered$().map(this._onMessageDelivered),
-    //     Qiscus.onlinePresence$().map(this._onOnline),
-    //     Qiscus.typing$()
-    //       .filter(it => Number(it.room_id) === this.state.room.id)
-    //       .map(this._onTyping),
-    //   )
-    //   .subscribe({
-    //     next: () => {},
-    //     error: error => console.tron.error('subscription error', error),
-    //   });
-  }
-
-  // componentDidUpdate(prevProps) {
-  //   console.tron.log({ prevProps });
-  //   console.tron.log({ 'this.props': this.props });
-  //   const { messages, getMessages } = this.props
-
-  //   if(!getMessages.fetching && prevProps.getMessages.fetching) {
-  //     console.tron.log({ 'this.state.messages': this.state.messages });
-  //     const message = messages[0] || {};
-  //     const isLoadMoreable = messages[0].comment_before_id !== 0;
-  //     const formattedMessages = messages.reduce((result, message) => {
-  //       result[message.unique_temp_id] = message;
-  //       return result;
-  //     }, {});
-  //     this.setState({
-  //       messages: formattedMessages,
-  //       isLoadMoreable,
-  //     });
-  //   }
-  // }
-
-  componentWillUnmount() {
-    // Qiscus.qiscus.exitChatRoom();
-
-    // this.subscription && this.subscription.unsubscribe();
   }
 
   render() {
-    const {room, isTyping, isOnline, lastOnline, typingUsername} = this.state;
+    const { room, isTyping, isOnline, lastOnline, typingUsername } = this.state;
     const messages = this.messages;
     const roomName = room ? room.name : 'Chat';
     const avatarURL = room ? room.avatar : null;
@@ -151,7 +85,7 @@ class ChatScreen extends React.Component {
                 }}
               />
               <Image
-                source={{uri: avatarURL}}
+                source={{ uri: avatarURL }}
                 style={{
                   width: 50,
                   height: 50,
@@ -162,19 +96,19 @@ class ChatScreen extends React.Component {
               />
             </TouchableOpacity>
           )}
-          // renderMeta={() => (
-          //   <View style={styles.onlineStatus}>
-          //     {this._renderOnlineStatus()}
-          //     {showTyping && (
-          //       <Text style={styles.typingText}>
-          //         {typingUsername} is typing...
-          //       </Text>
-          //     )}
-          //     {this.isGroup && (
-          //       <Text style={styles.typingText}>{this.participants}</Text>
-          //     )}
-          //   </View>
-          // )}
+        // renderMeta={() => (
+        //   <View style={styles.onlineStatus}>
+        //     {this._renderOnlineStatus()}
+        //     {showTyping && (
+        //       <Text style={styles.typingText}>
+        //         {typingUsername} is typing...
+        //       </Text>
+        //     )}
+        //     {this.isGroup && (
+        //       <Text style={styles.typingText}>{this.participants}</Text>
+        //     )}
+        //   </View>
+        // )}
         />
 
         {messages.length === 0 && <EmptyChat />}
@@ -183,7 +117,7 @@ class ChatScreen extends React.Component {
             isLoadMoreable={messages[0].comment_before_id !== 0}
             messages={messages}
             scroll={this.state.scroll}
-            onLoadMore={this._loadMore}
+            // onLoadMore={this._loadMore}
           />
         )}
 
@@ -196,8 +130,8 @@ class ChatScreen extends React.Component {
   }
 
   _renderOnlineStatus = () => {
-    const {isGroup} = this;
-    const {isTyping, isOnline, lastOnline, room} = this.state;
+    const { isGroup } = this;
+    const { isTyping, isOnline, lastOnline, room } = this.state;
     if (room == null) return;
     if (isGroup || isTyping) return;
 
@@ -213,7 +147,7 @@ class ChatScreen extends React.Component {
     );
   };
 
-  _onTyping = debounce(({username}) => {
+  _onTyping = debounce(({ username }) => {
     this.setState(
       {
         isTyping: true,
@@ -248,13 +182,13 @@ class ChatScreen extends React.Component {
     return 'New message';
   };
 
-  _onMessageRead = ({comment}) => {
+  _onMessageRead = ({ comment }) => {
     // toast("message read");
     // const date = new Date(comment.timestamp);
     const results = this.messages
       // .filter(it => new Date(it.timestamp) <= date)
       .filter(it => it.timestamp <= comment.timestamp)
-      .map(it => ({...it, status: 'read'}));
+      .map(it => ({ ...it, status: 'read' }));
 
     const messages = results.reduce((result, item) => {
       const uniqueId = item.unique_id || item.unique_temp_id;
@@ -270,12 +204,12 @@ class ChatScreen extends React.Component {
     return 'Message read';
   };
 
-  _onMessageDelivered = ({comment}) => {
+  _onMessageDelivered = ({ comment }) => {
     // toast("message delivered");
 
     const results = this.messages
       .filter(it => it.timestamp <= comment.timestamp && it.status !== 'read')
-      .map(it => ({...it, status: 'delivered'}));
+      .map(it => ({ ...it, status: 'delivered' }));
 
     const messages = results.reduce((result, item) => {
       const uniqueId = item.unique_id || item.unique_temp_id;
@@ -319,20 +253,11 @@ class ChatScreen extends React.Component {
     await this._addMessage(message, true);
 
     this.props.sendMessageRequest({
-      roomId: this.state.room.id, 
-      text: text, 
-      uniqueId: message.unique_temp_id, 
+      roomId: this.state.room.id,
+      text: text,
+      uniqueId: message.unique_temp_id,
       type: message.type,
     })
-
-    // const resp = await Qiscus.qiscus.sendComment(
-    //   this.state.room.id,
-    //   text,
-    //   message.unique_temp_id,
-    // );
-    // this._updateMessage(message, resp);
-    
-    // toast("Success sending message!");
   };
 
   _onSelectFile = () => {
@@ -341,76 +266,79 @@ class ChatScreen extends React.Component {
         title: 'Select image',
         storageOptions: {
           skipBackup: true,
-          path: 'images',
+          // path: 'images',
         },
       },
       resp => {
-        if (resp.didCancel) return console.tron.error('user cancel');
-        if (resp.error)
-          return console.tron.error('error when getting file', resp.error);
+        if (resp.didCancel) console.tron.error('user cancel');
+        if (resp.error) console.tron.error('error when getting file', resp.error);
 
         const message = this._prepareFileMessage('File attachment', resp.uri);
 
         this.props.sendMessageRequest({
-          roomId: this.state.room.id, 
-          text: message.message, 
-          uniqueId: message.uniqueId, 
-          type: 'custom', // message type
+          roomId: this.state.room.id,
+          text: message.message,
+          uniqueId: message.uniqueId,
+          type: QiscusStrings.message_type.custom, // message type
           needToUpload: true,
-          toUpload: resp,
+          toUpload: {
+            uri: resp.uri,
+            type: resp.type,
+            name: resp.fileName,
+          },
         })
 
-        this._addMessage(message, true)
-          .then(() => {
-            const name = resp.name;
-            const obj = {
-              uri: resp.uri,
-              type: resp.type,
-              name: resp.fileName,
-            };
+        // this._addMessage(message, true)
+        //   .then(() => {
+        //     const name = resp.name;
+        //     const obj = {
+        //       uri: resp.uri,
+        //       type: resp.type,
+        //       name: resp.fileName,
+        //     };
 
-            // return Qiscus.qiscus.upload(obj, (error, progress, fileURL) => {
-            //   if (error)
-            //     return console.tron.error('error when uploading', error);
-            //   if (progress) return console.tron.error(progress.percent);
-            //   if (fileURL != null) {
-            //     const payload = JSON.stringify({
-            //       type: 'image',
-            //       content: {
-            //         url: fileURL,
-            //         file_name: name,
-            //         caption: '',
-            //       },
-            //     });
-            //     Qiscus.qiscus
-            //       .sendComment(
-            //         this.state.room.id,
-            //         message.message,
-            //         message.uniqueId,
-            //         'custom', // message type
-            //         payload,
-            //       )
-            //       .then(resp => {});
-            //   }
-            // });
-          })
-          .catch(error => {
-            console.tron.error('Catch me if you can', error);
-          });
+        //     // return Qiscus.qiscus.upload(obj, (error, progress, fileURL) => {
+        //     //   if (error)
+        //     //     return console.tron.error('error when uploading', error);
+        //     //   if (progress) return console.tron.error(progress.percent);
+        //     //   if (fileURL != null) {
+        //     //     const payload = JSON.stringify({
+        //     //       type: 'image',
+        //     //       content: {
+        //     //         url: fileURL,
+        //     //         file_name: name,
+        //     //         caption: '',
+        //     //       },
+        //     //     });
+        //     //     Qiscus.qiscus
+        //     //       .sendComment(
+        //     //         this.state.room.id,
+        //     //         message.message,
+        //     //         message.uniqueId,
+        //     //         'custom', // message type
+        //     //         payload,
+        //     //       )
+        //     //       .then(resp => {});
+        //     //   }
+        //     // });
+        //   })
+        //   .catch(error => {
+        //     console.tron.error('Catch me if you can', error);
+        //   });
       },
     );
   };
 
   async openCamera() {
     try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        this._onSelectFile()
-      } else {
-        console.tron.warn('Camera permission denied');
-      }
+      // const granted = await PermissionsAndroid.request(
+      //   PermissionsAndroid.PERMISSIONS.CAMERA,
+      // );
+      // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      this._onSelectFile()
+      // } else {
+      //   console.tron.warn('Camera permission denied');
+      // }
     } catch (err) {
       console.tron.error(err);
     }
@@ -419,12 +347,12 @@ class ChatScreen extends React.Component {
   _addMessage = (message, scroll = false) =>
     new Promise(resolve => {
       this.setState({
-          scroll,
-        },
+        scroll,
+      },
         () => {
           if (scroll === false) return;
           const timeoutId = setTimeout(() => {
-            this.setState({scroll: false}, () => {
+            this.setState({ scroll: false }, () => {
               clearTimeout(timeoutId);
               resolve();
             });
@@ -453,7 +381,7 @@ class ChatScreen extends React.Component {
     // toast(`Loading more message ${lastCommentId}`);
 
     Qiscus.qiscus
-      .loadComments(roomId, {last_comment_id: lastCommentId})
+      .loadComments(roomId, { last_comment_id: lastCommentId })
       .then(messages => {
         // toast("Done loading message");
         // const isLoadMoreable = messages[0].comment_before_id !== 0;
@@ -478,7 +406,7 @@ class ChatScreen extends React.Component {
 
   _onToolbarClick = () => {
     const roomId = this.state.room.id;
-    this.props.navigation.navigate('RoomInfo', {roomId});
+    this.props.navigation.navigate('RoomInfo', { roomId });
   };
 
   get isGroup() {

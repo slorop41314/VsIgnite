@@ -10,8 +10,8 @@
  *    you'll need to define a constant in that file.
  *************************************************************/
 
-import {call, put, fork, take, cancelled} from 'redux-saga/effects';
-import QiscusActions, {QiscusTypes} from '../Redux/QiscusRedux';
+import { call, put, fork, take, cancelled } from 'redux-saga/effects';
+import QiscusActions, { QiscusTypes } from '../Redux/QiscusRedux';
 import QiscusManager from '../Qiscus/QiscusManager';
 import {
   loginSuccessCallbackSaga,
@@ -25,44 +25,44 @@ import {
   errorCallbackSaga,
   newMessagesCallbackSaga,
 } from './QiscusHelperSagas';
-import {eventChannel} from 'redux-saga';
+import { eventChannel } from 'redux-saga';
 import QiscusStrings from '../Qiscus/QiscusStrings';
 import NavigationServices from '../Services/NavigationServices';
 
 export function qiscusCallbackHandler() {
   return eventChannel(emit => {
     const errorCallback = error => {
-      emit(new Error({type: QiscusStrings.errors.loginFailure, error}));
+      emit(new Error({ type: QiscusStrings.errors.loginFailure, error }));
     };
     const loginSuccessCallback = payload => {
-      emit({type: QiscusStrings.events.loginSuccess, payload});
+      emit({ type: QiscusStrings.events.loginSuccess, payload });
     };
     const messageDeletedCallback = payload => {
-      emit({type: QiscusStrings.events.commentDeleted, payload});
+      emit({ type: QiscusStrings.events.commentDeleted, payload });
     };
     const messageDeliveredCallback = payload => {
-      emit({type: QiscusStrings.events.commentDelivered, payload});
+      emit({ type: QiscusStrings.events.commentDelivered, payload });
     };
     const messageReadCallback = payload => {
-      emit({type: QiscusStrings.events.commentRead, payload});
+      emit({ type: QiscusStrings.events.commentRead, payload });
     };
     const presenceCallback = (data, userId) => {
       emit({
         type: QiscusStrings.events.onlinePresence,
-        payload: {data, userId},
+        payload: { data, userId },
       });
     };
     const typingCallback = payload => {
-      emit({type: QiscusStrings.events.typing, payload});
+      emit({ type: QiscusStrings.events.typing, payload });
     };
     const reconnectCallback = payload => {
-      emit({type: QiscusStrings.events.onReconnect, payload});
+      emit({ type: QiscusStrings.events.onReconnect, payload });
     };
     const newMessageCallback = messages => {
-      emit({type: QiscusStrings.events.newMessage, payload: {messages}});
+      emit({ type: QiscusStrings.events.newMessage, payload: { messages } });
     };
     const roomClearedCallback = payload => {
-      emit({type: QiscusStrings.events.chatRoomCreated, payload});
+      emit({ type: QiscusStrings.events.chatRoomCreated, payload });
     };
 
     QiscusManager.init({
@@ -93,7 +93,7 @@ export function* qiscusInitSaga(action) {
       try {
         // An error from socketChannel will cause the saga jump to the catch block
         const eventPayload = yield take(qiscusEvent);
-        const {type, payload} = eventPayload;
+        const { type, payload } = eventPayload;
         switch (type) {
           case QiscusStrings.events.loginSuccess: {
             yield* loginSuccessCallbackSaga(payload);
@@ -147,14 +147,14 @@ export function* qiscusInitSaga(action) {
 }
 
 export function* setUserSaga(action) {
-  const {data} = action;
-  const {userId, userKey, userName, avatarUrl, extras} = data;
+  const { data } = action;
+  const { userId, userKey, userName, avatarUrl, extras } = data;
 
   yield QiscusManager.setUser(userId, userKey, userName, avatarUrl, extras);
 }
 
 export function* getRoomsSaga(action) {
-  const {data} = action;
+  const { data } = action;
   try {
     const rooms = yield QiscusManager.getChatRoomList(data);
     yield put(QiscusActions.getRoomsSuccess(rooms));
@@ -164,46 +164,108 @@ export function* getRoomsSaga(action) {
 }
 
 export function* getMessagesSaga(action) {
-  console.tron.log({action});
-  const {data} = action;
+  console.tron.log({ action });
+  const { data } = action;
   try {
     const comments = yield QiscusManager.getMessages(data.roomId, data.options);
     yield put(QiscusActions.getMessagesSuccess(comments));
   } catch (error) {
-    console.tron.error({error});
+    console.tron.error({ error });
     yield put(QiscusActions.getMessagesFailure());
   }
 }
 
+function uploadFileHelper(obj) {
+  return eventChannel(emit => {
+    const uploadFailure = error => {
+      emit(new Error({ type: QiscusStrings.upload.failure, error }));
+    };
+    const uploadSuccess = payload => {
+      emit({ type: QiscusStrings.upload.success, payload });
+    };
+    const uploadProgress = payload => {
+      emit({ type: QiscusStrings.upload.progress, payload });
+    };
+
+    QiscusManager.uploadFile(obj,
+      uploadFailure,
+      uploadProgress,
+      uploadSuccess)
+
+    const unsubscribe = () => {
+      // unsubscribe
+    };
+
+    return unsubscribe;
+  });
+}
+
 export function* sendMessageSaga(action) {
-  console.tron.log({action});
-  const { data } = action;
+  let { data } = action;
   try {
     if (data.needToUpload) {
-      const name = data.toUpload.name;
       const obj = {
         uri: data.toUpload.uri,
         type: data.toUpload.type,
-        name: data.toUpload.fileName,
+        name: data.toUpload.name,
       };
+
+      const qiscusEvent = yield call(uploadFileHelper, obj);
+      try {
+        while (true) {
+          const eventPayload = yield take(qiscusEvent);
+          const { type, payload } = eventPayload;
+          switch (type) {
+            case QiscusStrings.upload.success: {
+              const name = data.toUpload.name;
+              data = {
+                ...data,
+                payload: JSON.stringify({
+                  type: QiscusStrings.upload.type.image,
+                  content: {
+                    url: payload,
+                    file_name: name,
+                    caption: data.text,
+                  },
+                })
+              }
+
+              const message = yield QiscusManager.sendMessage(
+                data.roomId,
+                data.text,
+                data.uniqueId,
+                data.type,
+                data.payload,
+              );
+              yield put(QiscusActions.sendMessageSuccess(message));
+              break;
+            }
+            case QiscusStrings.upload.progress: {
+              break;
+            }
+          }
+        }
+      } catch (error) {
+        console.tron.error({ failure: err })
+      }
 
       // yield QiscusManager.uploadFile(obj, 
       //   throw, 
       //   progress, 
       //   fileURL
       // )
-        // if (error) return console.tron.error('error when uploading', error);
-        // if (progress) return console.tron.log(progress.percent);
-        // if (fileURL != null) {
-        //   data.payload = JSON.stringify({
-        //     type: 'image',
-        //     content: {
-        //       url: fileURL,
-        //       file_name: name,
-        //       caption: '',
-        //     },
-        //   });
-        // }
+      // if (error) return console.tron.error('error when uploading', error);
+      // if (progress) return console.tron.log(progress.percent);
+      // if (fileURL != null) {
+      //   data.payload = JSON.stringify({
+      //     type: 'image',
+      //     content: {
+      //       url: fileURL,
+      //       file_name: name,
+      //       caption: '',
+      //     },
+      //   });
+      // }
     } else {
       const message = yield QiscusManager.sendMessage(
         data.roomId,
@@ -215,13 +277,13 @@ export function* sendMessageSaga(action) {
       yield put(QiscusActions.sendMessageSuccess(message));
     }
   } catch (error) {
-    console.tron.error({error});
+    console.tron.error({ error });
     yield put(QiscusActions.sendMessageFailure());
   }
 }
 
 export function* getUsersSaga(action) {
-  const {data} = action;
+  const { data } = action;
   try {
     const users = yield QiscusManager.getUsers(
       data.searchQuery,
@@ -235,10 +297,10 @@ export function* getUsersSaga(action) {
 }
 
 export function* openRoomSaga(action) {
-  const {data} = action;
+  const { data } = action;
   try {
     const room = yield QiscusManager.createOrGetSingleRoom(data);
-    NavigationServices.navigate('ChatScreen', {room});
+    NavigationServices.navigate('ChatScreen', { room });
     yield put(QiscusActions.openRoomSuccess(room));
   } catch (error) {
     yield put(QiscusActions.openRoomFailure());
