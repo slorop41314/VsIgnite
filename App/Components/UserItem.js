@@ -5,11 +5,13 @@ import {
   Text,
   View,
 } from 'react-native';
+import { PlaceholderImage, PlaceholderText } from 'react-native-awesome-component';
 
 export default class UserItem extends React.Component {
   render() {
-    const avatarURL = this.props.user.avatar_url;
-    const username = this.props.user.username;
+    const { user } = this.props
+    const avatarURL = user.avatar_url;
+    const username = user.username;
     return (
       <TouchableOpacity
         onPress={this.props.onPress}
@@ -24,16 +26,13 @@ export default class UserItem extends React.Component {
             paddingHorizontal: 10,
           }}
         >
-          <Image
-            source={{uri: avatarURL}}
-            style={{
-              flex: 0,
-              flexBasis: 30,
-              resizeMode: 'cover',
-              borderRadius: 50,
-              width: 30,
-              height: 30,
-            }}
+          <PlaceholderImage
+            uri={avatarURL}
+            width={30}
+            height={30}
+            resizeMethod='resize'
+            resizeMode='cover'
+            radius={15}
           />
           <View style={{
             flex: 1,
@@ -46,7 +45,7 @@ export default class UserItem extends React.Component {
             display: 'flex',
             justifyContent: 'center',
           }}>
-            <Text>{username}</Text>
+            <PlaceholderText numberOfLines={1}>{username}</PlaceholderText>
           </View>
         </View>
       </TouchableOpacity>

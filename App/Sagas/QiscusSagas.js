@@ -173,14 +173,11 @@ export function* sendMessageSaga(action) {
 }
 
 export function* getUsersSaga(action) {
-  console.tron.log({ 'AAAAA': action})
   const { data } = action
   try {
     const users = yield QiscusManager.getUsers(data.searchQuery, data.page, data.limit)
-    // const users = yield QiscusManager.getBlockUser(data.page, data.limit)  //no error
     yield put(QiscusActions.getUsersSuccess(users))
   } catch (error) {
-    console.tron.error({error})
     yield put(QiscusActions.getUsersFailure())
   }
 }

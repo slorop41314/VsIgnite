@@ -16,61 +16,43 @@ import { Images } from '../../Themes'
 
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
+import { CustomFlatList, Styled } from "react-native-awesome-component";
 
 class UserListScreen extends React.Component {
-  perPage = 20;
-
-  // _onUserClick = async userId => {
-  //   try {
-  //     const room = await Qiscus.qiscus.chatTarget(userId);
-  //     console.tron.log({room})
-
-  //     this.props.navigation.push("ChatScreen", {
-  //       room
-  //     });
-  //   } catch (error) {
-  //     console.tron.error("error when getting room", error);
-  //   }
-  // };
-
-  // _loadUsers = (query = null) => {
-  //   Qiscus.qiscus
-  //     .getUsers(query, 1, this.perPage)
-  //     .then(resp => {
-  //       this.setState({ users: resp.users });
-  //     })
-  //     .catch(error => {
-  //       console.tron.error("Error when getting user list", error);
-  //     });
-  // };
+  itemPerPage = 50
+  currentPage = 1
 
   _onBack = () => {
     this.props.navigation.goBack();
   };
 
-  _onEndReached = ({ distanceFromEnd }) => {
-    console.tron.log("on end reached", distanceFromEnd);
-  };
-
-  componentDidMount() {
+  _fetchFunction = ({ page }) => {
+    this.currentPage = page
     this.props.getUsersRequest({
       searchQuery: null,
-      page: 1,
-      limit: this.perPage,
+      page,
+      limit: this.itemPerPage,
     })
   }
 
   _renderItem = item => {
-    if (item.type === "load-more") return this._loadMore();
     return (
       <UserItem user={item} onPress={() => this.props.openRoomRequest(item.email)} />
     );
   };
 
   render() {
-    const { users } = this.props;
+    const { users, getUserStatus } = this.props;
+    const { payload, fetching } = getUserStatus
+    let flatListMeta = { current_page: this.currentPage, next_page: undefined }
+    if (payload) {
+      const { meta } = payload
+      if (meta && (meta.total_data >= users.length) && (meta.total_page >= this.currentPage)) {
+        flatListMeta = { current_page: this.currentPage, next_page: this.currentPage + 1 }
+      }
+    }
     return (
-      <View style={styles.container}>
+      <Styled.FlexContainer>
         <Toolbar
           title="Choose Contacts"
           renderLeftButton={() => (
@@ -94,13 +76,16 @@ class UserListScreen extends React.Component {
         <View style={styles.separator}>
           <Text style={styles.separatorText}>Contact</Text>
         </View>
-        <FlatList
-          data={users}
-          keyExtractor={it => `key-${it.email}`}
-          onEndReached={this._onEndReached}
-          renderItem={({ item }) => this._renderItem(item)}
-        />
-      </View>
+        <Styled.FlexContainer>
+          <CustomFlatList
+            data={users}
+            fetchFunction={this._fetchFunction}
+            renderItem={({ item }) => this._renderItem(item)}
+            loading={fetching}
+            meta={flatListMeta}
+          />
+        </Styled.FlexContainer>
+      </Styled.FlexContainer>
     );
   }
 
@@ -113,6 +98,7 @@ const mapStateToProps = (state) => {
   return {
     qiscusUser: state.qiscus.currentUser,
     users: state.qiscus.users,
+    getUserStatus: state.qiscus.getUsers
   }
 }
 
@@ -142,7 +128,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    
+
     elevation: 5,
   },
   createGroupBtnText: {

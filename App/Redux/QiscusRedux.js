@@ -1,6 +1,7 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
 import { DEFAULT_REDUCER_STATE } from '../Utils/Const'
+import { Method } from 'react-native-awesome-component'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -30,7 +31,7 @@ const { Types, Creators } = createActions({
   getMessagesRequest: ['data'],
   getMessagesSuccess: ['payload'],
   getMessagesFailure: null,
-  
+
   sendMessageRequest: ['data'],
   sendMessageSuccess: ['payload'],
   sendMessageFailure: null,
@@ -62,7 +63,7 @@ export const INITIAL_STATE = Immutable({
   sendMessage: DEFAULT_REDUCER_STATE,
   getUsers: DEFAULT_REDUCER_STATE,
   openRoom: DEFAULT_REDUCER_STATE,
-  
+
 })
 
 /* ------------- Selectors ------------- */
@@ -137,10 +138,10 @@ export const getMessagesSuccessReducer = (state, { payload }) => {
     return result;
   }, {});
 
-  return state.merge({ 
-    ...state, 
-    getMessages: { ...state.getMessages, fetching: false, error: undefined }, 
-    messages: formattedMessages, 
+  return state.merge({
+    ...state,
+    getMessages: { ...state.getMessages, fetching: false, error: undefined },
+    messages: formattedMessages,
   })
 }
 export const getMessagesFailureReducer = (state) => {
@@ -152,9 +153,9 @@ export const sendMessageRequestReducer = (state, { data }) => {
 }
 export const sendMessageSuccessReducer = (state, { payload }) => {
   console.tron.log({ 'state.sendMessage': state.sendMessage })
-  return state.merge({ 
-    ...state, 
-    sendMessage: { ...state.sendMessage, fetching: false, error: undefined }, 
+  return state.merge({
+    ...state,
+    sendMessage: { ...state.sendMessage, fetching: false, error: undefined },
     messages: {
       ...state.messages,
       [state.sendMessage.data.uniqueId]: payload,
@@ -170,10 +171,15 @@ export const getUsersRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getUsers: { ...state.getUsers, fetching: true, data } })
 }
 export const getUsersSuccessReducer = (state, { payload }) => {
-  return state.merge({ 
-    ...state, 
-    getUsers: { ...state.getUsers, fetching: false, error: undefined }, 
-    users: payload, 
+  let newUsers = [...state.users]
+  const { users } = payload
+  if (users) {
+    newUsers = Method.Array.mergeAndReplace(newUsers, users)
+  }
+  return state.merge({
+    ...state,
+    getUsers: { ...state.getUsers, fetching: false, error: undefined, payload, },
+    users: newUsers
   })
 }
 export const getUsersFailureReducer = (state) => {
@@ -184,9 +190,9 @@ export const openRoomRequestReducer = (state, { data }) => {
   return state.merge({ ...state, openRoom: { ...state.openRoom, fetching: true, data } })
 }
 export const openRoomSuccessReducer = (state, { payload }) => {
-  return state.merge({ 
-    ...state, 
-    openRoom: { ...state.openRoom, fetching: false, error: undefined }, 
+  return state.merge({
+    ...state,
+    openRoom: { ...state.openRoom, fetching: false, error: undefined },
   })
 }
 export const openRoomFailureReducer = (state) => {
@@ -224,7 +230,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_MESSAGES_REQUEST]: getMessagesRequestReducer,
   [Types.GET_MESSAGES_SUCCESS]: getMessagesSuccessReducer,
   [Types.GET_MESSAGES_FAILURE]: getMessagesFailureReducer,
-  
+
   [Types.SEND_MESSAGE_REQUEST]: sendMessageRequestReducer,
   [Types.SEND_MESSAGE_SUCCESS]: sendMessageSuccessReducer,
   [Types.SEND_MESSAGE_FAILURE]: sendMessageFailureReducer,

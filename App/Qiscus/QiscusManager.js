@@ -193,14 +193,9 @@ class QiscusManager {
    * @param {number} limit 
    */
   getUsers(searchQuery, page, limit) {
-    console.tron.log({
-      searchQuery,
-      page,
-      limit,
-    })
     return new Promise(async (resolve, reject) => {
       try {
-        const users = await qiscus.getUsers(searchQuery, page, limit)
+        const users = await this.qiscus.getUsers(searchQuery, page, limit)
         resolve(users)
       } catch (error) {
         reject({ type: QiscusStrings.errors.getUsersFailure, error })

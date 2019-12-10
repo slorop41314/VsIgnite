@@ -16,8 +16,8 @@ import { connect } from 'react-redux'
 
 class LoginScreen extends React.Component {
   state = {
-    userId: "guest-101",
-    userKey: "passkey",
+    userId: "rahmat@virtualspirit.me",
+    userKey: "useruser12345!",
     isLogin: false
   };
 
