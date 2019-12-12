@@ -420,6 +420,7 @@ class QiscusManager {
    * @param {string} lastReadMessageId 
    */
   readMessage(roomId, lastReadMessageId) {
+    console.tron.log({ roomId, lastReadMessageId })
     return new Promise(async (resolve, reject) => {
       try {
         await this.qiscus.readComment(roomId, lastReadMessageId)

@@ -16,6 +16,9 @@ import MessageUpload from "./MessageUpload";
 import MessageCustom from "./MessageCustom";
 
 import { Images } from "../Themes";
+
+import QiscusActions from '../Redux/QiscusRedux'
+import { connect } from 'react-redux'
 import QiscusStrings from "../Qiscus/QiscusStrings";
 
 class AnimatedSending extends React.Component {
@@ -50,7 +53,7 @@ class AnimatedSending extends React.Component {
   }
 }
 
-export default class MessageList extends React.Component {
+class MessageList extends React.Component {
   _messageListFormatter = messages => {
     const _messages = [];
 
@@ -77,7 +80,7 @@ export default class MessageList extends React.Component {
   };
   _renderMessage = message => {
     const type = message.type;
-    const isMe = message.email === Qiscus.currentUser().email;
+    const isMe = message.email === this.props.qiscusUser.email;
     const isLoadMore = type === "load-more";
     const isDate = type === "date";
     const isCustomMessage =
@@ -248,6 +251,20 @@ export default class MessageList extends React.Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    qiscusUser: state.qiscus.currentUser,
+  }
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    // getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MessageList)
 
 const styles = StyleSheet.create({
   container: {

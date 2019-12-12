@@ -18,6 +18,7 @@ import {
   getRoomsSaga, 
   getMessagesSaga,
   sendMessageSaga,
+  readMessageSaga,
   getUsersSaga,
   openRoomSaga,
 } from './QiscusSagas'
@@ -40,7 +41,9 @@ export default function* root() {
     takeLatest(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
     takeLatest(QiscusTypes.GET_MESSAGES_REQUEST, getMessagesSaga),
     takeEvery(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
+    takeLatest(QiscusTypes.READ_MESSAGE_REQUEST, readMessageSaga),
     takeLatest(QiscusTypes.GET_USERS_REQUEST, getUsersSaga),
     takeLatest(QiscusTypes.OPEN_ROOM_REQUEST, openRoomSaga),
+    
   ])
 }
