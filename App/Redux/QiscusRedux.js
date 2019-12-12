@@ -122,7 +122,12 @@ export const getRoomsRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: true, data } })
 }
 export const getRoomsSuccessReducer = (state, { payload }) => {
-  return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: undefined }, rooms: payload })
+  console.tron.log({ 'getRoomsSuccessReducer': payload })
+  return state.merge({ 
+    ...state, 
+    getRooms: { ...state.getRooms, fetching: false, error: undefined }, 
+    rooms: payload 
+  })
 }
 export const getRoomsFailureReducer = (state) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: true } })
@@ -152,7 +157,37 @@ export const sendMessageRequestReducer = (state, { data }) => {
   return state.merge({ ...state, sendMessage: { ...state.sendMessage, fetching: true, data } })
 }
 export const sendMessageSuccessReducer = (state, { payload }) => {
-  console.tron.log({ 'state.sendMessage': state.sendMessage })
+  // console.tron.log({ 'sendMessageSuccessReducer': payload })
+  // let roomsTemp = [ ...state.rooms ]
+  // console.tron.log({ 'roomsTemp': roomsTemp })
+
+  // const index = roomsTemp.findIndex(room => room.id == payload.room_id)
+  // if(index >= 0) {
+  //   let temp = Object.assign({}, roomsTemp[index])
+  //   console.tron.log({ 'roomsTemp[index]': temp })
+  //   temp.last_comment = payload
+  //   temp.last_comment_id = payload.id
+  //   temp.last_comment_message = payload.message
+  //   temp.last_comment_message_created_at = payload.timestamp
+  //   // temp.last_comment_topic_title = payload.topic_id //not sure
+  //   temp.avatar = payload.room_avatar
+  //   temp.name = payload.room_name
+
+  //   roomsTemp[index] = temp
+  //   console.tron.log({ 'roomsTemp[index] after': temp })
+  // } else {
+  //   roomsTemp.push({
+  //     last_comment: payload,
+  //     last_comment_id: payload.id,
+  //     last_comment_message: payload.message,
+  //     last_comment_message_created_at: payload.timestamp,
+  //     // last_comment_topic_title: payload.topic_id, //not sure
+  //     avatar: payload.room_avatar,
+  //     name: payload.room_name,
+  //   })
+  // }
+  // console.tron.log({ 'roomsTempAfter': roomsTemp })
+
   return state.merge({
     ...state,
     sendMessage: { ...state.sendMessage, fetching: false, error: undefined },
@@ -160,6 +195,7 @@ export const sendMessageSuccessReducer = (state, { payload }) => {
       ...state.messages,
       [state.sendMessage.data.uniqueId]: payload,
     },
+    // room: roomsTemp,
   })
 }
 export const sendMessageFailureReducer = (state) => {

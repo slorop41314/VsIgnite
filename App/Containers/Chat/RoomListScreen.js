@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   FlatList
 } from "react-native";
+import { NavigationEvents } from 'react-navigation'
 import RoomItem from "../../Components/RoomItem";
 import Toolbar from "../../Components/Toolbar";
 import { Images } from '../../Themes'
@@ -45,6 +46,7 @@ class RoomListScreen extends React.Component {
     const { qiscusUser, rooms } = this.props
     return (
       <View style={styles.container}>
+        <NavigationEvents onDidFocus={() => this.componentDidMount()} />
         <Toolbar
           title="Conversation"
           renderLeftButton={() => (
