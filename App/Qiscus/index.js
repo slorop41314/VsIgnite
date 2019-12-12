@@ -30,7 +30,7 @@ const distinct = stream => {
 };
 
 export const qiscus = new QiscusSDK();
-const appId = "berage-8ixp3zhriqtkgb";
+const appId = "sdksample";
 
 const event = mitt();
 export const event$ = xs.create({

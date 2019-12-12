@@ -1,7 +1,7 @@
 import QiscusSDK from "qiscus-sdk-core";
 import QiscusStrings from "./QiscusStrings";
 
-const appId = "berage-8ixp3zhriqtkgb";
+const appId = "sdksample";
 
 class QiscusManager {
   qiscus = undefined
