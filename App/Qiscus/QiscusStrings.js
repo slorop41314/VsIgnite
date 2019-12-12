@@ -34,6 +34,7 @@ const QiscusStrings = {
     deleteMessagesFailure: 'delete-messages-failure',
     uploadFileFailure: 'upload-file-failure',
     clearMessagesFailure: 'clear-messages-failure',
+    publishTypingFailure: 'publish-typing-failure',
   },
   isOnlineStatus: '1',
   delimiter: ':',
@@ -49,7 +50,8 @@ const QiscusStrings = {
     text: 'text', 
     file_attachment: 'file-attachment',
     custom: 'custom',
-  }
+  },
+  room_event: 'room-event'
 }
 
 export default QiscusStrings

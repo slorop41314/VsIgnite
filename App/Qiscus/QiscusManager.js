@@ -1,7 +1,7 @@
 import QiscusSDK from "qiscus-sdk-core";
 import QiscusStrings from "./QiscusStrings";
 
-const appId = "berage-8ixp3zhriqtkgb";
+const appId = "test-qisc-tkfoim909xj";
 
 class QiscusManager {
   qiscus = undefined
@@ -10,6 +10,7 @@ class QiscusManager {
 
   constructor() {
     this.qiscus = new QiscusSDK();
+    this.qiscus.debugMode = true
 
     this.init = this.init.bind(this)
     this.setUser = this.setUser.bind(this)
@@ -37,6 +38,14 @@ class QiscusManager {
     this.removeParticipantsFromRoom = this.removeParticipantsFromRoom.bind(this)
 
     this.getTotalUnreadCount = this.getTotalUnreadCount.bind(this)
+
+    this.subscribeEvent = this.subscribeEvent.bind(this)
+    this.unsubscribeEvent = this.unsubscribeEvent.bind(this)
+
+    // this function not working also for typing listener / callback
+    this.publishTyping = this.publishTyping.bind(this)
+    // end not working function
+    this.publishEvent = this.publishEvent.bind(this)
 
     // messages
     this.sendMessage = this.sendMessage.bind(this)
@@ -395,6 +404,30 @@ class QiscusManager {
   }
 
   /**
+   * Not working
+   * @param {*} status 
+   */
+  publishTyping(status) {
+    this.qiscus.publishTyping(status)
+  }
+
+  publishEvent(roomId, payload) {
+    console.tron.error('PUBLISH EVENT')
+    console.tron.error({ roomId, payload })
+    this.qiscus.publishEvent(roomId, payload)
+  }
+
+  subscribeEvent(roomId, callback) {
+    console.tron.error('SUBSCRIBE')
+    console.tron.error({ roomId })
+    this.qiscus.subscribeEvent(roomId, callback)
+  }
+
+  unsubscribeEvent(roomId) {
+    this.qiscus.unsubscribeEvent(roomId)
+  }
+
+  /**
    * function to send message
    * @param {string} roomId : chat room Identity (Id), you can get this Id in chat room object
    * @param {string} text : message text that you send to other participant
@@ -442,10 +475,10 @@ class QiscusManager {
     return new Promise(async (resolve, reject) => {
       try {
         const messages = await this.qiscus.loadComments(roomId, options)
-        console.tron.log({messages})
+        console.tron.log({ messages })
         resolve(messages)
       } catch (error) {
-        console.tron.error({getMessages: error})
+        console.tron.error({ getMessages: error })
         reject({ type: QiscusStrings.errors.getMessagesFailure, error })
       }
     })

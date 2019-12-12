@@ -10,7 +10,7 @@
  *    you'll need to define a constant in that file.
  *************************************************************/
 
-import { call, put, fork, take, cancelled } from 'redux-saga/effects';
+import { call, put, fork, take, cancelled, all } from 'redux-saga/effects';
 import QiscusActions, { QiscusTypes } from '../Redux/QiscusRedux';
 import QiscusManager from '../Qiscus/QiscusManager';
 import {
@@ -24,6 +24,7 @@ import {
   roomClearedCallbackSaga,
   errorCallbackSaga,
   newMessagesCallbackSaga,
+  roomEventSubscribe,
 } from './QiscusHelperSagas';
 import { eventChannel } from 'redux-saga';
 import QiscusStrings from '../Qiscus/QiscusStrings';
@@ -148,29 +149,30 @@ export function* qiscusInitSaga(action) {
 
 export function* setUserSaga(action) {
   const { data } = action;
-  const { userId, userKey, userName, avatarUrl, extras } = data;
+  const { userId, userKey, username, avatarUrl, extras } = data;
 
-  yield QiscusManager.setUser(userId, userKey, userName, avatarUrl, extras);
+  yield QiscusManager.setUser(userId, userKey, username, avatarUrl, extras);
 }
 
 export function* getRoomsSaga(action) {
   const { data } = action;
   try {
     const rooms = yield QiscusManager.getChatRoomList(data);
-    yield put(QiscusActions.getRoomsSuccess(rooms));
+    yield all([
+      put(QiscusActions.getRoomsSuccess(rooms)),
+      fork(roomEventSubscribe, rooms),
+    ])
   } catch (error) {
     yield put(QiscusActions.getRoomsFailure());
   }
 }
 
 export function* getMessagesSaga(action) {
-  console.tron.log({ action });
   const { data } = action;
   try {
     const comments = yield QiscusManager.getMessages(data.roomId, data.options);
     yield put(QiscusActions.getMessagesSuccess(comments));
   } catch (error) {
-    console.tron.error({ error });
     yield put(QiscusActions.getMessagesFailure());
   }
 }
@@ -248,24 +250,6 @@ export function* sendMessageSaga(action) {
       } catch (error) {
         console.tron.error({ failure: err })
       }
-
-      // yield QiscusManager.uploadFile(obj, 
-      //   throw, 
-      //   progress, 
-      //   fileURL
-      // )
-      // if (error) return console.tron.error('error when uploading', error);
-      // if (progress) return console.tron.log(progress.percent);
-      // if (fileURL != null) {
-      //   data.payload = JSON.stringify({
-      //     type: 'image',
-      //     content: {
-      //       url: fileURL,
-      //       file_name: name,
-      //       caption: '',
-      //     },
-      //   });
-      // }
     } else {
       const message = yield QiscusManager.sendMessage(
         data.roomId,

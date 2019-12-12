@@ -17,7 +17,7 @@ import * as Qiscus from '../../Qiscus';
 
 import Toolbar from '../../Components/Toolbar';
 import MessageList from '../../Components/MessageList';
-import Form from '../../Components/Form';
+import ChatInput from '../../Components/ChatInput';
 import EmptyChat from '../../Components/EmptyChat';
 import { Images } from '../../Themes';
 
@@ -117,11 +117,12 @@ class ChatScreen extends React.Component {
             isLoadMoreable={messages[0].comment_before_id !== 0}
             messages={messages}
             scroll={this.state.scroll}
-            // onLoadMore={this._loadMore}
+          // onLoadMore={this._loadMore}
           />
         )}
 
-        <Form
+        <ChatInput
+          room={room}
           onSubmit={this._submitMessage}
           onSelectFile={() => this.openCamera()}
         />
@@ -287,58 +288,13 @@ class ChatScreen extends React.Component {
             name: resp.fileName,
           },
         })
-
-        // this._addMessage(message, true)
-        //   .then(() => {
-        //     const name = resp.name;
-        //     const obj = {
-        //       uri: resp.uri,
-        //       type: resp.type,
-        //       name: resp.fileName,
-        //     };
-
-        //     // return Qiscus.qiscus.upload(obj, (error, progress, fileURL) => {
-        //     //   if (error)
-        //     //     return console.tron.error('error when uploading', error);
-        //     //   if (progress) return console.tron.error(progress.percent);
-        //     //   if (fileURL != null) {
-        //     //     const payload = JSON.stringify({
-        //     //       type: 'image',
-        //     //       content: {
-        //     //         url: fileURL,
-        //     //         file_name: name,
-        //     //         caption: '',
-        //     //       },
-        //     //     });
-        //     //     Qiscus.qiscus
-        //     //       .sendComment(
-        //     //         this.state.room.id,
-        //     //         message.message,
-        //     //         message.uniqueId,
-        //     //         'custom', // message type
-        //     //         payload,
-        //     //       )
-        //     //       .then(resp => {});
-        //     //   }
-        //     // });
-        //   })
-        //   .catch(error => {
-        //     console.tron.error('Catch me if you can', error);
-        //   });
       },
     );
   };
 
   async openCamera() {
     try {
-      // const granted = await PermissionsAndroid.request(
-      //   PermissionsAndroid.PERMISSIONS.CAMERA,
-      // );
-      // if (granted === PermissionsAndroid.RESULTS.GRANTED) {
       this._onSelectFile()
-      // } else {
-      //   console.tron.warn('Camera permission denied');
-      // }
     } catch (err) {
       console.tron.error(err);
     }
