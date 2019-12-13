@@ -42,12 +42,20 @@ class ChatScreen extends React.Component {
   }
 
   componentDidMount() {
+    const { room } = this.state
+    console.tron.log({ room })
+
     this.props.getMessagesRequest({
-      roomId: this.state.room.id,
+      roomId: room.id,
       options: {
         // last_comment_id: room.last_comment_id,
         limit: this.itemPerPage,
       },
+    })
+    
+    this.props.readMessageRequest({
+      roomId: room.id,
+      lastReadMessageId: room.last_comment_id,
     })
   }
 
@@ -399,6 +407,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
     sendMessageRequest: (params) => dispatch(QiscusActions.sendMessageRequest(params)),
+    readMessageRequest: (params) => dispatch(QiscusActions.readMessageRequest(params)),
   }
 }
 

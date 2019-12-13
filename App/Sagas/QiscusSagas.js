@@ -177,6 +177,18 @@ export function* getMessagesSaga(action) {
   }
 }
 
+export function* readMessageSaga(action) {
+  console.tron.log({ action });
+  const { data } = action;
+  try {
+    yield QiscusManager.readMessage(data.roomId, data.lastReadMessageId);
+    yield put(QiscusActions.readMessageSuccess());
+  } catch (error) {
+    console.tron.error({ error });
+    yield put(QiscusActions.readMessageFailure());
+  }
+}
+
 function uploadFileHelper(obj) {
   return eventChannel(emit => {
     const uploadFailure = error => {

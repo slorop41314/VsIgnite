@@ -1,7 +1,11 @@
 import QiscusSDK from "qiscus-sdk-core";
 import QiscusStrings from "./QiscusStrings";
 
+<<<<<<< HEAD
 const appId = "test-qisc-tkfoim909xj";
+=======
+const appId = "sdksample";
+>>>>>>> 0d57f12696e381ce726f207a9876f6139483d2b7
 
 class QiscusManager {
   qiscus = undefined
@@ -453,6 +457,7 @@ class QiscusManager {
    * @param {string} lastReadMessageId 
    */
   readMessage(roomId, lastReadMessageId) {
+    console.tron.log({ roomId, lastReadMessageId })
     return new Promise(async (resolve, reject) => {
       try {
         await this.qiscus.readComment(roomId, lastReadMessageId)
