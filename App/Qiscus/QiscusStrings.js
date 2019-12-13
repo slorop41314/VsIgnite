@@ -24,7 +24,8 @@ const QiscusStrings = {
     getRoomParticipantsFailure: 'get-room-participants-failure',
     getRoomListFailure: 'get-roomlist-failure',
     getRoomsInfoFailure: 'get-rooms-info-failure',
-    getChatByRoomIdFailure: 'get-chat-by-roomid-failure',
+    setActiveRoomFailure: 'set-active-room-failure',
+    exitActiveRoomFailure: 'exit-active-room-failure',
     crateOrgetChannelFailure: 'create-or-get-channel-failure',
     createOrGetGroupFailure: 'create-or-get-group-failure',
     createOrGetSingleFailure: 'crate-or-get-single-failure',
@@ -48,11 +49,19 @@ const QiscusStrings = {
     progress: 'upload-progress'
   },
   message_type: {
-    text: 'text', 
+    text: 'text',
     file_attachment: 'file-attachment',
     custom: 'custom',
   },
-  room_event: 'room-event'
+  room_event: 'room-event',
+  message_status: {
+    read: 'read',
+    sending: 'sending',
+    sent: 'sent',
+    delivered: 'delivered',
+    read: 'read',
+    failed: 'failed',
+  }
 }
 
 export default QiscusStrings

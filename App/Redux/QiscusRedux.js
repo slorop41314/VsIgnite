@@ -2,6 +2,8 @@ import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
 import { DEFAULT_REDUCER_STATE } from '../Utils/Const'
 import { Method } from 'react-native-awesome-component'
+import QiscusStrings from '../Qiscus/QiscusStrings'
+import { values } from 'ramda'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -23,6 +25,14 @@ const { Types, Creators } = createActions({
   setUser: ['data'],
 
   // rooms action
+  setActiveRoomRequest: ['data'],
+  setActiveRoomSuccess: ['payload'],
+  setActiveRoomFailure: null,
+
+  exitActiveRoomRequest: null,
+  exitActiveRoomSuccess: null,
+  exitActiveRoomFailure: null,
+
   getRoomsRequest: ['data'],
   getRoomsSuccess: ['payload'],
   getRoomsFailure: null,
@@ -35,7 +45,7 @@ const { Types, Creators } = createActions({
   sendMessageRequest: ['data'],
   sendMessageSuccess: ['payload'],
   sendMessageFailure: null,
-  
+
   readMessageRequest: ['data'],
   readMessageSuccess: null,
   readMessageFailure: null,
@@ -58,10 +68,12 @@ export default Creators
 export const INITIAL_STATE = Immutable({
   init: undefined,
   currentUser: undefined,
-  rooms: [],
+  rooms: {},
   messages: [],
   users: [],
+  activeRoom: undefined,
 
+  setActiveRoom: DEFAULT_REDUCER_STATE,
   getRooms: DEFAULT_REDUCER_STATE,
 
   getMessages: DEFAULT_REDUCER_STATE,
@@ -95,44 +107,102 @@ export const loginSuccessCallbackReducer = (state, { data }) => {
   return state.merge({ ...state, currentUser: user })
 }
 export const messageDeletedCallbackReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const { activeRoom } = state
+  let newMessages = { ...state.messages }
+  if (activeRoom) {
+    const { comment } = data
+    delete newMessages[comment.room_id][comment.id]
+  }
+  return state.merge({ ...state, messages: newMessages })
 }
 export const messageDeliveredCallbackReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const { activeRoom } = state
+  let newMessages = { ...state.messages }
+  if (activeRoom) {
+    const { comment } = data
+    newMessages = {
+      ...newMessages,
+      [comment.room_id]: {
+        ...newMessages[comment.room_id],
+        [comment.id]: comment,
+      }
+    }
+  }
+
+  return state.merge({ ...state, messages: newMessages })
 }
 export const messageReadCallbackReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const { activeRoom } = state
+  let newMessages = { ...state.messages }
+  if (activeRoom) {
+    const { comment } = data
+
+    let messagesToUpdate = Object.values(newMessages[comment.room_id] || []).filter(m => (m.status === QiscusStrings.message_status.delivered) || (m.status === QiscusStrings.message_status.sent))
+    for (let i = 0; i < messagesToUpdate.length; i++) {
+      newMessages = {
+        ...newMessages,
+        [messagesToUpdate[i].room_id]: {
+          ...newMessages[messagesToUpdate[i].room_id],
+          [messagesToUpdate[i].id]: {
+            ...messagesToUpdate[i],
+            status: QiscusStrings.message_status.read
+          },
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, messages: newMessages })
 }
 export const presenceCallbackReducer = (state, { data, userId }) => {
+  const { activeRoom, messages } = state
   return state.merge({ ...state, })
 }
 export const typingCallbackReducer = (state, { data }) => {
+  const { activeRoom } = state
   return state.merge({ ...state, })
 }
 export const onReconnectCallbackReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
 export const newMessagesCallbackReducer = (state, { data }) => {
-  console.tron.log({ 
-    'newMessagesCallbackReducer': data.messages,
-  })
-  let messagesTemp = { ...state.messages }
-  if(state.currentUser.email != data.messages[0].email) {
-    console.tron.log({ 
-      'masuk': state.currentUser.email,
-    })
-    messagesTemp = {
-      ...state.messages,
-      [data.messages[0].room_id]: {
-        ...state.messages[data.messages[0].room_id],
-        [data.messages[0].unique_temp_id]: data.messages[0],
+  let newMessages = { ...state.messages }
+  let newRooms = { ...state.rooms }
+  const { activeRoom } = state
+
+  const { messages } = data
+
+  for (let i = 0; i < messages.length; i++) {
+    newMessages = {
+      ...newMessages,
+      [messages[i].room_id]: {
+        ...newMessages[messages[i].room_id],
+        [messages[i].id]: messages[i]
+      }
+    }
+
+    const currentRoom = newRooms[messages[i].room_id]
+
+    const { last_comment } = currentRoom
+    if (messages[i].unix_timestamp > last_comment.unix_timestamp) {
+      newRooms = {
+        ...newRooms,
+        [messages[i].room_id]: {
+          ...newRooms[messages[i].room_id],
+          last_comment_id: messages[i].id,
+          last_comment_message: messages[i].message,
+          last_comment_message_created_at: new Date(messages[i].unix_timestamp * 1000).toString(),
+          last_comment: messages[i],
+          count_notif: newRooms[messages[i].room_id].count_notif + 1,
+        }
       }
     }
   }
-  
+
   return state.merge({
     ...state,
-    messages: messagesTemp,
+    messages: newMessages,
+    rooms: newRooms,
   })
 }
 export const roomClearedCallbacReducer = (state, { data }) => {
@@ -145,15 +215,43 @@ export const setUserReducer = (state, { data }) => {
 }
 
 // ROOMS
+export const setActiveRoomRequest = (state, { data }) => {
+  return state.merge({ ...state, setActiveRoom: { ...state.setActiveRoom, fetching: true, data } })
+}
+export const setActiveRoomSuccess = (state, { payload }) => {
+  return state.merge({
+    ...state,
+    setActiveRoom: { ...state.setActiveRoom, fetching: false, error: undefined, payload },
+    activeRoom: payload
+  })
+}
+export const setActiveRoomFailure = (state) => {
+  return state.merge({ ...state, setActiveRoom: { ...state.setActiveRoom, fetching: false, error: true, payload: undefined } })
+}
+
+export const exitActiveRoomRequest = (state) => {
+  return state.merge({ ...state })
+}
+export const exitActiveRoomSuccess = (state) => {
+  return state.merge({ ...state, activeRoom: undefined })
+}
+export const exitActiveRoomFailure = (state) => {
+  return state.merge({ ...state })
+}
+
 export const getRoomsRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: true, data } })
 }
 export const getRoomsSuccessReducer = (state, { payload }) => {
-  console.tron.log({ 'getRoomsSuccessReducer': payload })
-  return state.merge({ 
-    ...state, 
-    getRooms: { ...state.getRooms, fetching: false, error: undefined }, 
-    rooms: payload 
+  const formattedRooms = payload.reduce((result, room) => {
+    result[room.id] = room;
+    return result;
+  }, {});
+
+  return state.merge({
+    ...state,
+    getRooms: { ...state.getRooms, fetching: false, error: undefined },
+    rooms: formattedRooms
   })
 }
 export const getRoomsFailureReducer = (state) => {
@@ -165,18 +263,20 @@ export const getMessagesRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: true, data } })
 }
 export const getMessagesSuccessReducer = (state, { payload }) => {
+  const { data } = state.getMessages
+  const { roomId } = data
+
   const formattedMessages = payload.reduce((result, message) => {
-    result[message.unique_temp_id] = message;
+    result[message.id] = message;
     return result;
   }, {});
-  console.tron.log({ 'getMessagesSuccessReducer': payload })
 
   return state.merge({
     ...state,
     getMessages: { ...state.getMessages, fetching: false, error: undefined },
     messages: {
       ...state.messages,
-      [payload[0].room_id]: formattedMessages,
+      [roomId]: formattedMessages,
     },
   })
 }
@@ -188,16 +288,20 @@ export const sendMessageRequestReducer = (state, { data }) => {
   return state.merge({ ...state, sendMessage: { ...state.sendMessage, fetching: true, data } })
 }
 export const sendMessageSuccessReducer = (state, { payload }) => {
+  let newMessages = { ...state.messages }
+
+  newMessages = {
+    ...newMessages,
+    [payload.room_id]: {
+      ...newMessages[payload.room_id],
+      [payload.id]: payload,
+    }
+  }
+
   return state.merge({
     ...state,
     sendMessage: { ...state.sendMessage, fetching: false, error: undefined },
-    messages: {
-      ...state.messages,
-      [payload.room_id]: {
-        ...state.messages[payload.room_id],
-        [state.sendMessage.data.uniqueId]: payload,
-      }
-    },
+    messages: newMessages
   })
 }
 export const sendMessageFailureReducer = (state) => {
@@ -273,6 +377,14 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SET_USER]: setUserReducer,
 
   // ROOMS
+  [Types.SET_ACTIVE_ROOM_REQUEST]: setActiveRoomRequest,
+  [Types.SET_ACTIVE_ROOM_SUCCESS]: setActiveRoomSuccess,
+  [Types.SET_ACTIVE_ROOM_FAILURE]: setActiveRoomFailure,
+
+  [Types.EXIT_ACTIVE_ROOM_REQUEST]: exitActiveRoomRequest,
+  [Types.EXIT_ACTIVE_ROOM_SUCCESS]: exitActiveRoomSuccess,
+  [Types.EXIT_ACTIVE_ROOM_FAILURE]: exitActiveRoomFailure,
+
   [Types.GET_ROOMS_REQUEST]: getRoomsRequestReducer,
   [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
   [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
@@ -289,7 +401,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.READ_MESSAGE_REQUEST]: readMessageRequestReducer,
   [Types.READ_MESSAGE_SUCCESS]: readMessageSuccessReducer,
   [Types.READ_MESSAGE_FAILURE]: readMessageFailureReducer,
-  
+
   // USERS
   [Types.GET_USERS_REQUEST]: getUsersRequestReducer,
   [Types.GET_USERS_SUCCESS]: getUsersSuccessReducer,

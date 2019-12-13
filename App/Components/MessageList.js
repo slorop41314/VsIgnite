@@ -15,7 +15,7 @@ import * as Qiscus from "../Qiscus";
 import MessageUpload from "./MessageUpload";
 import MessageCustom from "./MessageCustom";
 
-import { Images } from "../Themes";
+import { Images, Colors } from "../Themes";
 
 import QiscusActions from '../Redux/QiscusRedux'
 import { connect } from 'react-redux'
@@ -80,7 +80,7 @@ class MessageList extends React.Component {
   };
   _renderMessage = message => {
     const type = message.type;
-    const isMe = message.email === this.props.qiscusUser.email;
+    const isMe = (message.email === this.props.qiscusUser.email) || (message.username_real === this.props.qiscusUser.email);
     const isLoadMore = type === "load-more";
     const isDate = type === "date";
     const isCustomMessage =
@@ -151,15 +151,15 @@ class MessageList extends React.Component {
     if (status === "sent")
       return (
         <Image
-          style={styles.iconStatus}
+          style={[styles.iconStatus, { tintColor: Colors.steel }]}
           source={Images.qiscusDelivered}
         />
       );
     if (status === "delivered")
       return (
         <Image
-          style={styles.iconStatus}
-          source={Images.qiscusDelivered}
+          style={[styles.iconStatus, { tintColor: Colors.steel }]}
+          source={Images.qiscusRead}
         />
       );
     if (status === "read")
@@ -217,8 +217,6 @@ class MessageList extends React.Component {
       type: "load-more",
       message: "Load more",
       id,
-      unique_id: id,
-      unique_temp_id: id
     };
   }
 

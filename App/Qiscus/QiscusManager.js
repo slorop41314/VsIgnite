@@ -27,7 +27,7 @@ class QiscusManager {
     this.createGroupChatRoom = this.createGroupChatRoom.bind(this)
     this.createOrGetChannelRoom = this.createOrGetChannelRoom.bind(this)
 
-    this.getChatsByRoomId = this.getChatsByRoomId.bind(this)
+    this.setActiveRoom = this.setActiveRoom.bind(this)
     this.getRoomsInfo = this.getRoomsInfo.bind(this)
     this.getChatRoomList = this.getChatRoomList.bind(this)
     this.getParticipantsRoom = this.getParticipantsRoom.bind(this)
@@ -41,6 +41,7 @@ class QiscusManager {
 
     this.subscribeEvent = this.subscribeEvent.bind(this)
     this.unsubscribeEvent = this.unsubscribeEvent.bind(this)
+    this.exitRoom = this.exitRoom.bind(this)
 
     // this function not working also for typing listener / callback
     this.publishTyping = this.publishTyping.bind(this)
@@ -50,7 +51,6 @@ class QiscusManager {
     // messages
     this.sendMessage = this.sendMessage.bind(this)
     this.readMessage = this.readMessage.bind(this)
-    this.receiveMessage = this.receiveMessage.bind(this)
     this.getMessages = this.getMessages.bind(this)
     this.deleteMessages = this.deleteMessages.bind(this)
     this.uploadFile = this.uploadFile.bind(this)
@@ -269,15 +269,24 @@ class QiscusManager {
    * Function to get chats by room id
    * @param {string} roomId 
    */
-  getChatsByRoomId(roomId) {
+  setActiveRoom(roomId) {
     return new Promise(async (resolve, reject) => {
       try {
-        const rooms = await this.qiscus.getRoomById(roomId)
-        // console.tron.log({rooms})
-        const { comments } = rooms
-        resolve(comments)
+        const room = await this.qiscus.getRoomById(roomId)
+        resolve(room)
       } catch (error) {
-        reject({ type: QiscusStrings.errors.getChatByRoomIdFailure, error })
+        reject({ type: QiscusStrings.errors.setActiveRoomFailure, error })
+      }
+    })
+  }
+
+  exitRoom() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.qiscus.exitChatRoom();
+        resolve()
+      } catch (error) {
+        reject({ type: QiscusStrings.errors.exitActiveRoomFailure, error })
       }
     })
   }
@@ -448,7 +457,7 @@ class QiscusManager {
     })
   }
 
-  /**
+    /**
    * You can set your message status into read. The ideal case of this, is to notify other participants that a message has been read. You need to pass roomId and commentId.
    * @param {string} roomId 
    * @param {string} lastReadMessageId 
@@ -463,18 +472,6 @@ class QiscusManager {
       }
     })
   }
-
-  receiveMessage(roomId, lastReadMessageId) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        this.qiscus.receiveComment(roomId, lastReadMessageId);
-        resolve()
-      } catch (error) {
-        reject({ type: QiscusStrings.errors.receiveMessageFailure, error })
-      }
-    })
-  }
-
   /**
    * funtion to get messages by romom id
    * @param {string} roomId 

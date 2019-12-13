@@ -58,9 +58,6 @@ export function* onReconnectCallbackSaga(data) {
 
 export function* newMessagesCallbackSaga(data) {
   const {messages} = data
-  messages.map(message => {
-    QiscusManager.receiveMessage(message.topic_id_str, message.id_str)
-  })
   yield all([
     put(QiscusActions.newMessagesCallback(data))
   ])

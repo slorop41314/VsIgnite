@@ -32,7 +32,6 @@ class RoomListScreen extends React.Component {
   }
 
   onClickRoom(room) {
-    console.tron.log({room})
     this.props.navigation.push("ChatScreen", {
       room,
     });
@@ -42,11 +41,20 @@ class RoomListScreen extends React.Component {
     this.props.navigation.push("UserListScreen");
   };
 
+  sortRooms = rooms =>
+    rooms.sort((a, b) => new Date(a.last_comment_message_created_at) < new Date(b.last_comment_message_created_at));
+
+  get rooms() {
+    return this.sortRooms(Object.values(this.props.rooms || []));
+  }
+
   render() {
-    const { qiscusUser, rooms } = this.props
+    const { qiscusUser } = this.props
+    const rooms = this.rooms;
+
     return (
       <View style={styles.container}>
-        <NavigationEvents onDidFocus={() => this.componentDidMount()} />
+        <NavigationEvents onWillFocus={() => this.componentDidMount()} />
         <Toolbar
           title="Conversation"
           renderLeftButton={() => (

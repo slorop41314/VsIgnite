@@ -154,6 +154,26 @@ export function* setUserSaga(action) {
   yield QiscusManager.setUser(userId, userKey, username, avatarUrl, extras);
 }
 
+export function* setActiveRoom(action) {
+  const { data } = action
+  const { roomId } = data
+  try {
+    const room = yield QiscusManager.setActiveRoom(roomId)
+    yield put(QiscusActions.setActiveRoomSuccess(room))
+  } catch (error) {
+    yield put(QiscusActions.setActiveRoomFailure());
+  }
+}
+
+export function* exitActiveRoom(action) {
+  try {
+    yield QiscusManager.exitRoom()
+    yield put(QiscusActions.exitActiveRoomSuccess())
+  } catch (error) {
+    yield put(QiscusActions.exitActiveRoomFailure())
+  } 
+}
+
 export function* getRoomsSaga(action) {
   const { data } = action;
   try {

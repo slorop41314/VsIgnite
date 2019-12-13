@@ -24,13 +24,15 @@ import { Images } from '../../Themes';
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 import QiscusStrings from '../../Qiscus/QiscusStrings';
+import QiscusManager from '../../Qiscus/QiscusManager';
 
 class ChatScreen extends React.Component {
-  itemPerPage = 50;
+  itemPerPage = 20;
 
   constructor(props) {
     super(props)
     const room = props.navigation.getParam('room');
+    props.setActiveRoomRequest({ roomId: room.id })
 
     this.state = {
       room,
@@ -43,8 +45,6 @@ class ChatScreen extends React.Component {
 
   componentDidMount() {
     const { room } = this.state
-    console.tron.log({ room })
-
     this.props.getMessagesRequest({
       roomId: room.id,
       options: {
@@ -52,11 +52,15 @@ class ChatScreen extends React.Component {
         limit: this.itemPerPage,
       },
     })
-    
+
     this.props.readMessageRequest({
       roomId: room.id,
       lastReadMessageId: room.last_comment_id,
     })
+  }
+
+  componentWillUnmount() {
+    this.props.exitActiveRoomRequest()
   }
 
   render() {
@@ -156,91 +160,10 @@ class ChatScreen extends React.Component {
     );
   };
 
-  _onTyping = debounce(({ username }) => {
-    this.setState(
-      {
-        isTyping: true,
-        typingUsername: username,
-      },
-      () => {
-        setTimeout(
-          () =>
-            this.setState({
-              isTyping: false,
-              typingUsername: null,
-            }),
-          850,
-        );
-      },
-    );
-  }, 300);
-  _onOnline = data => {
-    this.setState({
-      isOnline: data.isOnline,
-      lastOnline: data.lastOnline,
-    });
-    return ['Online presence', data];
-  };
-  _onNewMessage = message => {
-    this.setState(state => ({
-      messages: {
-        ...state.messages,
-        [message.unique_temp_id]: message,
-      },
-    }));
-    return 'New message';
-  };
-
-  _onMessageRead = ({ comment }) => {
-    // toast("message read");
-    // const date = new Date(comment.timestamp);
-    const results = this.messages
-      // .filter(it => new Date(it.timestamp) <= date)
-      .filter(it => it.timestamp <= comment.timestamp)
-      .map(it => ({ ...it, status: 'read' }));
-
-    const messages = results.reduce((result, item) => {
-      const uniqueId = item.unique_id || item.unique_temp_id;
-      result[uniqueId] = item;
-      return result;
-    }, {});
-    this.setState(state => ({
-      messages: {
-        ...state.messages,
-        ...messages,
-      },
-    }));
-    return 'Message read';
-  };
-
-  _onMessageDelivered = ({ comment }) => {
-    // toast("message delivered");
-
-    const results = this.messages
-      .filter(it => it.timestamp <= comment.timestamp && it.status !== 'read')
-      .map(it => ({ ...it, status: 'delivered' }));
-
-    const messages = results.reduce((result, item) => {
-      const uniqueId = item.unique_id || item.unique_temp_id;
-      result[uniqueId] = item;
-      return result;
-    }, {});
-
-    this.setState(state => ({
-      messages: {
-        ...state.messages,
-        ...messages,
-      },
-    }));
-    return 'Message delivered';
-  };
-
   _prepareMessage = message => {
     const date = new Date();
     return {
       id: date.getTime(),
-      uniqueId: '' + date.getTime(),
-      unique_temp_id: '' + date.getTime(),
       timestamp: date.getTime(),
       type: 'text',
       status: 'sending',
@@ -264,7 +187,6 @@ class ChatScreen extends React.Component {
     this.props.sendMessageRequest({
       roomId: this.state.room.id,
       text: text,
-      uniqueId: message.unique_temp_id,
       type: message.type,
     })
   };
@@ -325,46 +247,6 @@ class ChatScreen extends React.Component {
       );
     });
 
-  // _updateMessage = (message, newMessage) => {
-  //   this.setState(state => ({
-  //     messages: {
-  //       ...state.messages,
-  //       [message.unique_temp_id]: newMessage,
-  //     },
-  //   }));
-  // };
-
-  _loadMore = () => {
-    const { messages, navigation } = this.props;
-
-    if (messages[0].comment_before_id === 0) return;
-    const roomId = navigation.getParam('roomId', null);
-    if (roomId == null) return;
-
-    const lastCommentId = this.messages[0].id;
-    // toast(`Loading more message ${lastCommentId}`);
-
-    Qiscus.qiscus
-      .loadComments(roomId, { last_comment_id: lastCommentId })
-      .then(messages => {
-        // toast("Done loading message");
-        // const isLoadMoreable = messages[0].comment_before_id !== 0;
-        this.setState(state => ({
-          messages: {
-            ...state.messages,
-            ...messages.reduce(
-              (result, item) => ((result[item.unique_temp_id] = item), result),
-              {},
-            ),
-          },
-          // isLoadMoreable,
-        }));
-      })
-      .catch(error =>
-        console.tron.error('Error when loading more comment', error),
-      );
-  };
-
   _sortMessage = messages =>
     messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
@@ -405,6 +287,8 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
+    setActiveRoomRequest: (params) => dispatch(QiscusActions.setActiveRoomRequest(params)),
+    exitActiveRoomRequest: () => dispatch(QiscusActions.exitActiveRoomRequest()),
     getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
     sendMessageRequest: (params) => dispatch(QiscusActions.sendMessageRequest(params)),
     readMessageRequest: (params) => dispatch(QiscusActions.readMessageRequest(params)),
