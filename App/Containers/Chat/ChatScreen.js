@@ -392,7 +392,7 @@ class ChatScreen extends React.Component {
   }
 
   get messages() {
-    return this._sortMessage(Object.values(this.props.messages));
+    return this._sortMessage(Object.values(this.props.messages[this.state.room.id] || []));
   }
 }
 

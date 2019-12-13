@@ -113,7 +113,27 @@ export const onReconnectCallbackReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
 export const newMessagesCallbackReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  console.tron.log({ 
+    'newMessagesCallbackReducer': data.messages,
+  })
+  let messagesTemp = { ...state.messages }
+  if(state.currentUser.email != data.messages[0].email) {
+    console.tron.log({ 
+      'masuk': state.currentUser.email,
+    })
+    messagesTemp = {
+      ...state.messages,
+      [data.messages[0].room_id]: {
+        ...state.messages[data.messages[0].room_id],
+        [data.messages[0].unique_temp_id]: data.messages[0],
+      }
+    }
+  }
+  
+  return state.merge({
+    ...state,
+    messages: messagesTemp,
+  })
 }
 export const roomClearedCallbacReducer = (state, { data }) => {
   return state.merge({ ...state, })
@@ -149,11 +169,15 @@ export const getMessagesSuccessReducer = (state, { payload }) => {
     result[message.unique_temp_id] = message;
     return result;
   }, {});
+  console.tron.log({ 'getMessagesSuccessReducer': payload })
 
   return state.merge({
     ...state,
     getMessages: { ...state.getMessages, fetching: false, error: undefined },
-    messages: formattedMessages,
+    messages: {
+      ...state.messages,
+      [payload[0].room_id]: formattedMessages,
+    },
   })
 }
 export const getMessagesFailureReducer = (state) => {
@@ -169,7 +193,10 @@ export const sendMessageSuccessReducer = (state, { payload }) => {
     sendMessage: { ...state.sendMessage, fetching: false, error: undefined },
     messages: {
       ...state.messages,
-      [state.sendMessage.data.uniqueId]: payload,
+      [payload.room_id]: {
+        ...state.messages[payload.room_id],
+        [state.sendMessage.data.uniqueId]: payload,
+      }
     },
   })
 }
