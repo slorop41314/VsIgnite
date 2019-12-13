@@ -50,6 +50,7 @@ class QiscusManager {
     // messages
     this.sendMessage = this.sendMessage.bind(this)
     this.readMessage = this.readMessage.bind(this)
+    this.receiveMessage = this.receiveMessage.bind(this)
     this.getMessages = this.getMessages.bind(this)
     this.deleteMessages = this.deleteMessages.bind(this)
     this.uploadFile = this.uploadFile.bind(this)
@@ -453,13 +454,23 @@ class QiscusManager {
    * @param {string} lastReadMessageId 
    */
   readMessage(roomId, lastReadMessageId) {
-    console.tron.log({ roomId, lastReadMessageId })
     return new Promise(async (resolve, reject) => {
       try {
-        await this.qiscus.readComment(roomId, lastReadMessageId)
+        this.qiscus.readComment(roomId, lastReadMessageId)
         resolve()
       } catch (error) {
         reject({ type: QiscusStrings.errors.readMessageFailure, error })
+      }
+    })
+  }
+
+  receiveMessage(roomId, lastReadMessageId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        this.qiscus.receiveComment(roomId, lastReadMessageId);
+        resolve()
+      } catch (error) {
+        reject({ type: QiscusStrings.errors.receiveMessageFailure, error })
       }
     })
   }

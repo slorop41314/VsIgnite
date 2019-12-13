@@ -30,6 +30,7 @@ const QiscusStrings = {
     createOrGetSingleFailure: 'crate-or-get-single-failure',
     sendMessageFailure: 'send-message-failure',
     readMessageFailure: 'read-message-failure',
+    receiveMessageFailure: 'receive-message-failure',
     getMessagesFailure: 'get-messages-failure',
     deleteMessagesFailure: 'delete-messages-failure',
     uploadFileFailure: 'upload-file-failure',
