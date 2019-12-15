@@ -38,9 +38,9 @@ export function* messageReadCallbackSaga(data) {
   ])
 }
 
-export function* presenceCallbackSaga(data, userId) {
+export function* presenceCallbackSaga(data) {
   yield all([
-    put(QiscusActions.presenceCallback(data, userId))
+    put(QiscusActions.presenceCallback(data))
   ])
 }
 

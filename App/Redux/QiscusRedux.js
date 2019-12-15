@@ -72,6 +72,7 @@ export const INITIAL_STATE = Immutable({
   messages: [],
   users: [],
   activeRoom: undefined,
+  roomTypingStatus: undefined,
 
   setActiveRoom: DEFAULT_REDUCER_STATE,
   getRooms: DEFAULT_REDUCER_STATE,
@@ -160,7 +161,19 @@ export const presenceCallbackReducer = (state, { data, userId }) => {
 }
 export const typingCallbackReducer = (state, { data }) => {
   const { activeRoom } = state
-  return state.merge({ ...state, })
+  let { roomTypingStatus } = state
+  const { participants } = activeRoom
+  const { message, username } = data
+
+  if (message === '1') {
+    const index = participants.findIndex(user => user.email === username)
+    const user = participants[index]
+    roomTypingStatus = user
+  } else {
+    roomTypingStatus = undefined
+  }
+
+  return state.merge({ ...state, roomTypingStatus })
 }
 export const onReconnectCallbackReducer = (state, { data }) => {
   return state.merge({ ...state, })
@@ -168,7 +181,6 @@ export const onReconnectCallbackReducer = (state, { data }) => {
 export const newMessagesCallbackReducer = (state, { data }) => {
   let newMessages = { ...state.messages }
   let newRooms = { ...state.rooms }
-  const { activeRoom } = state
 
   const { messages } = data
 
@@ -233,7 +245,7 @@ export const exitActiveRoomRequest = (state) => {
   return state.merge({ ...state })
 }
 export const exitActiveRoomSuccess = (state) => {
-  return state.merge({ ...state, activeRoom: undefined })
+  return state.merge({ ...state, activeRoom: undefined, roomTypingStatus: undefined })
 }
 export const exitActiveRoomFailure = (state) => {
   return state.merge({ ...state })

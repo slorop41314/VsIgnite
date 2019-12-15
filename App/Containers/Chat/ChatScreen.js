@@ -9,6 +9,7 @@ import {
   PermissionsAndroid,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+import { values } from 'ramda'
 import debounce from 'lodash.debounce';
 import xs from 'xstream';
 import dateFns from 'date-fns';
@@ -64,12 +65,12 @@ class ChatScreen extends React.Component {
   }
 
   render() {
-    const { room, isTyping, isOnline, lastOnline, typingUsername } = this.state;
+    const { room } = this.state;
     const messages = this.messages;
     const roomName = room ? room.name : 'Chat';
     const avatarURL = room ? room.avatar : null;
 
-    const showTyping = room != null && !this.isGroup && isTyping;
+    const { roomTypingStatus } = this.props
 
     return (
       <View
@@ -108,19 +109,19 @@ class ChatScreen extends React.Component {
               />
             </TouchableOpacity>
           )}
-        // renderMeta={() => (
-        //   <View style={styles.onlineStatus}>
-        //     {this._renderOnlineStatus()}
-        //     {showTyping && (
-        //       <Text style={styles.typingText}>
-        //         {typingUsername} is typing...
-        //       </Text>
-        //     )}
-        //     {this.isGroup && (
-        //       <Text style={styles.typingText}>{this.participants}</Text>
-        //     )}
-        //   </View>
-        // )}
+          renderMeta={() => (
+            <View style={styles.onlineStatus}>
+              {roomTypingStatus && (
+                <Text style={styles.typingText}>
+                  {roomTypingStatus.username} is typing...
+                </Text>
+              )}
+              {/* {this._renderOnlineStatus()} */}
+              {/* {this.isGroup && (
+              <Text style={styles.typingText}>{this.participants}</Text>
+            )} */}
+            </View>
+          )}
         />
 
         {messages.length === 0 && <EmptyChat />}
@@ -282,6 +283,7 @@ const mapStateToProps = (state) => {
   return {
     qiscusUser: state.qiscus.currentUser,
     messages: state.qiscus.messages,
+    roomTypingStatus: state.qiscus.roomTypingStatus
   }
 }
 

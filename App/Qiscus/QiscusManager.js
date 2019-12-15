@@ -43,9 +43,7 @@ class QiscusManager {
     this.unsubscribeEvent = this.unsubscribeEvent.bind(this)
     this.exitRoom = this.exitRoom.bind(this)
 
-    // this function not working also for typing listener / callback
     this.publishTyping = this.publishTyping.bind(this)
-    // end not working function
     this.publishEvent = this.publishEvent.bind(this)
 
     // messages
