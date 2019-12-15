@@ -61,6 +61,11 @@ const QiscusStrings = {
     delivered: 'delivered',
     read: 'read',
     failed: 'failed',
+  },
+  room_type: {
+    single: 'single',
+    group: 'group',
+    channel: 'channel',
   }
 }
 

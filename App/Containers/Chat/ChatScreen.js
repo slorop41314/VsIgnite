@@ -12,7 +12,6 @@ import ImagePicker from 'react-native-image-picker';
 import { values } from 'ramda'
 import debounce from 'lodash.debounce';
 import xs from 'xstream';
-import dateFns from 'date-fns';
 
 import * as Qiscus from '../../Qiscus';
 
@@ -26,17 +25,27 @@ import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 import QiscusStrings from '../../Qiscus/QiscusStrings';
 import QiscusManager from '../../Qiscus/QiscusManager';
+import OnlineStatusContainer from '../../Components/OnlineStatusContainer';
 
 class ChatScreen extends React.Component {
   itemPerPage = 20;
 
   constructor(props) {
     super(props)
+    let targetUser = undefined
     const room = props.navigation.getParam('room');
     props.setActiveRoomRequest({ roomId: room.id })
 
+    if (room.room_type === QiscusStrings.room_type.single) {
+      const targetUserIndex = room.participants.findIndex(u => u.id !== props.qiscusUser.id)
+      if (targetUserIndex >= 0) {
+        targetUser = room.participants[targetUserIndex]
+      }
+    }
+
     this.state = {
       room,
+      targetUser,
       isOnline: false,
       isTyping: false,
       lastOnline: undefined,
@@ -65,7 +74,7 @@ class ChatScreen extends React.Component {
   }
 
   render() {
-    const { room } = this.state;
+    const { room, targetUser } = this.state;
     const messages = this.messages;
     const roomName = room ? room.name : 'Chat';
     const avatarURL = room ? room.avatar : null;
@@ -111,12 +120,12 @@ class ChatScreen extends React.Component {
           )}
           renderMeta={() => (
             <View style={styles.onlineStatus}>
+              <OnlineStatusContainer targetUser={targetUser} />
               {roomTypingStatus && (
                 <Text style={styles.typingText}>
                   {roomTypingStatus.username} is typing...
                 </Text>
               )}
-              {/* {this._renderOnlineStatus()} */}
               {/* {this.isGroup && (
               <Text style={styles.typingText}>{this.participants}</Text>
             )} */}
@@ -142,24 +151,6 @@ class ChatScreen extends React.Component {
       </View>
     );
   }
-
-  _renderOnlineStatus = () => {
-    const { isGroup } = this;
-    const { isTyping, isOnline, lastOnline, room } = this.state;
-    if (room == null) return;
-    if (isGroup || isTyping) return;
-
-    const lastOnlineText = dateFns.isSameDay(lastOnline, new Date())
-      ? dateFns.format(lastOnline, 'hh:mm')
-      : '';
-
-    return (
-      <>
-        {isOnline && <Text style={styles.onlineStatusText}>Online</Text>}
-        {!isOnline && <Text style={styles.typingText}>{lastOnlineText}</Text>}
-      </>
-    );
-  };
 
   _prepareMessage = message => {
     const date = new Date();
@@ -283,7 +274,7 @@ const mapStateToProps = (state) => {
   return {
     qiscusUser: state.qiscus.currentUser,
     messages: state.qiscus.messages,
-    roomTypingStatus: state.qiscus.roomTypingStatus
+    roomTypingStatus: state.qiscus.roomTypingStatus,
   }
 }
 
@@ -304,11 +295,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#fafafa',
-  },
-  onlineStatus: {},
-  onlineStatusText: {
-    fontSize: 12,
-    color: '#94ca62',
   },
   typingText: {
     fontSize: 12,

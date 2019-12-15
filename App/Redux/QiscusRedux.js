@@ -72,6 +72,7 @@ export const INITIAL_STATE = Immutable({
   messages: [],
   users: [],
   activeRoom: undefined,
+  userOnlineCollection: {},
   roomTypingStatus: undefined,
 
   setActiveRoom: DEFAULT_REDUCER_STATE,
@@ -155,9 +156,19 @@ export const messageReadCallbackReducer = (state, { data }) => {
 
   return state.merge({ ...state, messages: newMessages })
 }
-export const presenceCallbackReducer = (state, { data, userId }) => {
-  const { activeRoom, messages } = state
-  return state.merge({ ...state, })
+export const presenceCallbackReducer = (state, { data }) => {
+  let { userOnlineCollection } = state
+  const userId = data.userId
+  const userData = data.data.split(':');
+  const isOnline = userData[0] === '1';
+  const lastOnline = new Date(Number(userData[1]));
+
+  userOnlineCollection = {
+    ...userOnlineCollection,
+    [userId]: { isOnline, lastOnline }
+  }
+
+  return state.merge({ ...state, userOnlineCollection })
 }
 export const typingCallbackReducer = (state, { data }) => {
   const { activeRoom } = state
@@ -245,7 +256,7 @@ export const exitActiveRoomRequest = (state) => {
   return state.merge({ ...state })
 }
 export const exitActiveRoomSuccess = (state) => {
-  return state.merge({ ...state, activeRoom: undefined, roomTypingStatus: undefined })
+  return state.merge({ ...state, activeRoom: undefined, roomTypingStatus: undefined, userOnlineCollection: {} })
 }
 export const exitActiveRoomFailure = (state) => {
   return state.merge({ ...state })
