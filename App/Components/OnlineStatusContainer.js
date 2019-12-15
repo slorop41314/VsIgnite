@@ -1,4 +1,4 @@
-import React, { PureComponent } from 'react'
+import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import dateFns from 'date-fns';
@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   },
 })
 
-class OnlineStatusContainer extends PureComponent {
+class OnlineStatusContainer extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const thisProps = this.props
@@ -38,7 +38,7 @@ class OnlineStatusContainer extends PureComponent {
         const lastOnlineText = dateFns.isSameDay(lastOnline, new Date())
           ? dateFns.format(lastOnline, 'hh:mm')
           : '';
-        return <Text style={styles.text}>{lastOnlineText}</Text>
+        return <Text style={styles.text}>Last Online {lastOnlineText}</Text>
       }
     } else {
       return null

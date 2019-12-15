@@ -256,7 +256,25 @@ export const exitActiveRoomRequest = (state) => {
   return state.merge({ ...state })
 }
 export const exitActiveRoomSuccess = (state) => {
-  return state.merge({ ...state, activeRoom: undefined, roomTypingStatus: undefined, userOnlineCollection: {} })
+  const { activeRoom, currentUser } = state
+  let { userOnlineCollection } = state
+  if (activeRoom.room_type === QiscusStrings.room_type.single) {
+    const targetUserIndex = activeRoom.participants.findIndex(u => u.id !== currentUser.id)
+    if (targetUserIndex >= 0) {
+      const targetUser = activeRoom.participants[targetUserIndex]
+      if (userOnlineCollection[targetUser.email]) {
+        userOnlineCollection = {
+          ...userOnlineCollection,
+          [targetUser.email]: {
+            ...userOnlineCollection[targetUser.email],
+            isOnline: false
+          }
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, activeRoom: undefined, roomTypingStatus: undefined, userOnlineCollection })
 }
 export const exitActiveRoomFailure = (state) => {
   return state.merge({ ...state })
