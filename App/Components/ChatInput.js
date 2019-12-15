@@ -32,13 +32,11 @@ class ChatInput extends React.Component {
   onChangeMessage(message) {
     this.setState({ message }, () => {
       this.isTyping = false
-      console.tron.error('SET TYPING FALSE')
       QiscusManager.publishTyping(0)
     })
   }
 
   onSubmit() {
-    console.tron.error('SUBMIT')
     const { message } = this.state
     if (this.textInput) {
       this.textInput.clear()
