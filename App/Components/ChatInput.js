@@ -40,9 +40,10 @@ class ChatInput extends React.Component {
   onSubmit() {
     console.tron.error('SUBMIT')
     const { message } = this.state
-    this.setState({ message: '' }, () => {
-      this.props.onSubmit(message);
-    });
+    if (this.textInput) {
+      this.textInput.clear()
+    }
+    this.props.onSubmit(message);
   }
 
   render() {
@@ -72,6 +73,7 @@ class ChatInput extends React.Component {
             />
           </TouchableOpacity>
           <TextInput
+            ref={ref => this.textInput = ref}
             style={styles.formTextField}
             placeholder="Type your message"
             returnKeyType="send"

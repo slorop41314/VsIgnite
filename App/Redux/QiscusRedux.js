@@ -10,7 +10,7 @@ import { values } from 'ramda'
 const { Types, Creators } = createActions({
   // main action
   qiscusInit: null,
-  qiscusDestroy: null,
+  qiscusLogout: null,
   // listener
   loginSuccessCallback: ['data'],
   messageDeletedCallback: ['data'],
@@ -99,8 +99,8 @@ export const QiscusSelectors = {
 export const qiscusInitReducer = (state) => {
   return state.merge({ ...state, init: true })
 }
-export const qiscusDestroyReducer = (state) => {
-  return state.merge({ INITIAL_STATE })
+export const qiscusLogoutReducer = (state) => {
+  return state.merge({ ...INITIAL_STATE })
 }
 
 // LISTENER
@@ -401,7 +401,8 @@ export const openRoomFailureReducer = (state) => {
 export const reducer = createReducer(INITIAL_STATE, {
   // MAIN
   [Types.QISCUS_INIT]: qiscusInitReducer,
-  [Types.QISCUS_DESTROY]: qiscusDestroyReducer,
+  [Types.QISCUS_LOGOUT]: qiscusLogoutReducer,
+
 
   // LISTENER
   [Types.LOGIN_SUCCESS_CALLBACK]: loginSuccessCallbackReducer,

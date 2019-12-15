@@ -24,6 +24,8 @@ import {
   setActiveRoom,
   exitActiveRoom,
 } from './QiscusSagas'
+import { SessionTypes } from '../Redux/SessionRedux'
+import { doLogout } from './SessionSagas'
 
 /* ------------- API ------------- */
 
@@ -49,5 +51,7 @@ export default function* root() {
     takeLatest(QiscusTypes.GET_USERS_REQUEST, getUsersSaga),
     takeLatest(QiscusTypes.OPEN_ROOM_REQUEST, openRoomSaga),
     
+    // SESSION
+    takeLatest(SessionTypes.LOGOUT_REQUEST, doLogout),
   ])
 }

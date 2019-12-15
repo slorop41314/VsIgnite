@@ -420,14 +420,10 @@ class QiscusManager {
   }
 
   publishEvent(roomId, payload) {
-    console.tron.error('PUBLISH EVENT')
-    console.tron.error({ roomId, payload })
     this.qiscus.publishEvent(roomId, payload)
   }
 
   subscribeEvent(roomId, callback) {
-    console.tron.error('SUBSCRIBE')
-    console.tron.error({ roomId })
     this.qiscus.subscribeEvent(roomId, callback)
   }
 

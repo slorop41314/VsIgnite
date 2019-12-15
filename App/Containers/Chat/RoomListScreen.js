@@ -17,6 +17,9 @@ import { connect } from 'react-redux'
 class RoomListScreen extends React.Component {
   constructor(props) {
     super(props)
+
+    this.onClickProfile = this.onClickProfile.bind(this)
+    this.onClickRoom = this.onClickRoom.bind(this)
   }
 
   componentDidMount() {
@@ -29,6 +32,10 @@ class RoomListScreen extends React.Component {
     }
 
     getRoomsRequest(params)
+  }
+
+  onClickProfile() {
+    this.props.navigation.push("ProfileScreen");
   }
 
   onClickRoom(room) {
@@ -60,7 +67,7 @@ class RoomListScreen extends React.Component {
           renderLeftButton={() => (
             <TouchableOpacity
               style={styles.btnAvatar}
-              // onPress={this._openProfile}
+              onPress={this.onClickProfile}
               disabled={qiscusUser ? false : true}
             >
               {qiscusUser && qiscusUser.avatar_url && <Image style={styles.avatar} source={{ uri: qiscusUser.avatar_url }} />}

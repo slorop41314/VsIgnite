@@ -5,6 +5,7 @@ import QiscusManager from '../Qiscus/QiscusManager'
 import NavigationServices from '../Services/NavigationServices'
 import QiscusStrings from '../Qiscus/QiscusStrings'
 import { difference } from 'ramda'
+import SessionActions from '../Redux/SessionRedux'
 
 const subscribedEventRoomId = []
 
@@ -14,8 +15,9 @@ export function* errorCallbackSaga(error) {
 }
 
 export function* loginSuccessCallbackSaga(data) {
-  NavigationServices.navigate('RoomListScreen')
+  NavigationServices.navigate('Main')
   yield all([
+    put(SessionActions.setLogin(data)),
     put(QiscusActions.loginSuccessCallback(data)),
   ])
 }
