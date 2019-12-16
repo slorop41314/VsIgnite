@@ -9,7 +9,6 @@ import {
   Platform
 } from 'react-native';
 import { Images } from '../Themes'
-import QiscusActions from '../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 import styles from './Styles/ChatInputStyles'
 import { isIphoneX } from 'react-native-iphone-x-helper';

@@ -1,54 +1,55 @@
-import React from "react";
-import {
-  View,
-  Text,
-  FlatList,
-  Image,
-  TouchableOpacity,
-  StyleSheet
-} from "react-native";
+import React from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 
-import * as Qiscus from "../../Qiscus";
+import Toolbar from '../../Components/Toolbar';
+import UserItem from '../../Components/UserItem';
+import { Images } from '../../Themes';
 
-import Toolbar from "../../Components/Toolbar";
-import UserItem from "../../Components/UserItem";
-import { Images } from '../../Themes'
-
-import QiscusActions from '../../Redux/QiscusRedux'
-import { connect } from 'react-redux'
-import { CustomFlatList, Styled } from "react-native-awesome-component";
+import QiscusActions from '../../Redux/QiscusRedux';
+import { connect } from 'react-redux';
+import { CustomFlatList, Styled } from 'react-native-awesome-component';
 
 class UserListScreen extends React.Component {
-  itemPerPage = 50
-  currentPage = 1
+  itemPerPage = 50;
+  currentPage = 1;
 
-  _onBack = () => {
+  onBack = () => {
     this.props.navigation.goBack();
   };
 
-  _fetchFunction = ({ page }) => {
-    this.currentPage = page
+  fetchFunction = ({ page }) => {
+    this.currentPage = page;
     this.props.getUsersRequest({
       searchQuery: null,
       page,
       limit: this.itemPerPage,
-    })
-  }
+    });
+  };
 
-  _renderItem = item => {
+  renderItem = item => {
     return (
-      <UserItem user={item} onPress={() => this.props.openRoomRequest(item.email)} />
+      <UserItem
+        user={item}
+        onPress={() => this.props.openRoomRequest(item.email)}
+      />
     );
   };
 
   render() {
     const { users, getUserStatus } = this.props;
-    const { payload, fetching } = getUserStatus
-    let flatListMeta = { current_page: this.currentPage, next_page: undefined }
+    const { payload, fetching } = getUserStatus;
+    let flatListMeta = { current_page: this.currentPage, next_page: undefined };
     if (payload) {
-      const { meta } = payload
-      if (meta && (meta.total_data >= users.length) && (meta.total_page >= this.currentPage)) {
-        flatListMeta = { current_page: this.currentPage, next_page: this.currentPage + 1 }
+      const { meta } = payload;
+      if (
+        meta &&
+        meta.total_data >= users.length &&
+        meta.total_page >= this.currentPage
+      ) {
+        flatListMeta = {
+          current_page: this.currentPage,
+          next_page: this.currentPage + 1,
+        };
       }
     }
     return (
@@ -56,31 +57,20 @@ class UserListScreen extends React.Component {
         <Toolbar
           title="Choose Contacts"
           renderLeftButton={() => (
-            <TouchableOpacity onPress={this._onBack}>
+            <TouchableOpacity onPress={this.onBack}>
               <Image source={Images.qiscusBack} />
             </TouchableOpacity>
           )}
         />
-        <View>
-          {/* <TouchableOpacity
-            style={styles.createGroupBtn}
-            // onPress={this._onCreateGroup}
-          >
-            <Image
-              style={styles.createGroupIcon}
-              source={Images.qiscusNewChatGroup}
-            />
-            <Text style={styles.createGroupBtnText}>Create Group Chat</Text>
-          </TouchableOpacity> */}
-        </View>
+        <View></View>
         <View style={styles.separator}>
           <Text style={styles.separatorText}>Contact</Text>
         </View>
         <Styled.FlexContainer>
           <CustomFlatList
             data={users}
-            fetchFunction={this._fetchFunction}
-            renderItem={({ item }) => this._renderItem(item)}
+            fetchFunction={this.fetchFunction}
+            renderItem={({ item }) => this.renderItem(item)}
             loading={fetching}
             meta={flatListMeta}
           />
@@ -88,28 +78,24 @@ class UserListScreen extends React.Component {
       </Styled.FlexContainer>
     );
   }
-
-  // _onCreateGroup = () => {
-  //   this.props.navigation.navigate("CreateGroup");
-  // };
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     qiscusUser: state.qiscus.currentUser,
     users: state.qiscus.users,
-    getUserStatus: state.qiscus.getUsers
-  }
-}
+    getUserStatus: state.qiscus.getUsers,
+  };
+};
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    getUsersRequest: (params) => dispatch(QiscusActions.getUsersRequest(params)),
-    openRoomRequest: (userId) => dispatch(QiscusActions.openRoomRequest(userId)),
-  }
-}
+    getUsersRequest: params => dispatch(QiscusActions.getUsersRequest(params)),
+    openRoomRequest: userId => dispatch(QiscusActions.openRoomRequest(userId)),
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserListScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(UserListScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -121,7 +107,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#fff',
     paddingLeft: 10,
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
@@ -151,5 +137,5 @@ const styles = StyleSheet.create({
     fontSize: 10,
     textTransform: 'uppercase',
     color: '#666',
-  }
+  },
 });

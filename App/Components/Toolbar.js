@@ -8,7 +8,7 @@ export default class Toolbar extends React.PureComponent {
         {this.props.renderLeftButton && this.props.renderLeftButton()}
         <TouchableWithoutFeedback
           style={styles.titleButton}
-          onPress={this._onPress}
+          onPress={this.onPress}
         >
           <View style={styles.titleContainer}>
             <Text style={styles.title}>{this.props.title}</Text>
@@ -20,7 +20,7 @@ export default class Toolbar extends React.PureComponent {
     );
   }
 
-  _onPress = () => {
+  onPress = () => {
     this.props.onPress && this.props.onPress();
   };
 }

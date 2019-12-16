@@ -21,13 +21,6 @@ class LoginScreen extends React.Component {
     isLogin: false
   };
 
-  componentDidMount() {
-
-  }
-
-  componentWillUnmount() {
-  }
-
   onSubmit = () => {
     const { setQiscusUser } = this.props
     const params = {
@@ -42,12 +35,6 @@ class LoginScreen extends React.Component {
 
     setQiscusUser(params)
   };
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (this.state.isLogin && prevState.isLogin !== this.state.isLogin) {
-  //     // this.props.navigation.replace("RoomListScreen");
-  //   }
-  // }
 
   render() {
     return (

@@ -16,7 +16,7 @@ export default class RoomItem extends React.PureComponent {
     return dateFns.format(time, 'DD/MM/YYYY')
   };
 
-  _onClick = (roomId) => {
+  onClick = (roomId) => {
     this.props.onClick && this.props.onClick(roomId)
   };
 
@@ -29,7 +29,7 @@ export default class RoomItem extends React.PureComponent {
     const unreadCount = Number(room.count_notif);
     return (
       <TouchableOpacity style={styles.container}
-      onPress={() => this._onClick(room.id)}>
+      onPress={() => this.onClick(room.id)}>
         <Image style={styles.avatar} source={{ uri: room.avatar }} />
         <View style={styles.dataContainer}>
           <View style={styles.content}>
