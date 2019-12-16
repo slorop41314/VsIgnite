@@ -84,16 +84,23 @@ class ChatScreen extends React.Component {
         enabled
       >
         <Toolbar
-          title={<Text style={styles.titleText}>{roomName}</Text>}
-          onPress={this.onToolbarClick}
+          title={roomName}
+          renderIcon={() => (
+            <Image
+              source={{ uri: avatarURL }}
+              style={{
+                width: 32,
+                height: 32,
+                resizeMode: 'cover',
+                borderRadius: 50,
+                marginRight: 5,
+              }}
+            />
+          )}
           renderLeftButton={() => (
             <TouchableOpacity
               onPress={() => this.props.navigation.goBack()}
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flex: 0,
-              }}
+              style={{ justifyContent: 'center' }}
             >
               <Image
                 source={Images.qiscusBack}
@@ -101,16 +108,6 @@ class ChatScreen extends React.Component {
                   width: 20,
                   height: 20,
                   resizeMode: 'contain',
-                }}
-              />
-              <Image
-                source={{ uri: avatarURL }}
-                style={{
-                  width: 50,
-                  height: 50,
-                  resizeMode: 'cover',
-                  borderRadius: 50,
-                  marginLeft: 10,
                 }}
               />
             </TouchableOpacity>
@@ -123,9 +120,6 @@ class ChatScreen extends React.Component {
                   {roomTypingStatus.username} is typing...
                 </Text>
               )}
-              {/* {this.isGroup && (
-              <Text style={styles.typingText}>{this.participants}</Text>
-            )} */}
             </View>
           )}
         />
@@ -240,11 +234,6 @@ class ChatScreen extends React.Component {
   sortMessage = messages =>
     messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
 
-  onToolbarClick = () => {
-    const roomId = this.state.room.id;
-    this.props.navigation.navigate('RoomInfo', { roomId });
-  };
-
   get isGroup() {
     if (this.state.room == null || this.state.room.room_type == null)
       return false;
@@ -298,7 +287,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: '#fafafa',
   },
   typingText: {

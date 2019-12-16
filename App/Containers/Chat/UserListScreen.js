@@ -55,14 +55,23 @@ class UserListScreen extends React.Component {
     return (
       <Styled.FlexContainer>
         <Toolbar
-          title="Choose Contacts"
+          title="New Message"
           renderLeftButton={() => (
-            <TouchableOpacity onPress={this.onBack}>
-              <Image source={Images.qiscusBack} />
+            <TouchableOpacity
+              onPress={() => this.props.navigation.goBack()}
+              style={{ justifyContent: 'center' }}
+            >
+              <Image
+                source={Images.qiscusBack}
+                style={{
+                  width: 20,
+                  height: 20,
+                  resizeMode: 'contain',
+                }}
+              />
             </TouchableOpacity>
           )}
         />
-        <View></View>
         <View style={styles.separator}>
           <Text style={styles.separatorText}>Contact</Text>
         </View>
