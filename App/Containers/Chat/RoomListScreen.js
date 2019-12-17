@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
-  Button
 } from "react-native";
 import { NavigationEvents } from 'react-navigation'
 import RoomItem from "../../Components/RoomItem";
@@ -14,7 +13,6 @@ import { Images } from '../../Themes'
 
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
-import firebase from "react-native-firebase";
 
 class RoomListScreen extends React.Component {
   constructor(props) {
@@ -98,18 +96,6 @@ class RoomListScreen extends React.Component {
             />
           )}
         />
-        <Button title={'TEST NOTIF'} onPress={() => {
-          const notification = new firebase.notifications.Notification()
-          .setNotificationId('notificationId')
-          .setTitle('My notification title')
-          .setBody('My notification body')
-          .setData({
-            key1: 'value1',
-            key2: 'value2',
-          });
-          console.tron.error({ notification })
-          firebase.notifications().displayNotification(notification)
-        }} />
       </View>
     );
   }

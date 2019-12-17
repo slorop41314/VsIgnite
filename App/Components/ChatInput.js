@@ -24,23 +24,20 @@ class ChatInput extends React.Component {
 
     this.isTyping = false
 
-    this.onChangeMessage = debounce(this.onChangeMessage.bind(this), 500)
+    this.onTypingMessage = debounce(this.onTypingMessage.bind(this), 500)
     this.onSubmit = this.onSubmit.bind(this)
   }
 
-  onChangeMessage(message) {
-    this.setState({ message }, () => {
-      this.isTyping = false
-      QiscusManager.publishTyping(0)
-    })
+  onTypingMessage() {
+    this.isTyping = false
+    QiscusManager.publishTyping(0)
   }
 
   onSubmit() {
-    const { message } = this.state
     if (this.textInput) {
       this.textInput.clear()
     }
-    this.props.onSubmit(message);
+    this.props.onSubmit(this.message);
   }
 
   render() {
@@ -80,7 +77,8 @@ class ChatInput extends React.Component {
                 this.isTyping = true
                 QiscusManager.publishTyping(1)
               }
-              this.onChangeMessage(text)
+              this.message = text
+              this.onTypingMessage(text)
             }}
             onSubmitEditing={this.onSubmit}
           />
