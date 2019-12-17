@@ -8,6 +8,8 @@ import ReduxPersist from '../Config/ReduxPersist';
 
 // Styles
 import styles from './Styles/RootContainerStyles';
+import { setupNotificationListener } from '../FIrebase/NotificationHelper';
+import firebase from 'react-native-firebase';
 
 class RootContainer extends Component {
   componentDidMount() {
@@ -15,6 +17,14 @@ class RootContainer extends Component {
     // if (!ReduxPersist.active) {
     // this.props.startup();
     // }
+
+    setupNotificationListener()
+
+    /**
+    * NEED TO REMOVE
+    * remove thi code after you test crashlytic
+    */
+    firebase.crashlytics().recordError(37, "Test Error");
   }
 
   render() {

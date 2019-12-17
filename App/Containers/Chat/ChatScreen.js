@@ -13,8 +13,6 @@ import { values } from 'ramda'
 import debounce from 'lodash.debounce';
 import xs from 'xstream';
 
-import * as Qiscus from '../../Qiscus';
-
 import Toolbar from '../../Components/Toolbar';
 import MessageList from '../../Components/MessageList';
 import ChatInput from '../../Components/ChatInput';
@@ -24,7 +22,6 @@ import { Images } from '../../Themes';
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
 import QiscusStrings from '../../Qiscus/QiscusStrings';
-import QiscusManager from '../../Qiscus/QiscusManager';
 import OnlineStatusContainer from '../../Components/OnlineStatusContainer';
 
 class ChatScreen extends React.Component {

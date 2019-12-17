@@ -82,6 +82,7 @@
 		2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VsIgnite_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
 		4441F80223894CD500EE7936 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "VsIgnite/GoogleService-Info.plist"; sourceTree = "<group>"; };
+		445E83BA23A7702100BC5650 /* VsIgnite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = VsIgnite.entitlements; path = VsIgnite/VsIgnite.entitlements; sourceTree = "<group>"; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		6380B111BA2D49A7B36CD135 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		6C085DA9CCEA255461679048 /* Pods-VsIgniteTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgniteTests.release.xcconfig"; path = "Target Support Files/Pods-VsIgniteTests/Pods-VsIgniteTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -176,6 +177,7 @@
 		13B07FAE1A68108700A75B9A /* VsIgnite */ = {
 			isa = PBXGroup;
 			children = (
+				445E83BA23A7702100BC5650 /* VsIgnite.entitlements */,
 				4441F80223894CD500EE7936 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -380,17 +382,20 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 3WML82NMGY;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = Z8MP7PJXH2;
+						DevelopmentTeam = 3WML82NMGY;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 3WML82NMGY;
 						ProvisioningStyle = Automatic;
 					};
 					2D02E48F1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
+						DevelopmentTeam = 3WML82NMGY;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 2D02E47A1E0B4A5D006451C7;
 					};
@@ -692,6 +697,7 @@
 			baseConfigurationReference = 0DAF21AE273BBF136EF5E3DC /* Pods-VsIgniteTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -730,6 +736,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-gesture-handler/ios/**",
@@ -763,9 +770,10 @@
 			baseConfigurationReference = ED9153BE33B317ACCC2E2799 /* Pods-VsIgnite.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VsIgnite/VsIgnite.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = Z8MP7PJXH2;
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VsIgnite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -774,7 +782,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.app;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -785,9 +793,10 @@
 			baseConfigurationReference = 96948AB7017D38C35E0791F1 /* Pods-VsIgnite.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = VsIgnite/VsIgnite.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = Z8MP7PJXH2;
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VsIgnite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -796,7 +805,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.app;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -813,6 +822,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -856,6 +866,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -896,6 +907,7 @@
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -938,6 +950,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 3WML82NMGY;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

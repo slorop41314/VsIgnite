@@ -6,6 +6,7 @@ import NavigationServices from '../Services/NavigationServices'
 import QiscusStrings from '../Qiscus/QiscusStrings'
 import { difference } from 'ramda'
 import SessionActions from '../Redux/SessionRedux'
+import { setupTokenRegistration, setupNotificationPermission } from '../FIrebase/NotificationHelper';
 
 const subscribedEventRoomId = []
 
@@ -14,9 +15,30 @@ export function* errorCallbackSaga(error) {
   console.tron.error({ error })
 }
 
+function * setDeviceTokenHandler() {
+ try {
+  const isGranted = yield setupNotificationPermission()
+  if (isGranted) {
+    const fcmToken = yield setupTokenRegistration()
+    if (fcmToken) {
+      const response = yield QiscusManager.setDeviceToken(fcmToken)
+      if (response.data) {
+        console.tron.error('SUCCESS SET DEVICE TOKEN')
+      }
+    } else {
+      console.tron.error('NO DEVICE TOKEN')
+    }
+  }
+ } catch (error) {
+   // handle once failure
+   console.tron.error({error})
+ }
+}
+
 export function* loginSuccessCallbackSaga(data) {
   NavigationServices.navigate('Main')
   yield all([
+    fork(setDeviceTokenHandler),
     put(SessionActions.setLogin(data)),
     put(QiscusActions.loginSuccessCallback(data)),
   ])
@@ -59,7 +81,7 @@ export function* onReconnectCallbackSaga(data) {
 }
 
 export function* newMessagesCallbackSaga(data) {
-  const {messages} = data
+  const { messages } = data
   yield all([
     put(QiscusActions.newMessagesCallback(data))
   ])

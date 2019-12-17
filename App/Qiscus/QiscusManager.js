@@ -1,5 +1,6 @@
 import QiscusSDK from "qiscus-sdk-core";
 import QiscusStrings from "./QiscusStrings";
+import apisauce from 'apisauce'
 
 const appId = "test-qisc-tkfoim909xj";
 
@@ -60,6 +61,9 @@ class QiscusManager {
     this.isLogin = this.isLogin.bind(this)
 
     this.diconnect = this.diconnect.bind(this)
+
+    // notification
+    this.setDeviceToken = this.setDeviceToken.bind(this)
   }
 
   /**
@@ -451,11 +455,11 @@ class QiscusManager {
     })
   }
 
-    /**
-   * You can set your message status into read. The ideal case of this, is to notify other participants that a message has been read. You need to pass roomId and commentId.
-   * @param {string} roomId 
-   * @param {string} lastReadMessageId 
-   */
+  /**
+ * You can set your message status into read. The ideal case of this, is to notify other participants that a message has been read. You need to pass roomId and commentId.
+ * @param {string} roomId 
+ * @param {string} lastReadMessageId 
+ */
   readMessage(roomId, lastReadMessageId) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -565,6 +569,38 @@ class QiscusManager {
    */
   diconnect() {
     this.qiscus.disconnect()
+  }
+
+  setDeviceToken(token) {
+    const userToken = this.qiscus.userData.token;
+    const baseURL = this.qiscus.baseURL
+    const api = apisauce.create({
+      // base URL is read from the "constructor"
+      baseURL,
+      // here are some default headers
+      headers: {
+        'qiscus_sdk_app_id': this.qiscus.AppId,
+        'qiscus_sdk_token': userToken,
+        'qiscus_sdk_user_id': this.qiscus.user_id
+      },
+      // 10 second timeout...
+      timeout: 10000
+    })
+
+    const params = {
+      token: userToken,
+      device_token: token,
+      device_platform: "rn"
+    }
+
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await api.post('/api/v2/mobile/set_user_device_token', params)
+        resolve(response)
+      } catch (error) {
+        reject({ type: QiscusStrings.errors.setDeviceTokenFailure, error })
+      }
+    })
   }
 }
 

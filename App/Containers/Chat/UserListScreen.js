@@ -8,8 +8,6 @@ import {
   StyleSheet
 } from "react-native";
 
-import * as Qiscus from "../../Qiscus";
-
 import Toolbar from "../../Components/Toolbar";
 import UserItem from "../../Components/UserItem";
 import { Images } from '../../Themes'

@@ -37,6 +37,7 @@ const QiscusStrings = {
     uploadFileFailure: 'upload-file-failure',
     clearMessagesFailure: 'clear-messages-failure',
     publishTypingFailure: 'publish-typing-failure',
+    setDeviceTokenFailure: 'set-devices-token-failure',
   },
   isOnlineStatus: '1',
   delimiter: ':',
