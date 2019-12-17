@@ -46,9 +46,9 @@ class ChatInput extends React.Component {
 
     if (Platform.OS === 'ios') {
       if (isIphoneX()) {
-        keyboardAvoidingViewProps = { behavior: 'padding', keyboardVerticalOffset: 88 }
+        keyboardAvoidingViewProps = { behavior: 'padding', keyboardVerticalOffset: 18 }
       } else {
-        keyboardAvoidingViewProps = { behavior: 'padding', keyboardVerticalOffset: 64 }
+        keyboardAvoidingViewProps = { behavior: 'padding', keyboardVerticalOffset: 0 }
       }
     }
 

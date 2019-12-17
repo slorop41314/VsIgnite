@@ -1,5 +1,8 @@
-import firebase from "react-native-firebase";
-import { Platform } from 'react-native'
+import firebase, { RNFirebase } from "react-native-firebase";
+
+const ANDROID_CHANNEL_ID = 'VsIgnite'
+const ANDROID_CHANNEL_NAME = 'VsIgnite Channel'
+const ANDROID_CHANNEL_DESCRIPTION = 'VsIgnite apps test channel'
 
 export function setupNotificationPermission() {
   return new Promise(async (resolve, reject) => {
@@ -46,10 +49,22 @@ export function setupTokenRegistration() {
 export function setupMessageListener() {
   firebase.messaging().onMessage((message) => {
     // Process your message as required
+    console.tron.error({message})
   });
 }
 
 export function setupNotificationListener() {
+  const channel = new firebase.notifications.Android.Channel(ANDROID_CHANNEL_ID, ANDROID_CHANNEL_NAME, firebase.notifications.Android.Importance.Max)
+  channel.setDescription(ANDROID_CHANNEL_DESCRIPTION);
+  channel.enableLights(true);
+  channel.enableVibration(true);
+  channel.setVibrationPattern([500])
+  channel.setSound('default')
+  channel.setLockScreenVisibility(firebase.notifications.Android.Visibility.Public)
+  channel.setBypassDnd(true)
+
+  // Create the channel
+  firebase.notifications().android.createChannel(channel);
   // Get initial notification
   firebase.notifications().getInitialNotification()
     .then((notificationOpen) => {
@@ -92,7 +107,7 @@ export function handlePressNotification(notification) {
 export function displayNotification(message) {
   let notification = new firebase.notifications.Notification(message);
 
-  notification.android.setChannelId("VsIgnite");
+  notification.android.setChannelId(ANDROID_CHANNEL_ID)
   notification.android.setAutoCancel(true)
   notification.android.setPriority(firebase.notifications.Android.Priority.High)
   notification.android.setOngoing(false)

@@ -8,7 +8,7 @@ import ReduxPersist from '../Config/ReduxPersist';
 
 // Styles
 import styles from './Styles/RootContainerStyles';
-import { setupNotificationListener } from '../FIrebase/NotificationHelper';
+import { setupNotificationListener, setupMessageListener } from '../FIrebase/NotificationHelper';
 import firebase from 'react-native-firebase';
 
 class RootContainer extends Component {
@@ -19,6 +19,7 @@ class RootContainer extends Component {
     // }
 
     setupNotificationListener()
+    // setupMessageListener()
 
     /**
     * NEED TO REMOVE
