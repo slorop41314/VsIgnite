@@ -6,12 +6,8 @@ import {
   Text,
   TouchableOpacity,
   View,
-  PermissionsAndroid,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import { values } from 'ramda'
-import debounce from 'lodash.debounce';
-import xs from 'xstream';
 
 import Toolbar from '../../Components/Toolbar';
 import MessageList from '../../Components/MessageList';
@@ -19,8 +15,8 @@ import ChatInput from '../../Components/ChatInput';
 import EmptyChat from '../../Components/EmptyChat';
 import { Images } from '../../Themes';
 
-import QiscusActions from '../../Redux/QiscusRedux'
-import { connect } from 'react-redux'
+import QiscusActions from '../../Redux/QiscusRedux';
+import { connect } from 'react-redux';
 import QiscusStrings from '../../Qiscus/QiscusStrings';
 import OnlineStatusContainer from '../../Components/OnlineStatusContainer';
 
@@ -28,15 +24,17 @@ class ChatScreen extends React.Component {
   itemPerPage = 20;
 
   constructor(props) {
-    super(props)
-    let targetUser = undefined
+    super(props);
+    let targetUser = undefined;
     const room = props.navigation.getParam('room');
-    props.setActiveRoomRequest({ roomId: room.id })
+    props.setActiveRoomRequest({ roomId: room.id });
 
     if (room.room_type === QiscusStrings.room_type.single) {
-      const targetUserIndex = room.participants.findIndex(u => u.id !== props.qiscusUser.id)
+      const targetUserIndex = room.participants.findIndex(
+        u => u.id !== props.qiscusUser.id,
+      );
       if (targetUserIndex >= 0) {
-        targetUser = room.participants[targetUserIndex]
+        targetUser = room.participants[targetUserIndex];
       }
     }
 
@@ -47,27 +45,27 @@ class ChatScreen extends React.Component {
       isTyping: false,
       lastOnline: undefined,
       typingUsername: undefined,
-    }
+    };
   }
 
   componentDidMount() {
-    const { room } = this.state
+    const { room } = this.state;
     this.props.getMessagesRequest({
       roomId: room.id,
       options: {
         // last_comment_id: room.last_comment_id,
         limit: this.itemPerPage,
       },
-    })
+    });
 
     this.props.readMessageRequest({
       roomId: room.id,
       lastReadMessageId: room.last_comment_id,
-    })
+    });
   }
 
   componentWillUnmount() {
-    this.props.exitActiveRoomRequest()
+    this.props.exitActiveRoomRequest();
   }
 
   render() {
@@ -76,41 +74,40 @@ class ChatScreen extends React.Component {
     const roomName = room ? room.name : 'Chat';
     const avatarURL = room ? room.avatar : null;
 
-    const { roomTypingStatus } = this.props
+    const { roomTypingStatus } = this.props;
 
     return (
       <View
         style={styles.container}
         keyboardVerticalOffset={StatusBar.currentHeight}
         behavior="padding"
-        enabled>
+        enabled
+      >
         <Toolbar
-          title={<Text style={styles.titleText}>{roomName}</Text>}
-          onPress={this._onToolbarClick}
+          title={roomName}
+          renderIcon={() => (
+            <Image
+              source={{ uri: avatarURL }}
+              style={{
+                width: 32,
+                height: 32,
+                resizeMode: 'cover',
+                borderRadius: 50,
+                marginRight: 5,
+              }}
+            />
+          )}
           renderLeftButton={() => (
             <TouchableOpacity
               onPress={() => this.props.navigation.goBack()}
-              style={{
-                display: 'flex',
-                flexDirection: 'row',
-                flex: 0,
-              }}>
+              style={{ justifyContent: 'center' }}
+            >
               <Image
                 source={Images.qiscusBack}
                 style={{
                   width: 20,
                   height: 20,
                   resizeMode: 'contain',
-                }}
-              />
-              <Image
-                source={{ uri: avatarURL }}
-                style={{
-                  width: 50,
-                  height: 50,
-                  resizeMode: 'cover',
-                  borderRadius: 50,
-                  marginLeft: 10,
                 }}
               />
             </TouchableOpacity>
@@ -123,9 +120,6 @@ class ChatScreen extends React.Component {
                   {roomTypingStatus.username} is typing...
                 </Text>
               )}
-              {/* {this.isGroup && (
-              <Text style={styles.typingText}>{this.participants}</Text>
-            )} */}
             </View>
           )}
         />
@@ -136,20 +130,19 @@ class ChatScreen extends React.Component {
             isLoadMoreable={messages[0].comment_before_id !== 0}
             messages={messages}
             scroll={this.state.scroll}
-          // onLoadMore={this._loadMore}
           />
         )}
 
         <ChatInput
           room={room}
-          onSubmit={this._submitMessage}
+          onSubmit={this.submitMessage}
           onSelectFile={() => this.openCamera()}
         />
       </View>
     );
   }
 
-  _prepareMessage = message => {
+  prepareMessage = message => {
     const date = new Date();
     return {
       id: date.getTime(),
@@ -157,30 +150,30 @@ class ChatScreen extends React.Component {
       type: 'text',
       status: 'sending',
       message: message,
-      // email: Qiscus.currentUser().email,
+      email: this.props.qiscusUser.email,
     };
   };
 
-  _prepareFileMessage = (message, fileURI) => {
+  prepareFileMessage = (message, fileURI) => {
     return {
-      ...this._prepareMessage(message),
+      ...this.prepareMessage(message),
       type: 'upload',
       fileURI,
     };
   };
 
-  _submitMessage = async text => {
-    const message = this._prepareMessage(text);
-    await this._addMessage(message, true);
+  submitMessage = async text => {
+    const message = this.prepareMessage(text);
+    await this.addMessage(message, true);
 
     this.props.sendMessageRequest({
       roomId: this.state.room.id,
       text: text,
       type: message.type,
-    })
+    });
   };
 
-  _onSelectFile = () => {
+  onSelectFile = () => {
     ImagePicker.showImagePicker(
       {
         title: 'Select image',
@@ -191,9 +184,10 @@ class ChatScreen extends React.Component {
       },
       resp => {
         if (resp.didCancel) console.tron.error('user cancel');
-        if (resp.error) console.tron.error('error when getting file', resp.error);
+        if (resp.error)
+          console.tron.error('error when getting file', resp.error);
 
-        const message = this._prepareFileMessage('File attachment', resp.uri);
+        const message = this.prepareFileMessage('File attachment', resp.uri);
 
         this.props.sendMessageRequest({
           roomId: this.state.room.id,
@@ -206,24 +200,25 @@ class ChatScreen extends React.Component {
             type: resp.type,
             name: resp.fileName,
           },
-        })
+        });
       },
     );
   };
 
   async openCamera() {
     try {
-      this._onSelectFile()
+      this.onSelectFile();
     } catch (err) {
       console.tron.error(err);
     }
   }
 
-  _addMessage = (message, scroll = false) =>
+  addMessage = (message, scroll = false) =>
     new Promise(resolve => {
-      this.setState({
-        scroll,
-      },
+      this.setState(
+        {
+          scroll,
+        },
         () => {
           if (scroll === false) return;
           const timeoutId = setTimeout(() => {
@@ -236,13 +231,8 @@ class ChatScreen extends React.Component {
       );
     });
 
-  _sortMessage = messages =>
+  sortMessage = messages =>
     messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-
-  _onToolbarClick = () => {
-    const roomId = this.state.room.id;
-    this.props.navigation.navigate('RoomInfo', { roomId });
-  };
 
   get isGroup() {
     if (this.state.room == null || this.state.room.room_type == null)
@@ -263,34 +253,40 @@ class ChatScreen extends React.Component {
   }
 
   get messages() {
-    return this._sortMessage(Object.values(this.props.messages[this.state.room.id] || []));
+    return this.sortMessage(
+      Object.values(this.props.messages[this.state.room.id] || []),
+    );
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     qiscusUser: state.qiscus.currentUser,
     messages: state.qiscus.messages,
     roomTypingStatus: state.qiscus.roomTypingStatus,
-  }
-}
+  };
+};
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
-    setActiveRoomRequest: (params) => dispatch(QiscusActions.setActiveRoomRequest(params)),
-    exitActiveRoomRequest: () => dispatch(QiscusActions.exitActiveRoomRequest()),
-    getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
-    sendMessageRequest: (params) => dispatch(QiscusActions.sendMessageRequest(params)),
-    readMessageRequest: (params) => dispatch(QiscusActions.readMessageRequest(params)),
-  }
-}
+    setActiveRoomRequest: params =>
+      dispatch(QiscusActions.setActiveRoomRequest(params)),
+    exitActiveRoomRequest: () =>
+      dispatch(QiscusActions.exitActiveRoomRequest()),
+    getMessagesRequest: params =>
+      dispatch(QiscusActions.getMessagesRequest(params)),
+    sendMessageRequest: params =>
+      dispatch(QiscusActions.sendMessageRequest(params)),
+    readMessageRequest: params =>
+      dispatch(QiscusActions.readMessageRequest(params)),
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen)
+export default connect(mapStateToProps, mapDispatchToProps)(ChatScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
     backgroundColor: '#fafafa',
   },
   typingText: {

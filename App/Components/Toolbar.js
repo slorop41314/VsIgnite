@@ -1,5 +1,5 @@
-import React from "react";
-import { View, TouchableWithoutFeedback, StyleSheet, Text } from "react-native";
+import React from 'react';
+import { View, TouchableWithoutFeedback, StyleSheet, Text } from 'react-native';
 
 export default class Toolbar extends React.PureComponent {
   render() {
@@ -8,10 +8,13 @@ export default class Toolbar extends React.PureComponent {
         {this.props.renderLeftButton && this.props.renderLeftButton()}
         <TouchableWithoutFeedback
           style={styles.titleButton}
-          onPress={this._onPress}
+          onPress={this.onPress}
         >
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>{this.props.title}</Text>
+            {this.props.renderIcon && this.props.renderIcon()}
+            <Text numberOfLines={1} style={styles.title}>
+              {this.props.title}
+            </Text>
             {this.props.renderMeta && this.props.renderMeta()}
           </View>
         </TouchableWithoutFeedback>
@@ -20,7 +23,7 @@ export default class Toolbar extends React.PureComponent {
     );
   }
 
-  _onPress = () => {
+  onPress = () => {
     this.props.onPress && this.props.onPress();
   };
 }
@@ -28,17 +31,16 @@ export default class Toolbar extends React.PureComponent {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 15,
-    justifyContent: 'center',
+    padding: 10,
     backgroundColor: 'white',
-    shadowColor: "#000",
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    
+
     elevation: 5,
   },
   titleButton: {
@@ -46,14 +48,13 @@ const styles = StyleSheet.create({
   },
   titleContainer: {
     flex: 1,
-    marginLeft: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
   },
   title: {
-    flex: 1,
-    fontWeight: '600',
+    fontWeight: '500',
     fontSize: 18,
-    textAlign: 'left',
-    alignItems: 'center',
-    color: '#362c33',
+    color: '#262626',
+    textAlignVertical: 'center',
   },
 });

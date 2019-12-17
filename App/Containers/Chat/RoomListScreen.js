@@ -63,7 +63,7 @@ class RoomListScreen extends React.Component {
       <View style={styles.container}>
         <NavigationEvents onWillFocus={() => this.componentDidMount()} />
         <Toolbar
-          title="Conversation"
+          title="Message"
           renderLeftButton={() => (
             <TouchableOpacity
               style={styles.btnAvatar}
@@ -121,8 +121,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   btnAvatar: {
-    height: 30,
-    width: 30,
     overflow: "hidden",
     backgroundColor: "transparent",
     flex: 0,
@@ -132,7 +130,7 @@ const styles = StyleSheet.create({
   },
   iconStartChat: {
     height: 30,
-    width: 30,
+    width: 20,
     resizeMode: "contain"
   },
   avatar: {

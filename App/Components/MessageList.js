@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   StyleSheet,
@@ -6,19 +6,18 @@ import {
   Image,
   FlatList,
   Animated,
-  TouchableWithoutFeedback
-} from "react-native";
-import dateFns from "date-fns";
-import debounce from "lodash.debounce";
+  TouchableWithoutFeedback,
+} from 'react-native';
+import dateFns from 'date-fns';
+import debounce from 'lodash.debounce';
 
-import MessageUpload from "./MessageUpload";
-import MessageCustom from "./MessageCustom";
+import MessageUpload from './MessageUpload';
+import MessageCustom from './MessageCustom';
 
-import { Images, Colors } from "../Themes";
+import { Images, Colors } from '../Themes';
 
-import QiscusActions from '../Redux/QiscusRedux'
-import { connect } from 'react-redux'
-import QiscusStrings from "../Qiscus/QiscusStrings";
+import { connect } from 'react-redux';
+import QiscusStrings from '../Qiscus/QiscusStrings';
 
 class AnimatedSending extends React.Component {
   animation = new Animated.Value(0);
@@ -28,7 +27,8 @@ class AnimatedSending extends React.Component {
       toValue: 1,
       duration: 2000,
       isInteraction: false,
-      useNativeDriver: true
+      useNativeDriver: true,
+      asas: '',
     });
     Animated.loop(timing).start();
   }
@@ -36,16 +36,17 @@ class AnimatedSending extends React.Component {
   render() {
     const spin = this.animation.interpolate({
       inputRange: [0, 1],
-      outputRange: ["0deg", "360deg"]
+      outputRange: ['0deg', '360deg'],
     });
+
     return (
       <Animated.Image
         source={Images.qiscusSending}
         style={[
           styles.iconStatus,
           {
-            transform: [{ rotate: spin }]
-          }
+            transform: [{ rotate: spin }],
+          },
         ]}
       />
     );
@@ -68,8 +69,8 @@ class MessageList extends React.Component {
       const dateMessage = {
         ...message,
         id: `date-${message.id}`,
-        type: "date",
-        message: dateFns.format(message.timestamp, "DD MMM YYYY")
+        type: 'date',
+        message: dateFns.format(message.timestamp, 'DD MMM YYYY'),
       };
       if (i === 0 || showDate) _messages.push(dateMessage);
       _messages.push(message);
@@ -77,13 +78,17 @@ class MessageList extends React.Component {
 
     return _messages;
   };
+
   _renderMessage = message => {
     const type = message.type;
-    const isMe = (message.email === this.props.qiscusUser.email) || (message.username_real === this.props.qiscusUser.email);
-    const isLoadMore = type === "load-more";
-    const isDate = type === "date";
+    const isMe =
+      message.email === this.props.qiscusUser.email ||
+      message.username_real === this.props.qiscusUser.email;
+    const isLoadMore = type === 'load-more';
+    const isDate = type === 'date';
     const isCustomMessage =
-      type === QiscusStrings.message_type.custom && typeof message.payload.content !== "string";
+      type === QiscusStrings.message_type.custom &&
+      typeof message.payload.content !== 'string';
 
     const containerStyle = [styles.container];
     if (isMe) containerStyle.push(styles.containerMe);
@@ -101,8 +106,8 @@ class MessageList extends React.Component {
 
     let content = <Text style={textStyle}>{message.message}</Text>;
 
-    if (type === "upload") content = this._renderUploadMessage(message);
-    if (isCustomMessage && message.payload.type === "image")
+    if (type === 'upload') content = this._renderUploadMessage(message);
+    if (isCustomMessage && message.payload.type === 'image')
       content = this._renderCustomImageMessage(message);
 
     return (
@@ -123,13 +128,14 @@ class MessageList extends React.Component {
       </View>
     );
   };
+
   _renderUploadMessage = message => <MessageUpload message={message} />;
   _renderCustomImageMessage = message => <MessageCustom message={message} />;
   _renderMessageMeta = message => {
     return (
       <View style={styles.metaContainer}>
         <Text style={styles.metaTime}>
-          {dateFns.format(message.timestamp, "HH:mm")}
+          {dateFns.format(message.timestamp, 'HH:mm')}
         </Text>
         {this._renderMessageStatus(message.status)}
       </View>
@@ -139,42 +145,32 @@ class MessageList extends React.Component {
     return (
       <View style={styles.metaContainer}>
         <Text style={styles.metaTime}>
-          {dateFns.format(message.timestamp, "HH:mm")}
+          {dateFns.format(message.timestamp, 'HH:mm')}
         </Text>
       </View>
     );
   };
 
   _renderMessageStatus = status => {
-    if (status === "sending") return <AnimatedSending />;
-    if (status === "sent")
+    if (status === 'sending') return <AnimatedSending />;
+    if (status === 'sent')
       return (
         <Image
           style={[styles.iconStatus, { tintColor: Colors.steel }]}
           source={Images.qiscusDelivered}
         />
       );
-    if (status === "delivered")
+    if (status === 'delivered')
       return (
         <Image
           style={[styles.iconStatus, { tintColor: Colors.steel }]}
           source={Images.qiscusRead}
         />
       );
-    if (status === "read")
-      return (
-        <Image
-          style={styles.iconStatus}
-          source={Images.qiscusRead}
-        />
-      );
-    if (status === "failed")
-      return (
-        <Image
-          style={styles.iconStatus}
-          source={Images.qiscusFailed}
-        />
-      );
+    if (status === 'read')
+      return <Image style={styles.iconStatus} source={Images.qiscusRead} />;
+    if (status === 'failed')
+      return <Image style={styles.iconStatus} source={Images.qiscusFailed} />;
   };
 
   _onEndReached = debounce(distance => {
@@ -188,7 +184,7 @@ class MessageList extends React.Component {
     setTimeout(() => {
       if (this.$flatList != null) {
         this.$flatList.scrollToOffset({
-          offset: (this.props.messages.length + 1) * 800
+          offset: (this.props.messages.length + 1) * 800,
         });
       }
     }, 1500);
@@ -213,8 +209,8 @@ class MessageList extends React.Component {
   get loadMoreMessage() {
     const id = 0x1011;
     return {
-      type: "load-more",
-      message: "Load more",
+      type: 'load-more',
+      message: 'Load more',
       id,
     };
   }
@@ -223,7 +219,7 @@ class MessageList extends React.Component {
     const messages = this.messages;
     const items = [
       this.props.isLoadMoreable ? this.loadMoreMessage : null,
-      ...messages
+      ...messages,
     ].filter(it => it != null);
 
     return (
@@ -235,49 +231,49 @@ class MessageList extends React.Component {
         renderItem={({ item }) => this._renderMessage(item)}
         getItemLayout={(data, index) => {
           let length = 80;
-          if (data.type === "custom" && data.payload.type === "image")
+          if (data.type === 'custom' && data.payload.type === 'image')
             length = 300;
           return { length: length, offset: 0, index: index };
         }}
         onEndReached={distance => this._onEndReached(distance.distanceFromEnd)}
         style={{
-          width: "100%",
-          height: "100%"
+          width: '100%',
+          height: '100%',
         }}
       />
     );
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = state => {
   return {
     qiscusUser: state.qiscus.currentUser,
-  }
-}
+  };
+};
 
-const mapDispatchToProps = (dispatch) => {
+const mapDispatchToProps = dispatch => {
   return {
     // getMessagesRequest: (params) => dispatch(QiscusActions.getMessagesRequest(params)),
-  }
-}
+  };
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(MessageList)
+export default connect(mapStateToProps, mapDispatchToProps)(MessageList);
 
 const styles = StyleSheet.create({
   container: {
     minHeight: 50,
-    width: "100%",
-    display: "flex",
-    flexDirection: "row",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'row',
     padding: 5,
-    alignItems: "flex-start",
-    justifyContent: "flex-start"
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
   },
   containerMe: {
-    justifyContent: "flex-end"
+    justifyContent: 'flex-end',
   },
   containerDate: {
-    justifyContent: "center"
+    justifyContent: 'center',
   },
 
   message: {
@@ -285,43 +281,43 @@ const styles = StyleSheet.create({
     maxWidth: 350,
     padding: 10,
     borderRadius: 4,
-    backgroundColor: "#e8e8e8",
-    shadowColor: "#c7c7c7",
+    backgroundColor: '#e8e8e8',
+    shadowColor: '#c7c7c7',
     shadowOpacity: 0.8,
     shadowOffset: { width: 0, height: 7 },
-    shadowRadius: 16
+    shadowRadius: 16,
   },
   messageMe: {
-    backgroundColor: "white"
+    backgroundColor: 'white',
   },
   messageDate: {
-    backgroundColor: "#94c162",
-    color: "white",
+    backgroundColor: '#94c162',
+    color: 'white',
     padding: 5,
-    minWidth: 0
+    minWidth: 0,
   },
   messageText: {
     fontSize: 13,
     lineHeight: 23,
-    color: "#666"
+    color: '#666',
   },
   messageTextDate: {
-    color: "white"
+    color: 'white',
   },
 
   metaContainer: {
-    marginHorizontal: 5
+    marginHorizontal: 5,
   },
   metaTime: {
     fontSize: 10,
     lineHeight: 14,
-    color: "#979797"
+    color: '#979797',
   },
 
   iconStatus: {
     height: 15,
     width: 15,
     padding: 1,
-    resizeMode: "center"
-  }
+    resizeMode: 'center',
+  },
 });

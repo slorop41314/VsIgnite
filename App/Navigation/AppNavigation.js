@@ -29,7 +29,7 @@ export const MainStack = createStackNavigator(
   },
   {
     // Default config for all screens
-    headerMode: 'screen',
+    headerMode: 'none',
     initialRouteName: 'RoomListScreen',
   },
 );
