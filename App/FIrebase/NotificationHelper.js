@@ -1,4 +1,5 @@
 import firebase from "react-native-firebase";
+import { Platform } from 'react-native'
 
 export function setupNotificationPermission() {
   return new Promise(async (resolve, reject) => {
@@ -71,7 +72,7 @@ export function setupNotificationListener() {
   // On receive notitication listener
   firebase.notifications().onNotification((notification) => {
     // Process your notification as required
-    console.tron.error({ notification })
+    displayNotification(notification)
   });
 
   // On open notification listener
@@ -86,4 +87,18 @@ export function setupNotificationListener() {
 
 export function handlePressNotification(notification) {
   console.tron.warn({ notification })
+}
+
+export function displayNotification(message) {
+  let notification = new firebase.notifications.Notification(message);
+
+  notification.android.setChannelId("VsIgnite");
+  notification.android.setAutoCancel(true)
+  notification.android.setPriority(firebase.notifications.Android.Priority.High)
+  notification.android.setOngoing(false)
+  notification.android.setVibrate([300])
+  // change small icon
+  // notification.android.setSmallIcon('ic_stat_2')
+  notification.setSound('default')
+  firebase.notifications().displayNotification(notification);
 }
