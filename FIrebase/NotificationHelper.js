@@ -50,6 +50,11 @@ export function setupMessageListener() {
 }
 
 export function setupNotificationListener() {
+  const channel = new firebase.notifications.Android.Channel('VsIgnite', 'VsIgnite Channel', firebase.notifications.Android.Importance.Max)
+  .setDescription('VsIgnite apps test channel');
+
+  // Create the channel
+  firebase.notifications().android.createChannel(channel);
   // Get initial notification
   firebase.notifications().getInitialNotification()
     .then((notificationOpen) => {
@@ -92,7 +97,8 @@ export function handlePressNotification(notification) {
 export function displayNotification(message) {
   let notification = new firebase.notifications.Notification(message);
 
-  notification.android.setChannelId("VsIgnite");
+  notification.android.setChannelId('VsIgnite')
+  notification.android.setSmallIcon('ic_launcher');
   notification.android.setAutoCancel(true)
   notification.android.setPriority(firebase.notifications.Android.Priority.High)
   notification.android.setOngoing(false)
