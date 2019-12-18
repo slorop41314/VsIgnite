@@ -8,6 +8,7 @@ class QiscusManager {
   qiscus = undefined
   errorCallback = () => { }
   user = {}
+  fcmToken = undefined
 
   constructor() {
     this.qiscus = new QiscusSDK();
@@ -64,6 +65,7 @@ class QiscusManager {
 
     // notification
     this.setDeviceToken = this.setDeviceToken.bind(this)
+    this.removeDeviceToken = this.removeDeviceToken.bind(this)
   }
 
   /**
@@ -567,38 +569,30 @@ class QiscusManager {
   /**
    * finction to disconect qiscus instance
    */
-  diconnect() {
+  async diconnect() {
+    await this.removeDeviceToken()
     this.qiscus.disconnect()
   }
 
   setDeviceToken(token) {
-    const userToken = this.qiscus.userData.token;
-    const baseURL = this.qiscus.baseURL
-    const api = apisauce.create({
-      // base URL is read from the "constructor"
-      baseURL,
-      // here are some default headers
-      headers: {
-        'qiscus_sdk_app_id': this.qiscus.AppId,
-        'qiscus_sdk_token': userToken,
-        'qiscus_sdk_user_id': this.qiscus.user_id
-      },
-      // 10 second timeout...
-      timeout: 10000
-    })
-
-    const params = {
-      token: userToken,
-      device_token: token,
-      device_platform: "rn"
-    }
-
+    this.fcmToken = token
     return new Promise(async (resolve, reject) => {
       try {
-        const response = await api.post('/api/v2/mobile/set_user_device_token', params)
+        const response = await this.qiscus.registerDeviceToken(token, __DEV__)
         resolve(response)
       } catch (error) {
         reject({ type: QiscusStrings.errors.setDeviceTokenFailure, error })
+      }
+    })
+  }
+
+  removeDeviceToken() {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const response = await this.qiscus.removeDeviceToken(this.fcmToken, __DEV__)
+        resolve(response)
+      } catch (error) {
+        reject({ type: QiscusStrings.errors.removeDeviceTokenFailure, error })
       }
     })
   }

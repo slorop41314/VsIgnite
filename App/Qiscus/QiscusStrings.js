@@ -38,6 +38,7 @@ const QiscusStrings = {
     clearMessagesFailure: 'clear-messages-failure',
     publishTypingFailure: 'publish-typing-failure',
     setDeviceTokenFailure: 'set-devices-token-failure',
+    removeDeviceTokenFailure: 'remove-devices-token-failure',
   },
   isOnlineStatus: '1',
   delimiter: ':',
