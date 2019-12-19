@@ -41,41 +41,37 @@ class LoginScreen extends React.Component {
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }}>
         <View style={{ height: "100%", width: "100%" }}>
           <KeyboardAvoidingView enabled style={{ flex: 1 }}>
-            <ImageBackground
-              source={Images.background}
-              style={styles.background}
-            >
-              <View style={styles.container}>
-                <Image source={Images.logo} style={styles.logo} />
-                <View style={styles.form}>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.label}>User ID</Text>
-                    <TextInput
-                      style={styles.input}
-                      onChangeText={text => this.setState({ userId: text })}
-                      value={this.state.userId}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.label}>User Key</Text>
-                    <TextInput
-                      style={styles.input}
-                      onChangeText={text => this.setState({ userKey: text })}
-                      value={this.state.userKey}
-                      secureTextEntry={true}
-                    />
-                  </View>
-                  <View style={styles.formGroup}>
-                    <TouchableOpacity
-                      style={styles.submitButton}
-                      onPress={() => this.onSubmit()}
-                    >
-                      <Text style={styles.submitText}>Start</Text>
-                    </TouchableOpacity>
-                  </View>
+
+            <View style={styles.container}>
+              <Image source={Images.logo} style={styles.logo} />
+              <View style={styles.form}>
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>User ID</Text>
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={text => this.setState({ userId: text })}
+                    value={this.state.userId}
+                  />
+                </View>
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>User Key</Text>
+                  <TextInput
+                    style={styles.input}
+                    onChangeText={text => this.setState({ userKey: text })}
+                    value={this.state.userKey}
+                    secureTextEntry={true}
+                  />
+                </View>
+                <View style={styles.formGroup}>
+                  <TouchableOpacity
+                    style={styles.submitButton}
+                    onPress={() => this.onSubmit()}
+                  >
+                    <Text style={styles.submitText}>Start</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
-            </ImageBackground>
+            </View>
           </KeyboardAvoidingView>
         </View>
       </ScrollView>

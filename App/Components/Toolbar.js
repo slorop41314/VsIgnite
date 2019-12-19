@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, TouchableWithoutFeedback, StyleSheet, Text } from 'react-native';
+import { View, TouchableWithoutFeedback, StyleSheet, Text, Platform } from 'react-native';
+import { getStatusBarHeight } from 'react-native-iphone-x-helper'
 
 export default class Toolbar extends React.PureComponent {
   render() {
@@ -31,7 +32,8 @@ export default class Toolbar extends React.PureComponent {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     backgroundColor: 'white',
     shadowColor: '#000',
     shadowOffset: {
@@ -40,7 +42,7 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-
+    paddingTop: 10 + (Platform.OS === 'ios' ? getStatusBarHeight() : 0),
     elevation: 5,
   },
   titleButton: {
