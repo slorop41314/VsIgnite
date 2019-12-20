@@ -7,18 +7,25 @@ import { Images } from '../../Themes';
 
 import QiscusActions from '../../Redux/QiscusRedux';
 import { connect } from 'react-redux';
-import { CustomFlatList, Styled } from 'react-native-awesome-component';
+import { CustomFlatList, Styled, CustomButton } from 'react-native-awesome-component';
+import { values } from 'ramda';
 
-class UserListScreen extends React.Component {
+class UserListGroupScreen extends React.Component {
   itemPerPage = 50;
   currentPage = 1;
 
   constructor(props) {
     super(props)
 
+    this.state = {
+      selectedUser: {},
+    }
+
     this.onBack = this.onBack.bind(this)
     this.fetchFunction = this.fetchFunction.bind(this)
     this.renderItem = this.renderItem.bind(this)
+    this.onPressUser = this.onPressUser.bind(this)
+    this.onPressInvite = this.onPressInvite.bind(this)
   }
 
   onBack() {
@@ -34,17 +41,38 @@ class UserListScreen extends React.Component {
     });
   };
 
+  onPressUser(user) {
+    let newSelectedUser = { ...this.state.selectedUser }
+    if (newSelectedUser[user.id]) {
+      delete newSelectedUser[user.id]
+    } else {
+      newSelectedUser = {
+        ...newSelectedUser,
+        [user.id]: user,
+      }
+    }
+    this.setState({ selectedUser: newSelectedUser })
+  }
+
+  onPressInvite() {
+    const selectedUserArray = values(this.state.selectedUser)
+    this.props.navigation.navigate('GroupCreateInfoScreen', { users: selectedUserArray })
+  }
+
   renderItem(item) {
     return (
       <UserItem
         user={item}
-        onPress={() => this.props.createSingleRoomRequest(item.email)}
+        onPress={() => this.onPressUser(item)}
+        selected={this.state.selectedUser[item.id] ? true : false}
       />
     );
   };
 
   render() {
     const { users, getUserStatus } = this.props;
+    const { selectedUser } = this.state
+    const selectedUserCount = values(selectedUser).length
     const { payload, fetching } = getUserStatus;
     let flatListMeta = { current_page: this.currentPage, next_page: undefined };
     if (payload) {
@@ -60,10 +88,11 @@ class UserListScreen extends React.Component {
         };
       }
     }
+
     return (
       <Styled.FlexContainer>
         <Toolbar
-          title="New Message"
+          title="Create Group"
           renderLeftButton={() => (
             <TouchableOpacity
               onPress={() => this.props.navigation.goBack()}
@@ -81,7 +110,7 @@ class UserListScreen extends React.Component {
           )}
         />
         <View style={styles.separator}>
-          <Text style={styles.separatorText}>Contact</Text>
+          <Text style={styles.separatorText}>{`Invite Member (${selectedUserCount}/100)`}</Text>
         </View>
         <Styled.FlexContainer>
           <CustomFlatList
@@ -92,6 +121,7 @@ class UserListScreen extends React.Component {
             meta={flatListMeta}
           />
         </Styled.FlexContainer>
+        <CustomButton title={'INVITE'} onPress={this.onPressInvite} />
       </Styled.FlexContainer>
     );
   }
@@ -108,11 +138,10 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     getUsersRequest: params => dispatch(QiscusActions.getUsersRequest(params)),
-    createSingleRoomRequest: userId => dispatch(QiscusActions.createSingleRoomRequest(userId)),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(UserListScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(UserListGroupScreen);
 
 const styles = StyleSheet.create({
   container: {

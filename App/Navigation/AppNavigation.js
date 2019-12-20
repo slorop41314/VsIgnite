@@ -8,6 +8,8 @@ import ChatScreen from '../Containers/Chat/ChatScreen'
 import ProfileScreen from '../Containers/Profile/ProfileScreen';
 
 import styles from './Styles/NavigationStyles'
+import UserListGroupScreen from '../Containers/Chat/UserListGroupScreen';
+import GroupCreateInfoScreen from '../Containers/Chat/GroupCreateInfoScreen'
 
 export const AuthStack = createStackNavigator(
   {
@@ -24,6 +26,8 @@ export const MainStack = createStackNavigator(
   {
     RoomListScreen: { screen: RoomListScreen },
     UserListScreen: { screen: UserListScreen },
+    UserListGroupScreen: { screen: UserListGroupScreen },
+    GroupCreateInfoScreen: { screen: GroupCreateInfoScreen },
     ChatScreen: { screen: ChatScreen },
     ProfileScreen: { screen: ProfileScreen }
   },

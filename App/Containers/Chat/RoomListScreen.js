@@ -5,6 +5,7 @@ import {
   Image,
   TouchableOpacity,
   FlatList,
+  Text,
 } from "react-native";
 import { NavigationEvents } from 'react-navigation'
 import RoomItem from "../../Components/RoomItem";
@@ -13,6 +14,8 @@ import { Images } from '../../Themes'
 
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
+import { Styled } from "react-native-awesome-component";
+import { Colors } from '../../Themes'
 
 class RoomListScreen extends React.Component {
   constructor(props) {
@@ -20,6 +23,7 @@ class RoomListScreen extends React.Component {
 
     this.onClickProfile = this.onClickProfile.bind(this)
     this.onClickRoom = this.onClickRoom.bind(this)
+    this.onPressCreateGroup = this.onPressCreateGroup.bind(this)
   }
 
   componentDidMount() {
@@ -27,8 +31,8 @@ class RoomListScreen extends React.Component {
     const params = {
       page: 1,
       limit: 100,
-      show_participants: false,
-      show_empty: false
+      show_participants: true,
+      show_empty: true
     }
 
     getRoomsRequest(params)
@@ -53,6 +57,10 @@ class RoomListScreen extends React.Component {
 
   get rooms() {
     return this.sortRooms(Object.values(this.props.rooms || []));
+  }
+
+  onPressCreateGroup() {
+    this.props.navigation.navigate('UserListGroupScreen')
   }
 
   render() {
@@ -85,6 +93,11 @@ class RoomListScreen extends React.Component {
             </TouchableOpacity>
           )}
         />
+        <Styled.Container padded isCard style={{ alignItems: 'flex-end' }}>
+          <TouchableOpacity activeOpacity={0.8} onPress={this.onPressCreateGroup}>
+            <Text style={{ fontSize: 15, color: Colors.charcoal }}>Create Group</Text>
+          </TouchableOpacity>
+        </Styled.Container>
         <FlatList
           data={rooms}
           keyExtractor={it => `key-${it.id}`}

@@ -1,4 +1,4 @@
-import { NavigationActions } from 'react-navigation';
+import { StackActions, NavigationActions } from 'react-navigation';
 
 let _navigator;
 
@@ -23,8 +23,13 @@ function dispatch(action) {
   navigation.dispatch(action)
 }
 
+function popToTop() {
+  const navigation = _navigator.currentNavProp
+  navigation.dispatch(StackActions.popToTop())
+}
+
 function findActiveScreen(state) {
-  const {routes, index} = state
+  const { routes, index } = state
   if (routes && routes[index]) {
     return findActiveScreen(routes[index])
   } else {
@@ -34,7 +39,7 @@ function findActiveScreen(state) {
 
 function getActiveScreenAndParams() {
   const navigation = _navigator.currentNavProp
-  const {state} = navigation
+  const { state } = navigation
   return findActiveScreen(state, null)
 }
 
@@ -45,4 +50,5 @@ export default {
   dispatch,
   setTopLevelNavigator,
   getActiveScreenAndParams,
+  popToTop,
 };

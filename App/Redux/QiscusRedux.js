@@ -55,9 +55,13 @@ const { Types, Creators } = createActions({
   getUsersSuccess: ['payload'],
   getUsersFailure: null,
 
-  openRoomRequest: ['data'],
-  openRoomSuccess: ['payload'],
-  openRoomFailure: null,
+  createSingleRoomRequest: ['data'],
+  createSingleRoomSuccess: ['payload'],
+  createSingleRoomFailure: null,
+
+  createGroupRoomRequest: ['data'],
+  createGroupRoomSuccess: ['payload'],
+  createGroupRoomFailure: null,
 })
 
 export const QiscusTypes = Types
@@ -83,8 +87,8 @@ export const INITIAL_STATE = Immutable({
   readMessage: DEFAULT_REDUCER_STATE,
 
   getUsers: DEFAULT_REDUCER_STATE,
-  openRoom: DEFAULT_REDUCER_STATE,
-
+  createSingleRoom: DEFAULT_REDUCER_STATE,
+  createGroupRoom: DEFAULT_REDUCER_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -299,6 +303,29 @@ export const getRoomsFailureReducer = (state) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: false, error: true } })
 }
 
+export const createSingleRoomRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, createSingleRoom: { ...state.createSingleRoom, fetching: true, data } })
+}
+export const createSingleRoomSuccessReducer = (state, { payload }) => {
+  return state.merge({
+    ...state,
+    createSingleRoom: { ...state.createSingleRoom, fetching: false, error: undefined, payload },
+  })
+}
+export const createSingleRoomFailureReducer = (state) => {
+  return state.merge({ ...state, createSingleRoom: { ...state.createSingleRoom, fetching: false, error: true } })
+}
+
+export const createGroupRoomRequest = (state, { data }) => {
+  return state.merge({ ...state, createGroupRoom: { ...state.createGroupRoom, fetching: true, error: undefined, data } })
+}
+export const createGroupRoomSuccess = (state, { payload }) => {
+  return state.merge({ ...state, createGroupRoom: { ...state.createGroupRoom, fetching: false, error: undefined, payload } })
+}
+export const createGroupRoomFailure = (state) => {
+  return state.merge({ ...state, createGroupRoom: { ...state.createGroupRoom, fetching: false, error: true } })
+}
+
 // MESSAGES
 export const getMessagesRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getMessages: { ...state.getMessages, fetching: true, data } })
@@ -382,20 +409,6 @@ export const getUsersFailureReducer = (state) => {
   return state.merge({ ...state, getUsers: { ...state.getUsers, fetching: false, error: true } })
 }
 
-export const openRoomRequestReducer = (state, { data }) => {
-  return state.merge({ ...state, openRoom: { ...state.openRoom, fetching: true, data } })
-}
-export const openRoomSuccessReducer = (state, { payload }) => {
-  return state.merge({
-    ...state,
-    openRoom: { ...state.openRoom, fetching: false, error: undefined, payload },
-  })
-}
-export const openRoomFailureReducer = (state) => {
-  return state.merge({ ...state, openRoom: { ...state.openRoom, fetching: false, error: true } })
-}
-
-
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -431,6 +444,15 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
   [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
 
+  // ROOM
+  [Types.CREATE_SINGLE_ROOM_REQUEST]: createSingleRoomRequestReducer,
+  [Types.CREATE_SINGLE_ROOM_SUCCESS]: createSingleRoomSuccessReducer,
+  [Types.CREATE_SINGLE_ROOM_FAILURE]: createSingleRoomFailureReducer,
+
+  [Types.CREATE_GROUP_ROOM_REQUEST]: createGroupRoomRequest,
+  [Types.CREATE_GROUP_ROOM_SUCCESS]: createGroupRoomSuccess,
+  [Types.CREATE_GROUP_ROOM_FAILURE]: createGroupRoomFailure,
+
   // MESSAGES
   [Types.GET_MESSAGES_REQUEST]: getMessagesRequestReducer,
   [Types.GET_MESSAGES_SUCCESS]: getMessagesSuccessReducer,
@@ -448,8 +470,4 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_USERS_REQUEST]: getUsersRequestReducer,
   [Types.GET_USERS_SUCCESS]: getUsersSuccessReducer,
   [Types.GET_USERS_FAILURE]: getUsersFailureReducer,
-
-  [Types.OPEN_ROOM_REQUEST]: openRoomRequestReducer,
-  [Types.OPEN_ROOM_SUCCESS]: openRoomSuccessReducer,
-  [Types.OPEN_ROOM_FAILURE]: openRoomFailureReducer,
 })

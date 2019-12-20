@@ -6,15 +6,42 @@ import {
   View,
 } from 'react-native';
 import { PlaceholderImage, PlaceholderText } from 'react-native-awesome-component';
+import { is } from 'ramda';
+import { Colors } from '../Themes';
+
+const Bullet = (props) => {
+  const { active } = props
+  return (
+    <View
+      style={{
+        width: 15,
+        height: 15,
+        borderRadius: 15,
+        backgroundColor: active ? Colors.green1 : Colors.cloud
+      }}
+    />
+  )
+}
 
 export default class UserItem extends React.Component {
   render() {
-    const { user } = this.props
+    const { user, selected, onPress } = this.props
     const avatarURL = user.avatar_url;
     const username = user.username;
+    let selectedComponent = null
+
+    if (is(Boolean, selected)) {
+      selectedComponent = (
+        <View style={{ marginRight: 10 }}>
+          <Bullet active={selected} />
+        </View>
+      )
+    }
+
     return (
       <TouchableOpacity
-        onPress={this.props.onPress}
+        onPress={onPress}
+        activeOpacity={0.8}
       >
         <View
           style={{
@@ -47,6 +74,7 @@ export default class UserItem extends React.Component {
           }}>
             <PlaceholderText numberOfLines={1}>{username}</PlaceholderText>
           </View>
+          {selectedComponent}
         </View>
       </TouchableOpacity>
     );

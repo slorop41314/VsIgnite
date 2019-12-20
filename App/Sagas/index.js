@@ -20,9 +20,10 @@ import {
   sendMessageSaga,
   readMessageSaga,
   getUsersSaga,
-  openRoomSaga,
+  createSingleRoomSaga,
   setActiveRoom,
   exitActiveRoom,
+  createGroupRoomSaga,
 } from './QiscusSagas'
 import { SessionTypes } from '../Redux/SessionRedux'
 import { doLogout } from './SessionSagas'
@@ -49,7 +50,8 @@ export default function* root() {
     takeEvery(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
     takeLatest(QiscusTypes.READ_MESSAGE_REQUEST, readMessageSaga),
     takeLatest(QiscusTypes.GET_USERS_REQUEST, getUsersSaga),
-    takeLatest(QiscusTypes.OPEN_ROOM_REQUEST, openRoomSaga),
+    takeLatest(QiscusTypes.CREATE_SINGLE_ROOM_REQUEST, createSingleRoomSaga),
+    takeLatest(QiscusTypes.CREATE_GROUP_ROOM_REQUEST, createGroupRoomSaga),
     
     // SESSION
     takeLatest(SessionTypes.LOGOUT_REQUEST, doLogout),

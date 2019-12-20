@@ -171,7 +171,7 @@ export function* exitActiveRoom(action) {
     yield put(QiscusActions.exitActiveRoomSuccess())
   } catch (error) {
     yield put(QiscusActions.exitActiveRoomFailure())
-  } 
+  }
 }
 
 export function* getRoomsSaga(action) {
@@ -312,13 +312,25 @@ export function* getUsersSaga(action) {
   }
 }
 
-export function* openRoomSaga(action) {
+export function* createSingleRoomSaga(action) {
   const { data } = action;
   try {
     const room = yield QiscusManager.createOrGetSingleRoom(data);
     NavigationServices.navigate('ChatScreen', { room });
-    yield put(QiscusActions.openRoomSuccess(room));
+    yield put(QiscusActions.createSingleRoomSuccess(room));
   } catch (error) {
-    yield put(QiscusActions.openRoomFailure());
+    yield put(QiscusActions.createSingleRoomFailure());
+  }
+}
+
+export function* createGroupRoomSaga(action) {
+  const { data } = action;
+  const { name, options, userIds } = data
+  try {
+    const room = yield QiscusManager.createGroupChatRoom(name, userIds, options)
+    NavigationServices.popToTop()
+    yield put(QiscusActions.createGroupRoomSuccess(room))
+  } catch (error) {
+    yield put(QiscusActions.createGroupRoomFailure())
   }
 }
