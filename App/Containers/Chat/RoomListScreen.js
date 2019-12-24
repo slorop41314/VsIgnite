@@ -14,23 +14,28 @@ import { Images } from '../../Themes'
 
 import QiscusActions from '../../Redux/QiscusRedux'
 import { connect } from 'react-redux'
-import { Styled } from "react-native-awesome-component";
+import { Styled, CustomFlatList } from "react-native-awesome-component";
 import { Colors } from '../../Themes'
 
 class RoomListScreen extends React.Component {
+  itemPerPage = 100;
+  currentPage = 1;
+
   constructor(props) {
     super(props)
 
+    this.fetchFunction = this.fetchFunction.bind(this)
     this.onClickProfile = this.onClickProfile.bind(this)
     this.onClickRoom = this.onClickRoom.bind(this)
     this.onPressCreateGroup = this.onPressCreateGroup.bind(this)
   }
 
-  componentDidMount() {
+  fetchFunction({ page }) {
     const { getRoomsRequest } = this.props
+    this.currentPage = page;
     const params = {
-      page: 1,
-      limit: 100,
+      page,
+      limit: this.itemPerPage,
       show_participants: true,
       show_empty: true
     }
@@ -64,12 +69,23 @@ class RoomListScreen extends React.Component {
   }
 
   render() {
-    const { qiscusUser } = this.props
+    const { qiscusUser, getRoomsStatus } = this.props
+    const { payload, fetching, data } = getRoomsStatus;
     const rooms = this.rooms;
+
+    let flatListMeta = { current_page: this.currentPage, next_page: undefined };
+    if (fetching === false && payload) {
+      if (payload.length === this.itemPerPage) {
+        flatListMeta = {
+          current_page: data.page,
+          next_page: data.page + 1,
+        };
+      }
+    }
 
     return (
       <View style={styles.container}>
-        <NavigationEvents onWillFocus={() => this.componentDidMount()} />
+        <NavigationEvents onWillFocus={() => this.fetchFunction({ page: this.currentPage })} />
         <Toolbar
           title="Message"
           renderLeftButton={() => (
@@ -98,16 +114,17 @@ class RoomListScreen extends React.Component {
             <Text style={{ fontSize: 15, color: Colors.charcoal }}>Create Group</Text>
           </TouchableOpacity>
         </Styled.Container>
-        <FlatList
+        <CustomFlatList
           data={rooms}
-          keyExtractor={it => `key-${it.id}`}
-          contentContainerStyle={{ flexGrow: 1, }}
-          renderItem={({ item }) => (
-            <RoomItem
-              room={item}
+          fetchFunction={this.fetchFunction}
+          loading={fetching}
+          meta={flatListMeta}
+          renderItem={({ item }) => {
+            return <RoomItem
+              data={item}
               onClick={() => this.onClickRoom(item)}
             />
-          )}
+          }}
         />
       </View>
     );
@@ -118,6 +135,7 @@ const mapStateToProps = (state) => {
   return {
     qiscusUser: state.qiscus.currentUser,
     rooms: state.qiscus.rooms,
+    getRoomsStatus: state.qiscus.getRooms,
   }
 }
 

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native'
 import dateFns from 'date-fns'
+import { PlaceholderImage, PlaceholderText } from 'react-native-awesome-component';
 
 export default class RoomItem extends React.PureComponent {
   getTime = (time) => {
@@ -21,26 +22,37 @@ export default class RoomItem extends React.PureComponent {
   };
 
   render() {
-    const room = this.props.room;
+    const { data } = this.props
+    let room = {}
+    let lastComment = undefined
+    let unreadCount = undefined
+    let lastCommentDate = undefined
 
-    const lastComment = room.last_comment_message.startsWith('[file]')
-      ? 'File attachment'
-      : room.last_comment_message;
-    const unreadCount = Number(room.count_notif);
+
+    if (data && data.loading !== true) {
+      room = data
+      lastComment = room.last_comment_message.startsWith('[file]') ? 'File attachment' : room.last_comment_message;
+      unreadCount = Number(room.count_notif);
+      lastCommentDate = this.getTime(room.last_comment_message_created_at)
+    }
+
     return (
-      <TouchableOpacity style={styles.container}
-      onPress={() => this.onClick(room.id)}>
-        <Image style={styles.avatar} source={{ uri: room.avatar }} />
+      <TouchableOpacity style={styles.container} onPress={() => this.onClick(room.id)}>
+        <PlaceholderImage uri={room.avatar} width={40} height={40} radius={20} />
         <View style={styles.dataContainer}>
           <View style={styles.content}>
-            <Text style={styles.name}>{room.name}</Text>
-            <Text style={styles.lastMessage}>{lastComment}</Text>
+            <PlaceholderText numberOfLines={1} style={styles.name}>{room.name}</PlaceholderText>
+            <PlaceholderText numberOfLines={1} style={styles.lastMessage}>{lastComment}</PlaceholderText>
           </View>
           <View style={styles.meta}>
-            <Text style={styles.time}>
-              {this.getTime(room.last_comment_message_created_at)}
-            </Text>
-            {unreadCount > 0 && <Text style={styles.unreadCount}>{unreadCount}</Text>}
+            {data.loading !== true && (
+              <Text numberOfLines={1} style={styles.time}>
+                {lastCommentDate}
+              </Text>
+            )}
+            {data.loading !== true && unreadCount > 0  && (
+              <Text numberOfLines={1} style={styles.unreadCount}>{unreadCount}</Text>
+            )}
           </View>
         </View>
       </TouchableOpacity>

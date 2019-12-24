@@ -10,7 +10,7 @@
  *    you'll need to define a constant in that file.
  *************************************************************/
 
-import { call, put, fork, take, cancelled, all } from 'redux-saga/effects';
+import { call, put, fork, take, cancelled, all, delay } from 'redux-saga/effects';
 import QiscusActions, { QiscusTypes } from '../Redux/QiscusRedux';
 import QiscusManager from '../Qiscus/QiscusManager';
 import {
@@ -198,13 +198,11 @@ export function* getMessagesSaga(action) {
 }
 
 export function* readMessageSaga(action) {
-  console.tron.log({ action });
   const { data } = action;
   try {
     yield QiscusManager.readMessage(data.roomId, data.lastReadMessageId);
     yield put(QiscusActions.readMessageSuccess());
   } catch (error) {
-    console.tron.error({ error });
     yield put(QiscusActions.readMessageFailure());
   }
 }

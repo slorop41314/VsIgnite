@@ -288,15 +288,18 @@ export const getRoomsRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getRooms: { ...state.getRooms, fetching: true, data } })
 }
 export const getRoomsSuccessReducer = (state, { payload }) => {
-  const formattedRooms = payload.reduce((result, room) => {
-    result[room.id] = room;
-    return result;
-  }, {});
+  let newRooms = { ...state.rooms }
+  for (let i = 0; i < payload.length; i++) {
+    newRooms = {
+      ...newRooms,
+      [payload[i].id]: payload[i]
+    }
+  }
 
   return state.merge({
     ...state,
-    getRooms: { ...state.getRooms, fetching: false, error: undefined },
-    rooms: formattedRooms
+    getRooms: { ...state.getRooms, fetching: false, error: undefined, payload },
+    rooms: newRooms
   })
 }
 export const getRoomsFailureReducer = (state) => {

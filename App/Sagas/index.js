@@ -45,7 +45,7 @@ export default function* root() {
     takeLatest(QiscusTypes.SET_USER, setUserSaga),
     takeLatest(QiscusTypes.SET_ACTIVE_ROOM_REQUEST, setActiveRoom),
     takeLatest(QiscusTypes.EXIT_ACTIVE_ROOM_REQUEST, exitActiveRoom),
-    takeLatest(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
+    takeEvery(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
     takeLatest(QiscusTypes.GET_MESSAGES_REQUEST, getMessagesSaga),
     takeEvery(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
     takeLatest(QiscusTypes.READ_MESSAGE_REQUEST, readMessageSaga),
