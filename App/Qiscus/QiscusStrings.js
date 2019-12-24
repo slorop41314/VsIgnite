@@ -9,7 +9,9 @@ const QiscusStrings = {
     commentDelivered: 'comment-delivered',
     typing: 'typing',
     chatRoomCreated: 'chat-room-created',
-    onReconnect: 'on-reconnect'
+    onReconnect: 'on-reconnect',
+    profileUpdate: 'profile-update',
+    roomUpdate: 'room-update',
   },
   errors: {
     loginFailure: 'login-failure',
@@ -43,9 +45,6 @@ const QiscusStrings = {
   isOnlineStatus: '1',
   delimiter: ':',
   upload: {
-    type: {
-      image: 'image'
-    },
     success: 'upload-success',
     failure: 'upload-failure',
     progress: 'upload-progress'
@@ -54,6 +53,11 @@ const QiscusStrings = {
     text: 'text',
     file_attachment: 'file-attachment',
     custom: 'custom',
+  },
+  sub_message_type: {
+    invite: 'invite',
+    leave: 'leave',
+    image: 'image'
   },
   room_event: 'room-event',
   message_status: {

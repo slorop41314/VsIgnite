@@ -6,6 +6,8 @@ const appId = "test-qisc-tkfoim909xj";
 
 class QiscusManager {
   qiscus = undefined
+  activeRoom = undefined
+  loggedUser = undefined
   errorCallback = () => { }
   user = {}
   fcmToken = undefined
@@ -93,7 +95,10 @@ class QiscusManager {
     this.qiscus.init({
       AppId: appId,
       options: {
-        loginSuccessCallback: loginSuccess ? (authData) => loginSuccess(authData) : () => { },
+        loginSuccessCallback: loginSuccess ? (authData) => {
+          this.loggedUser = authData.user
+          loginSuccess(authData)
+        } : () => { },
         commentDeletedCallback: commentDeleted ? (data) => commentDeleted(data) : () => { },
         commentDeliveredCallback: commentDelivered ? (data) => commentDelivered(data) : () => { },
         commentReadCallback: commentRead ? (data) => commentRead(data) : () => { },
@@ -277,6 +282,7 @@ class QiscusManager {
     return new Promise(async (resolve, reject) => {
       try {
         const room = await this.qiscus.getRoomById(roomId)
+        this.activeRoom = room
         resolve(room)
       } catch (error) {
         reject({ type: QiscusStrings.errors.setActiveRoomFailure, error })
@@ -288,6 +294,7 @@ class QiscusManager {
     return new Promise(async (resolve, reject) => {
       try {
         this.qiscus.exitChatRoom();
+        this.activeRoom = undefined
         resolve()
       } catch (error) {
         reject({ type: QiscusStrings.errors.exitActiveRoomFailure, error })
@@ -417,10 +424,6 @@ class QiscusManager {
     })
   }
 
-  /**
-   * Not working
-   * @param {*} status 
-   */
   publishTyping(status) {
     this.qiscus.publishTyping(status)
   }
@@ -570,6 +573,7 @@ class QiscusManager {
    * finction to disconect qiscus instance
    */
   async diconnect() {
+    this.loggedUser = undefined
     await this.removeDeviceToken()
     this.qiscus.disconnect()
   }

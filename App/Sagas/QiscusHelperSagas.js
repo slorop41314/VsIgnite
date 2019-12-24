@@ -15,24 +15,25 @@ export function* errorCallbackSaga(error) {
   console.tron.error({ error })
 }
 
-function * setDeviceTokenHandler() {
- try {
-  const isGranted = yield setupNotificationPermission()
-  if (isGranted) {
-    const fcmToken = yield setupTokenRegistration()
-    if (fcmToken) {
-      const response = yield QiscusManager.setDeviceToken(fcmToken)
-      if (response.data) {
-        console.tron.error('SUCCESS SET DEVICE TOKEN')
+function* setDeviceTokenHandler() {
+  try {
+    const isGranted = yield setupNotificationPermission()
+    if (isGranted) {
+      const fcmToken = yield setupTokenRegistration()
+      if (fcmToken) {
+        console.tron.error({ fcmToken })
+        // const response = yield QiscusManager.setDeviceToken(fcmToken)
+        // if (response.data) {
+        //   console.tron.error('SUCCESS SET DEVICE TOKEN')
+        // }
+      } else {
+        console.tron.error('NO DEVICE TOKEN')
       }
-    } else {
-      console.tron.error('NO DEVICE TOKEN')
     }
+  } catch (error) {
+    // handle once failure
+    console.tron.error({ error })
   }
- } catch (error) {
-   // handle once failure
-   console.tron.error({error})
- }
 }
 
 export function* loginSuccessCallbackSaga(data) {

@@ -255,7 +255,7 @@ export function* sendMessageSaga(action) {
               data = {
                 ...data,
                 payload: JSON.stringify({
-                  type: QiscusStrings.upload.type.image,
+                  type: QiscusStrings.sub_message_type.image,
                   content: {
                     url: payload,
                     file_name: name,
