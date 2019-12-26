@@ -24,6 +24,7 @@ import {
   setActiveRoom,
   exitActiveRoom,
   createGroupRoomSaga,
+  updateUserSaga,
 } from './QiscusSagas'
 import { SessionTypes } from '../Redux/SessionRedux'
 import { doLogout } from './SessionSagas'
@@ -43,15 +44,21 @@ export default function* root() {
 
     takeLatest(QiscusTypes.QISCUS_INIT, qiscusInitSaga),
     takeLatest(QiscusTypes.SET_USER, setUserSaga),
+    // Qiscus Room
     takeLatest(QiscusTypes.SET_ACTIVE_ROOM_REQUEST, setActiveRoom),
     takeLatest(QiscusTypes.EXIT_ACTIVE_ROOM_REQUEST, exitActiveRoom),
     takeEvery(QiscusTypes.GET_ROOMS_REQUEST, getRoomsSaga),
+    takeLatest(QiscusTypes.CREATE_SINGLE_ROOM_REQUEST, createSingleRoomSaga),
+    takeLatest(QiscusTypes.CREATE_GROUP_ROOM_REQUEST, createGroupRoomSaga),
+
+    // Qiscus Message
     takeLatest(QiscusTypes.GET_MESSAGES_REQUEST, getMessagesSaga),
     takeEvery(QiscusTypes.SEND_MESSAGE_REQUEST, sendMessageSaga),
     takeLatest(QiscusTypes.READ_MESSAGE_REQUEST, readMessageSaga),
+
+    // Qiscus User
     takeLatest(QiscusTypes.GET_USERS_REQUEST, getUsersSaga),
-    takeLatest(QiscusTypes.CREATE_SINGLE_ROOM_REQUEST, createSingleRoomSaga),
-    takeLatest(QiscusTypes.CREATE_GROUP_ROOM_REQUEST, createGroupRoomSaga),
+    takeLatest(QiscusTypes.UPDATE_USER_REQUEST, updateUserSaga),
     
     // SESSION
     takeLatest(SessionTypes.LOGOUT_REQUEST, doLogout),

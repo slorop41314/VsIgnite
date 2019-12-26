@@ -332,3 +332,14 @@ export function* createGroupRoomSaga(action) {
     yield put(QiscusActions.createGroupRoomFailure())
   }
 }
+
+export function* updateUserSaga(action) {
+  const { data } = action
+  const { name, extras } = data
+  try {
+    const response = yield QiscusManager.updateProfile(name, undefined, extras)
+    yield put(QiscusActions.updateUserSuccess(response))
+  } catch (error) {
+    yield put(QiscusActions.updateUserFailure())
+  }
+}

@@ -37,6 +37,14 @@ const { Types, Creators } = createActions({
   getRoomsSuccess: ['payload'],
   getRoomsFailure: null,
 
+  createSingleRoomRequest: ['data'],
+  createSingleRoomSuccess: ['payload'],
+  createSingleRoomFailure: null,
+
+  createGroupRoomRequest: ['data'],
+  createGroupRoomSuccess: ['payload'],
+  createGroupRoomFailure: null,
+
   // messages action
   getMessagesRequest: ['data'],
   getMessagesSuccess: ['payload'],
@@ -55,13 +63,9 @@ const { Types, Creators } = createActions({
   getUsersSuccess: ['payload'],
   getUsersFailure: null,
 
-  createSingleRoomRequest: ['data'],
-  createSingleRoomSuccess: ['payload'],
-  createSingleRoomFailure: null,
-
-  createGroupRoomRequest: ['data'],
-  createGroupRoomSuccess: ['payload'],
-  createGroupRoomFailure: null,
+  updateUserRequest: ['data'],
+  updateUserSuccess: ['payload'],
+  updateUserFailure: null,
 })
 
 export const QiscusTypes = Types
@@ -81,14 +85,15 @@ export const INITIAL_STATE = Immutable({
 
   setActiveRoom: DEFAULT_REDUCER_STATE,
   getRooms: DEFAULT_REDUCER_STATE,
+  createSingleRoom: DEFAULT_REDUCER_STATE,
+  createGroupRoom: DEFAULT_REDUCER_STATE,
 
   getMessages: DEFAULT_REDUCER_STATE,
   sendMessage: DEFAULT_REDUCER_STATE,
   readMessage: DEFAULT_REDUCER_STATE,
 
   getUsers: DEFAULT_REDUCER_STATE,
-  createSingleRoom: DEFAULT_REDUCER_STATE,
-  createGroupRoom: DEFAULT_REDUCER_STATE,
+  updateUser: DEFAULT_REDUCER_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -412,6 +417,16 @@ export const getUsersFailureReducer = (state) => {
   return state.merge({ ...state, getUsers: { ...state.getUsers, fetching: false, error: true } })
 }
 
+export const updateUserRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, updateUser: { ...state.updateUser, fetching: true, data } })
+}
+export const updateUserSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, updateUser: { ...state.updateUser, fetching: false, error: undefined, payload } })
+}
+export const updateUserFailureReducer = (state) => {
+  return state.merge({ ...state, updateUser: { ...state.updateUser, fetching: false, error: true, payload: undefined } })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -447,7 +462,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_ROOMS_SUCCESS]: getRoomsSuccessReducer,
   [Types.GET_ROOMS_FAILURE]: getRoomsFailureReducer,
 
-  // ROOM
   [Types.CREATE_SINGLE_ROOM_REQUEST]: createSingleRoomRequestReducer,
   [Types.CREATE_SINGLE_ROOM_SUCCESS]: createSingleRoomSuccessReducer,
   [Types.CREATE_SINGLE_ROOM_FAILURE]: createSingleRoomFailureReducer,
@@ -473,4 +487,8 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.GET_USERS_REQUEST]: getUsersRequestReducer,
   [Types.GET_USERS_SUCCESS]: getUsersSuccessReducer,
   [Types.GET_USERS_FAILURE]: getUsersFailureReducer,
+
+  [Types.UPDATE_USER_REQUEST]: updateUserRequestReducer,
+  [Types.UPDATE_USER_SUCCESS]: updateUserSuccessReducer,
+  [Types.UPDATE_USER_FAILURE]: updateUserFailureReducer,
 })

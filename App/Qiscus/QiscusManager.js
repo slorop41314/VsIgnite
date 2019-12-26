@@ -97,6 +97,9 @@ class QiscusManager {
       options: {
         loginSuccessCallback: loginSuccess ? (authData) => {
           this.loggedUser = authData.user
+          console.tron.error({ authData })
+          const user = this.getCurrentUser()
+          console.tron.error({ user })
           loginSuccess(authData)
         } : () => { },
         commentDeletedCallback: commentDeleted ? (data) => commentDeleted(data) : () => { },
@@ -106,7 +109,19 @@ class QiscusManager {
         typingCallback: typing ? (data) => typing(data) : () => { },
         onReconnectCallback: onReconnect ? (data) => onReconnect(data) : () => { },
         newMessagesCallback: newMessages ? (messages) => newMessages(messages) : () => { },
-        roomClearedCallback: roomCleared ? (data) => roomCleared(data) : () => { }
+        roomClearedCallback: roomCleared ? (data) => roomCleared(data) : () => { },
+        updateProfileCallback: (user) => {
+          console.tron.error({ 'UPDATE_PROFILE_CALLBACK': user })
+        },
+        roomChangedCallback: (room) => {
+          console.tron.error({ 'ROOM_CHANGE_CALLBACK': room })
+        },
+        chatRoomCreatedCallback: (response) => {
+          console.tron.error({ 'CHAT_ROOM_CREATED': response })
+        },
+        groupRoomCreatedCallback: (response) => {
+          console.tron.error({ 'GROUP_ROOM_CREATED': response })
+        }
       }
     });
   }
@@ -136,7 +151,7 @@ class QiscusManager {
    */
   async updateProfile(username, avatarUrl, extras) {
     try {
-      await this.qiscus.updateProfile({
+      this.qiscus.updateProfile({
         name: username ? username : this.user.username,
         avatar_url: avatarUrl ? avatarUrl : this.user.avatarUrl,
         extras: extras ? extras : this.user.extras,

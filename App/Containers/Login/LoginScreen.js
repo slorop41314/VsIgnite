@@ -26,10 +26,10 @@ class LoginScreen extends React.Component {
     const params = {
       userId: this.state.userId,
       userKey: this.state.userKey,
-      username: 'Rahmat Zulfikri',
-      avatarUrl: 'http://rahmatzulfikri.xyz/images/avatar.jpg',
+      // username: 'Rahmat Zulfikri',
+      // avatarUrl: 'http://rahmatzulfikri.xyz/images/avatar.jpg',
       extras: {
-        status: 'Keep calm and coding'
+        status: 'Keep calm and coding bro 123'
       }
     }
 
