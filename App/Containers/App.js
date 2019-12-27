@@ -4,9 +4,13 @@ import React, { Fragment } from 'react'
 import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
+import { GlobalConst } from 'react-native-awesome-component'
 
 // create our store
 const store = createStore()
+
+
+GlobalConst.setGlobalCustomInputLabelType('top-label')
 
 /**
  * Provides an entry point into our application.  Both index.ios.js and index.android.js

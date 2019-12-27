@@ -1,40 +1,68 @@
-import { put, select } from 'redux-saga/effects'
+import { put, select, cancelled, call, take } from 'redux-saga/effects'
 import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
 import { is } from 'ramda'
+import firebase from 'react-native-firebase'
+import NavigationService from '../Services/NavigationServices'
+import SessionActions from '../Redux/SessionRedux'
+import { eventChannel } from 'redux-saga';
+import { FirebaseStrings } from '../Data/Const'
 
 // exported to make available for tests
 export const selectAvatar = GithubSelectors.selectAvatar
 
 // process STARTUP actions
-export function * startup (action) {
-  if (__DEV__ && console.tron) {
-    // straight-up string logging
-    console.tron.log('Hello, I\'m an example of how to log via Reactotron.')
+export function setStatupAuthStateHelper() {
+  return eventChannel(emit => {
+    const hasUserCallback = (payload) => {
+      emit({ type: FirebaseStrings.hasUser, payload })
+    }
 
-    // logging an object for better clarity
-    console.tron.log({
-      message: 'pass objects for better logging',
-      someGeneratorFunction: selectAvatar
-    })
+    const noUserCallback = () => {
+      emit({ type: FirebaseStrings.nouser })
+    }
 
-    // fully customized!
-    const subObject = { a: 1, b: [1, 2, 3], c: true }
-    subObject.circularDependency = subObject // osnap!
-    console.tron.display({
-      name: '🔥 IGNITE 🔥',
-      preview: 'You should totally expand this',
-      value: {
-        '💃': 'Welcome to the future!',
-        subObject,
-        someInlineFunction: () => true,
-        someGeneratorFunction: startup,
-        someNormalFunction: selectAvatar
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        hasUserCallback(user)
+      } else {
+        noUserCallback()
       }
     })
-  }
-  const avatar = yield select(selectAvatar)
-  // only get if we don't have it yet
-  if (!is(String, avatar)) {
-    yield put(GithubActions.userRequest('GantMan'))
+
+    const unsubscribe = () => {
+      // unsubscribe
+    };
+
+    return unsubscribe;
+  });
+}
+
+export function* startup(action) {
+  const firebaseAuthStateEvent = yield call(setStatupAuthStateHelper);
+  try {
+    while (true) {
+      try {
+        // An error from socketChannel will cause the saga jump to the catch block
+        const eventPayload = yield take(firebaseAuthStateEvent);
+        const { type, payload } = eventPayload;
+        switch (type) {
+          case FirebaseStrings.hasUser: {
+            NavigationService.navigate('Main')
+            yield put(SessionActions.setLogin(payload))
+            break;
+          }
+          case FirebaseStrings.nouser: {
+            NavigationService.navigate('Auth')
+            break;
+          }
+        }
+      } catch (error) {
+        console.tron.log('FIREBASE AUTH EVENT ERROR', error);
+      }
+    }
+  } finally {
+    if (yield cancelled()) {
+      console.tron.error('FIREBASE AUTH EVENT CANCELED');
+    }
   }
 }
