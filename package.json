@@ -26,6 +26,7 @@
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.2",
     "apisauce": "1.0.3",
+    "chat-engine": "^0.9.21",
     "format-json": "1.0.3",
     "identity-obj-proxy": "3.0.0",
     "lodash": "4.17.15",
