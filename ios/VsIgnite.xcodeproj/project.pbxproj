@@ -22,6 +22,7 @@
 		2DCD954D1E0B4F2C00145EB5 /* VsIgniteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VsIgniteTests.m */; };
 		2E6370A0A085446FBB7EC6EE /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E8B359F645C4CF8B49B1428 /* Ionicons.ttf */; };
 		37BA7122B17D4F56AD9C07E1 /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E622A22D4BDC47438F696A84 /* FontAwesome5_Regular.ttf */; };
+		4441F80323894CD600EE7936 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4441F80223894CD500EE7936 /* GoogleService-Info.plist */; };
 		472345244B4F48698B14EEA2 /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE3CADE5542142A2B7A95273 /* libRNVectorIcons-tvOS.a */; };
 		4CC3FA6B8F314A6B98E7066B /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EE1DF93DC0C48C7819349E8 /* MaterialIcons.ttf */; };
 		52B68FFA187B4ECF9C162BA0 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7C1765F0BDF04C478A1C155E /* MaterialCommunityIcons.ttf */; };
@@ -79,6 +80,7 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VsIgnite_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
+		4441F80223894CD500EE7936 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "VsIgnite/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		6380B111BA2D49A7B36CD135 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		6C085DA9CCEA255461679048 /* Pods-VsIgniteTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgniteTests.release.xcconfig"; path = "Target Support Files/Pods-VsIgniteTests/Pods-VsIgniteTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -172,6 +174,7 @@
 		13B07FAE1A68108700A75B9A /* VsIgnite */ = {
 			isa = PBXGroup;
 			children = (
+				4441F80223894CD500EE7936 /* GoogleService-Info.plist */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -314,6 +317,7 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
+				4441F80423894D3200EE7936 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -375,6 +379,9 @@
 						CreatedOnToolsVersion = 6.2;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = Z8MP7PJXH2;
+					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
 						ProvisioningStyle = Automatic;
@@ -431,6 +438,7 @@
 				37BA7122B17D4F56AD9C07E1 /* FontAwesome5_Regular.ttf in Resources */,
 				583AD5AC7BF347BA8CC8300E /* FontAwesome5_Solid.ttf in Resources */,
 				7917A09CF63D4B61B722186E /* Foundation.ttf in Resources */,
+				4441F80323894CD600EE7936 /* GoogleService-Info.plist in Resources */,
 				2E6370A0A085446FBB7EC6EE /* Ionicons.ttf in Resources */,
 				52B68FFA187B4ECF9C162BA0 /* MaterialCommunityIcons.ttf in Resources */,
 				4CC3FA6B8F314A6B98E7066B /* MaterialIcons.ttf in Resources */,
@@ -507,6 +515,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+		};
+		4441F80423894D3200EE7936 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Fabric/run\"\n";
 		};
 		44CFF5DB23491DDE00ABC40F /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -736,6 +761,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = Z8MP7PJXH2;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VsIgnite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -744,7 +770,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -757,6 +783,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = Z8MP7PJXH2;
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = VsIgnite/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -765,7 +792,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
