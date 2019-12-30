@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>739423356391-su0rr82jd7bnapi3d93n9et8ronufnki.apps.googleusercontent.com</string>
+	<string>739423356391-09hdliht9ja5776d4devtfercrub1ipn.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.739423356391-su0rr82jd7bnapi3d93n9et8ronufnki</string>
+	<string>com.googleusercontent.apps.739423356391-09hdliht9ja5776d4devtfercrub1ipn</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>739423356391-blts79qcl2kh8ck93qvdl1v7sv40acv8.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.vsignite.dev</string>
+	<string>com.vsignite.app</string>
 	<key>PROJECT_ID</key>
 	<string>vsignite-7765d</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:739423356391:ios:00aa344257aa3a954ca942</string>
+	<string>1:739423356391:ios:b09f3795781df2444ca942</string>
 	<key>DATABASE_URL</key>
 	<string>https://vsignite-7765d.firebaseio.com</string>
 </dict>

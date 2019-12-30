@@ -770,7 +770,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.app;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -792,7 +792,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.dev;
+				PRODUCT_BUNDLE_IDENTIFIER = com.vsignite.app;
 				PRODUCT_NAME = VsIgnite;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
