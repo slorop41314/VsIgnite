@@ -11,6 +11,9 @@ const { Types, Creators } = createActions({
   logoutRequest: ['data'],
   logoutSuccess: ['payload'],
   logoutFailure: null,
+  registerRequest: ['data'],
+  registerSuccess: ['payload'],
+  registerFailure: null,
 })
 
 export const AuthTypes = Types
@@ -21,6 +24,7 @@ export default Creators
 export const INITIAL_STATE = Immutable({
   login: DEFAULT_STATE,
   logout: DEFAULT_STATE,
+  register: DEFAULT_STATE,
 })
 
 /* ------------- Selectors ------------- */
@@ -51,6 +55,16 @@ export const logoutFailureReducer = (state) => {
   return state.merge({ ...state, logout: { ...state.logout, fetching: false, error: true, payload: undefined } })
 }
 
+export const registerRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, register: { ...state.register, fetching: true, data } })
+}
+export const registerSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, register: { ...state.register, fetching: false, error: undefined, payload } })
+}
+export const registerFailureReducer = (state) => {
+  return state.merge({ ...state, register: { ...state.register, fetching: false, error: true, payload: undefined } })
+}
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
@@ -60,4 +74,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.LOGOUT_REQUEST]: logoutRequestReducer,
   [Types.LOGOUT_SUCCESS]: logoutSuccessReducer,
   [Types.LOGOUT_FAILURE]: logoutFailureReducer,
+  [Types.REGISTER_REQUEST]: registerRequestReducer,
+  [Types.REGISTER_SUCCESS]: registerSuccessReducer,
+  [Types.REGISTER_FAILURE]: registerFailureReducer,
 })

@@ -27,7 +27,6 @@ export function* loginSaga(action) {
       put(AuthActions.loginSuccess(response))
     ])
   } catch (error) {
-    console.tron.error({ error })
     yield put(AuthActions.loginFailure())
   }
 }
@@ -41,5 +40,22 @@ export function* logoutSaga() {
     ])
   } catch (error) {
     yield put(AuthActions.logoutFailure())
+  }
+}
+
+export function* registerSaga(action) {
+  const { data } = action
+  const { email, password, name, photoUrl } = data
+
+  try {
+    const response = yield firebase.auth().createUserWithEmailAndPassword(email, password)
+    yield response.user.updateProfile({ displayName: name, photoURL: photoUrl })
+    const user = yield firebase.auth().currentUser
+    yield all([
+      put(SessionActions.setLogin(user)),
+      put(AuthActions.registerSuccess(response))
+    ])
+  } catch (error) {
+    yield put(AuthActions.registerFailure())
   }
 }

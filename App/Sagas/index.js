@@ -11,7 +11,7 @@ import { AuthTypes } from '../Redux/AuthRedux'
 /* ------------- Sagas ------------- */
 
 import { startup } from './StartupSagas'
-import { loginSaga, logoutSaga } from './AuthSagas'
+import { loginSaga, logoutSaga, registerSaga } from './AuthSagas'
 
 /* ------------- API ------------- */
 
@@ -28,5 +28,6 @@ export default function* root() {
 
     takeLatest(AuthTypes.LOGIN_REQUEST, loginSaga),
     takeLatest(AuthTypes.LOGOUT_REQUEST, logoutSaga),
+    takeLatest(AuthTypes.REGISTER_REQUEST, registerSaga)
   ])
 }
