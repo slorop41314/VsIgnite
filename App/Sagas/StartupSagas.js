@@ -48,7 +48,9 @@ export function* startup(action) {
         switch (type) {
           case FirebaseStrings.hasUser: {
             NavigationService.navigate('Main')
-            yield put(SessionActions.setLogin(payload))
+            const { uid, displayName, photoURL, email } = payload
+            const currentUser = { uid, displayName, photoURL, email }
+            yield put(SessionActions.setLogin(currentUser))
             break;
           }
           case FirebaseStrings.nouser: {

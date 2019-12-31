@@ -10889,6 +10889,13 @@ react-modal@^3.6.1:
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
 
+react-native-action-button@^2.8.5:
+  version "2.8.5"
+  resolved "https://registry.yarnpkg.com/react-native-action-button/-/react-native-action-button-2.8.5.tgz#4152a50323a8a6b3468e6f161f9a9071f2f0739a"
+  integrity sha512-BvGZpzuGeuFR2Y6j93+vKiSqDhsF87VHvNXFs/qEYKfzT4b1ASAT/GQbgS6gNt4jRJCUnJWYrIwlBzRjesZQmQ==
+  dependencies:
+    prop-types "^15.5.10"
+
 react-native-animatable@1.3.3:
   version "1.3.3"
   resolved "https://registry.yarnpkg.com/react-native-animatable/-/react-native-animatable-1.3.3.tgz#a13a4af8258e3bb14d0a9d839917e9bb9274ec8a"
@@ -10903,10 +10910,10 @@ react-native-animatable@^1.3.2:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-awesome-component@^0.1.36:
-  version "0.1.36"
-  resolved "https://registry.yarnpkg.com/react-native-awesome-component/-/react-native-awesome-component-0.1.36.tgz#bd74c17b4bd1274d7abe1b589cd3ecf48ba18c04"
-  integrity sha512-MM9iod/GqtFmkZfC2H0sEO0qkJYqiof8BpnYFIJvTjXwoBOMThko4F98LcVrAY9EIAODXQFPEdmE3SqtCPDEjA==
+react-native-awesome-component@^0.1.37:
+  version "0.1.37"
+  resolved "https://registry.yarnpkg.com/react-native-awesome-component/-/react-native-awesome-component-0.1.37.tgz#af8d1617ec70e9e46d21236c1f3eb91e9381fc6c"
+  integrity sha512-AHhqnu3G1d5EQnh8PZP5BFbD+l0nUua1nTVECJAnAIYmMPx1MdPoZtiqUgN2/SrQW5zaoCAr4tOfi1CA0rr6fw==
   dependencies:
     "@react-native-community/netinfo" "^4.4.0"
     formik "^1.1.1"

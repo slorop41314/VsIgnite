@@ -35,7 +35,8 @@ class FireStoreManager {
         const userList = await userRef.orderBy('fullname', 'ASC').get()
 
         Promise.all(userList.docs.map(doc => {
-          return doc.data()
+          const user = doc.data()
+          return user
         })).then((users) => {
           resolve(users)
         })

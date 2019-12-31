@@ -1,6 +1,7 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
 import { DEFAULT_STATE } from '../Data/Const'
+import { Method } from 'react-native-awesome-component'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -17,6 +18,7 @@ export default Creators
 
 export const INITIAL_STATE = Immutable({
   getUserList: DEFAULT_STATE,
+  users: [],
 })
 
 /* ------------- Selectors ------------- */
@@ -32,7 +34,9 @@ export const getUserListRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getUserList: { ...state.getUserList, fetching: true, data } })
 }
 export const getUserListSuccessReducer = (state, { payload }) => {
-  return state.merge({ ...state, getUserList: { ...state.getUserList, fetching: false, error: undefined, payload } })
+  let newUsers = [...state.users]
+  newUsers = Method.Array.mergeAndReplace(newUsers, payload, 'id', 'fullname', 'asc', false)
+  return state.merge({ ...state, getUserList: { ...state.getUserList, fetching: false, error: undefined, payload }, users: newUsers })
 }
 export const getUserListFailureReducer = (state) => {
   return state.merge({ ...state, getUserList: { ...state.getUserList, fetching: false, error: true, payload: undefined } })
