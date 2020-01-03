@@ -10,9 +10,9 @@ const UserRowItem = (props) => {
   return (
     <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
       <Styled.Container padded style={{ flexDirection: 'row', alignItems: 'center' }} >
-        <Avatar source={data.avatar} name={data.fullname} />
+        <Avatar source={data.profileUrl} name={data.name} />
         <Styled.FlexContainer>
-          <PlaceholderText numberOfLines={1} style={{ marginLeft: 10 }}>{data.loading ? undefined : `${data.fullname}${isMe ? ' (you)' : ''}`}</PlaceholderText>
+          <PlaceholderText numberOfLines={1} style={{ marginLeft: 10 }}>{data.loading ? undefined : `${data.name}${isMe ? ' (you)' : ''}`}</PlaceholderText>
         </Styled.FlexContainer>
       </Styled.Container>
     </TouchableOpacity>

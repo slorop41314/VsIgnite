@@ -1,4 +1,4 @@
-import { put, select, cancelled, call, take } from 'redux-saga/effects'
+import { put, select, cancelled, call, take, fork, all } from 'redux-saga/effects'
 import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
 import { is } from 'ramda'
 import firebase from 'react-native-firebase'
@@ -6,6 +6,8 @@ import NavigationService from '../Services/NavigationServices'
 import SessionActions from '../Redux/SessionRedux'
 import { eventChannel } from 'redux-saga';
 import { FirebaseStrings } from '../Data/Const'
+import PubnubActions from '../Redux/PubnubRedux'
+import { initPubnub } from './PubnubSagas'
 
 // exported to make available for tests
 export const selectAvatar = GithubSelectors.selectAvatar
@@ -50,7 +52,11 @@ export function* startup(action) {
             NavigationService.navigate('Main')
             const { uid, displayName, photoURL, email } = payload
             const currentUser = { uid, displayName, photoURL, email }
-            yield put(SessionActions.setLogin(currentUser))
+            yield all([
+              fork(initPubnub, currentUser),
+              put(SessionActions.setLogin(currentUser)),
+            ])
+            yield
             break;
           }
           case FirebaseStrings.nouser: {

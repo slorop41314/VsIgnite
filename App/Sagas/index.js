@@ -12,8 +12,9 @@ import { AuthTypes } from '../Redux/AuthRedux'
 
 import { startup } from './StartupSagas'
 import { loginSaga, logoutSaga, registerSaga } from './AuthSagas'
-import { UserTypes } from '../Redux/UserRedux'
-import { getUserList } from './UserSagas'
+import { PubnubTypes } from '../Redux/PubnubRedux'
+import { getPubnubUserList, getPubnubUserDetail, createPubnubUser, updatePubnubUser, deletePubnubUser } from './PubnubSagasHelper/User'
+import { getPubnubMessage, sendPubnubMessage, sendPubnubTyping, updatePubnubMessage, deletePubnubMessage, getPubnubUnreadCount } from './PubnubSagasHelper/Message'
 
 /* ------------- API ------------- */
 
@@ -32,6 +33,20 @@ export default function* root() {
     takeLatest(AuthTypes.LOGOUT_REQUEST, logoutSaga),
     takeLatest(AuthTypes.REGISTER_REQUEST, registerSaga),
 
-    takeLatest(UserTypes.GET_USER_LIST_REQUEST, getUserList),
+    /** PUBNUB SECTION */
+    /** USER */
+    takeLatest(PubnubTypes.CREATE_PUBNUB_USER_REQUEST, createPubnubUser),
+    takeLatest(PubnubTypes.UPDATE_PUBNUB_USER_REQUEST, updatePubnubUser),
+    takeLatest(PubnubTypes.DELETE_PUBNUB_USER_REQUEST, deletePubnubUser),
+    takeLatest(PubnubTypes.GET_PUBNUB_USER_LIST_REQUEST, getPubnubUserList),
+    takeLatest(PubnubTypes.GET_PUBNUB_USER_DETAIL_REQUEST, getPubnubUserDetail),
+
+    /** MESSAGE */
+    takeLatest(PubnubTypes.GET_PUBNUB_MESSAGE_REQUEST, getPubnubMessage),
+    takeLatest(PubnubTypes.SEND_PUBNUB_MESSAGE_REQUEST, sendPubnubMessage),
+    takeLatest(PubnubTypes.SEND_PUBNUB_TYPING_REQUEST, sendPubnubTyping),
+    takeLatest(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),
+    takeLatest(PubnubTypes.DELETE_PUBNUB_MESSAGE_REQUEST, deletePubnubMessage),
+    takeLatest(PubnubTypes.GET_PUBNUB_UNREAD_COUNT_REQUEST, getPubnubUnreadCount),
   ])
 }

@@ -16,6 +16,8 @@ import SessionActions from '../Redux/SessionRedux'
 import firebase from 'react-native-firebase'
 // import { AuthSelectors } from '../Redux/AuthRedux'
 import FireStoreManager from '../FireStore/FireStoreManager'
+import PubnubManager from '../Pubnub/PubnubManager'
+import PubnubActions from '../Redux/PubnubRedux'
 
 export function* loginSaga(action) {
   const { data } = action
@@ -49,8 +51,10 @@ export function* registerSaga(action) {
     const response = yield firebase.auth().createUserWithEmailAndPassword(email, password)
     yield response.user.updateProfile({ displayName: name, photoURL: photoUrl })
     const user = yield firebase.auth().currentUser
-    const saveUser = yield FireStoreManager.addUser(user)
-    yield put(AuthActions.registerSuccess(response))
+    yield all(
+      put(PubnubActions.createPubnubUserRequest({ id: user.uid, name: user.displayName, profileUrl: user.photoURL, email: user.email })),
+      put(AuthActions.registerSuccess(response))
+    )
   } catch (error) {
     yield put(AuthActions.registerFailure())
   }
