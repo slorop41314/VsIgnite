@@ -10552,6 +10552,11 @@ react-native-animatable@^1.3.2:
   dependencies:
     prop-types "^15.5.10"
 
+react-native-app-tour@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/react-native-app-tour/-/react-native-app-tour-1.0.2.tgz#2d6d2c00f070bcf1ba3a81ff2a4fac1665062c4c"
+  integrity sha512-JMYa2yTo5gsP/vO0FQk7ntVQnygY9DcVFUW3QAO8/KYJhk13DzsU9oRlce0IcNbft+an6Ly9NdScLuK0c51yVQ==
+
 react-native-config@^0.11.7:
   version "0.11.7"
   resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-0.11.7.tgz#a2b323f2ecd76a4df88cbb6bc86eaa2ef9febee7"

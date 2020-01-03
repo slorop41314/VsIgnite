@@ -11,8 +11,8 @@ const PrimaryNav = createStackNavigator({
   LaunchScreen: { screen: LaunchScreen }
 }, {
   // Default config for all screens
-  // headerMode: 'none',
-  initialRouteName: 'PullRefreshListScreen',
+  headerMode: 'none',
+  initialRouteName: 'LaunchScreen',
   navigationOptions: {
     headerStyle: styles.header
   }

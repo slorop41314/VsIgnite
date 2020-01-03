@@ -41,6 +41,12 @@ target 'VsIgnite' do
   end
 
   use_native_modules!
+
+  pod 'RNAppTour', :path => '../node_modules/react-native-app-tour/ios'
+
+  use_frameworks!
+
+  pod 'MaterialShowcase'
 end
 
 target 'VsIgnite-tvOS' do
