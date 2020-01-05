@@ -10,7 +10,7 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put } from 'redux-saga/effects'
+import { call, put, all } from 'redux-saga/effects'
 import PubnubActions from '../Redux/PubnubRedux'
 import PubnubManager from '../Pubnub/PubnubManager'
 // import { PubnubSelectors } from '../Redux/PubnubRedux'
@@ -34,4 +34,7 @@ export function* initPubnub(data) {
       console.tron.warn('SOMETHING ERROR ONCE GET CURRENT USER PUBNUB')
     }
   })
+  yield all([
+    put(PubnubActions.getAllPubnubSpaceRequest({limit: 100}))
+  ])
 }

@@ -6,6 +6,7 @@ import AuthActions from '../../Redux/AuthRedux'
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StyleSheet } from 'react-native'
+import PubnubActions from '../../Redux/PubnubRedux'
 
 const styles = StyleSheet.create({
   actionButtonIcon: {
@@ -22,10 +23,15 @@ class ChannelListScreen extends Component {
     this.onPressNewChat = this.onPressNewChat.bind(this)
     this.onPressGroup = this.onPressGroup.bind(this)
     this.onPressLogout = this.onPressLogout.bind(this)
+    this.fetchFunction = this.fetchFunction.bind(this)
   }
 
   componentDidMount() {
-    
+  }
+
+  fetchFunction() {
+    const { getAllSpaceRequest } = this.props
+    getAllSpaceRequest({ limit: 100 })
   }
 
   onPressLogout() {
@@ -35,7 +41,7 @@ class ChannelListScreen extends Component {
 
   onPressNewChat() {
     const { navigation } = this.props
-    navigation.navigate('ChatScreen')
+    navigation.navigate('UserListScreen')
   }
 
   onPressGroup() {
@@ -73,6 +79,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     logoutRequest: () => dispatch(AuthActions.logoutRequest()),
+    getAllSpaceRequest: (params) => dispatch(PubnubActions.getAllPubnubSpaceRequest(params))
   }
 }
 

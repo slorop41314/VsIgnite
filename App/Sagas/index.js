@@ -15,6 +15,7 @@ import { loginSaga, logoutSaga, registerSaga } from './AuthSagas'
 import { PubnubTypes } from '../Redux/PubnubRedux'
 import { getPubnubUserList, getPubnubUserDetail, createPubnubUser, updatePubnubUser, deletePubnubUser } from './PubnubSagasHelper/User'
 import { getPubnubMessage, sendPubnubMessage, sendPubnubTyping, updatePubnubMessage, deletePubnubMessage, getPubnubUnreadCount } from './PubnubSagasHelper/Message'
+import { createPubnubSpace, getPubnubSpace, getAllPubnubSpace, updatePubnubSpace, deletePubnubSpace } from './PubnubSagasHelper/Space'
 
 /* ------------- API ------------- */
 
@@ -48,5 +49,12 @@ export default function* root() {
     takeLatest(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),
     takeLatest(PubnubTypes.DELETE_PUBNUB_MESSAGE_REQUEST, deletePubnubMessage),
     takeLatest(PubnubTypes.GET_PUBNUB_UNREAD_COUNT_REQUEST, getPubnubUnreadCount),
+
+    /** SPACE */
+    takeLatest(PubnubTypes.CREATE_PUBNUB_SPACE_REQUEST, createPubnubSpace),
+    takeLatest(PubnubTypes.GET_PUBNUB_SPACE_REQUEST, getPubnubSpace),
+    takeLatest(PubnubTypes.GET_ALL_PUBNUB_SPACE_REQUEST, getAllPubnubSpace),
+    takeLatest(PubnubTypes.UPDATE_PUBNUB_SPACE_REQUEST, updatePubnubSpace),
+    takeLatest(PubnubTypes.DELETE_PUBNUB_SPACE_REQUEST, deletePubnubSpace),
   ])
 }

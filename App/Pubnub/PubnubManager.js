@@ -26,6 +26,14 @@ class PubnubManager {
     this.updateMessage = this.updateMessage.bind(this)
     this.deleteMessage = this.deleteMessage.bind(this)
     this.getUnreadCount = this.getUnreadCount.bind(this)
+
+    // spaces
+    this.subscribeSpaces = this.subscribeSpaces.bind(this)
+    this.createSpace = this.createSpace.bind(this)
+    this.getSpace = this.getSpace.bind(this)
+    this.getAllSpaces = this.getAllSpaces.bind(this)
+    this.updateSpace = this.updateSpace.bind(this)
+    this.deleteSpace = this.deleteSpace.bind(this)
   }
 
   init(user) {
@@ -249,6 +257,87 @@ class PubnubManager {
     })
   }
 
+  /** SPCES */
+  subscribeSpaces(spaces) {
+    this.pubnub.subscribe({
+      channels: spaces,
+      withPresence: true,
+    });
+  }
+
+  createSpace(uid, name) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.createSpace({
+        id: uid,
+        name,
+      }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  getSpace(uid) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.getSpace({
+        spaceId: uid,
+      }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  getAllSpaces(limit, start, end) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.getSpaces({
+        limit, start, end
+      }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  updateSpace(uid, name) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.updateSpace({
+        id: uid, name
+      }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  deleteSpace(uid) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.deleteSpace(uid, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
 }
 
 export default new PubnubManager()
