@@ -35,7 +35,7 @@ class ChannelListScreen extends Component {
 
   onPressNewChat() {
     const { navigation } = this.props
-    navigation.navigate('UserListScreen')
+    navigation.navigate('ChatScreen')
   }
 
   onPressGroup() {

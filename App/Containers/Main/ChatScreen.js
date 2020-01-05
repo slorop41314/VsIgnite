@@ -11,10 +11,20 @@ class ChatScreen extends Component {
     super(props)
 
     this.onPressSendMessage = this.onPressSendMessage.bind(this)
+    this.onStartTyping = this.onStartTyping.bind(this)
+    this.onEndTyping = this.onEndTyping.bind(this)
   }
 
   onPressSendMessage(message) {
     console.tron.error({ message })
+  }
+
+  onStartTyping() {
+    console.tron.error('START TYPING')
+  }
+
+  onEndTyping() {
+    console.tron.error('END TYPING')
   }
 
   render() {
@@ -34,7 +44,7 @@ class ChatScreen extends Component {
           error={false}
         />
         <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
-          <ChatInput onSendMessage={this.onPressSendMessage} />
+          <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
         </KeyboardAvoidingView>
       </Styled.FlexContainer>
     )
