@@ -5,6 +5,7 @@ import android.app.Application;
 import com.facebook.react.ReactApplication;
 import com.microsoft.codepush.react.CodePush;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import android.content.Context;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
@@ -53,11 +54,23 @@ public class MainApplication extends Application implements ReactApplication {
     return mReactNativeHost;
   }
 
+  // @Override
+  // public void onCreate() {
+  //   super.onCreate();
+  //   SoLoader.init(this, /* native exopackage */ false);
+  // }
   @Override
-  public void onCreate() {
-    super.onCreate();
-    SoLoader.init(this, /* native exopackage */ false);
-  }
+   public void onCreate() {
+     new RNInstabugReactnativePackage
+             .Builder("INSTABUG_APP_TOKEN", MainApplication.this)
+             .setInvocationEvent("shake")
+             .setPrimaryColor("#1D82DC")
+             .setFloatingEdge("left")
+             .setFloatingButtonOffsetFromTop(250)
+             .build();
+     super.onCreate();
+     SoLoader.init(this, /* native exopackage */ false);
+   }
 
     /**
    * Loads Flipper in React Native templates.

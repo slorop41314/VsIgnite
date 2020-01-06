@@ -28,6 +28,7 @@
     "apisauce": "1.0.3",
     "format-json": "1.0.3",
     "identity-obj-proxy": "3.0.0",
+    "instabug-reactnative": "^9.0.1",
     "lodash": "4.17.15",
     "prop-types": "15.7.2",
     "querystringify": "2.1.1",
