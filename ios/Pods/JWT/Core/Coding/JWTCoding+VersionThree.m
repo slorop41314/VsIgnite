@@ -16,6 +16,9 @@
 #import "JWTClaimsSetSerializer.h"
 #import "JWTClaimsSetVerifier.h"
 
+#import "JWTAlgorithmDataHolder+FluentStyle.h"
+#import "JWTCodingBuilder+FluentStyle.h"
+
 @implementation JWT (VersionThree)
 + (JWTEncodingBuilder *)encodeWithHolders:(NSArray *)holders {
     return [JWTEncodingBuilder createWithHolders:holders];
@@ -45,10 +48,8 @@
 @property (copy, nonatomic, readwrite) JWTCodingBuilder *(^constructHolder)(id<JWTAlgorithmDataHolderProtocol>(^block)(id<JWTAlgorithmDataHolderProtocol> holder));
 
 @end
+
 @interface JWTCodingBuilder (Fluent_Setup)
-- (instancetype)chain:(JWTAlgorithmDataHolderChain *)chain;
-- (instancetype)options:(NSNumber *)options;
-- (instancetype)addHolder:(id<JWTAlgorithmDataHolderProtocol>)holder;
 - (void)setupFluent;
 @end
 
@@ -152,14 +153,7 @@
 @property (copy, nonatomic, readwrite) JWTEncodingBuilder *(^claimsSet)(JWTClaimsSet *claimsSet);
 @end
 
-@interface JWTEncodingBuilder (Fluent_Setup)
-- (instancetype)payload:(NSDictionary *)payload;
-- (instancetype)headers:(NSDictionary *)headers;
-- (instancetype)claimsSet:(JWTClaimsSet *)claimsSet;
-@end
-
-@implementation JWTEncodingBuilder (Fluent_Setup)
-
+@implementation JWTEncodingBuilder (Setters)
 - (instancetype)payload:(NSDictionary *)payload {
     self.internalPayload = payload;
     return self;
@@ -173,7 +167,9 @@
     self.internalClaimsSet = claimsSet;
     return self;
 }
+@end
 
+@implementation JWTEncodingBuilder (Fluent_Setup)
 - (void)setupFluent {
     [super setupFluent];
     __weak typeof(self) weakSelf = self;
@@ -187,7 +183,6 @@
         return [weakSelf claimsSet:claimsSet];
     };
 }
-
 @end
 
 @implementation JWTEncodingBuilder
@@ -237,14 +232,14 @@
         
         // BUG:
         // Read about it in
-        if ([holder isKindOfClass:JWTAlgorithmRSFamilyDataHolder.class]) {
-            JWTAlgorithmRSFamilyDataHolder *theHolder = (JWTAlgorithmRSFamilyDataHolder *)holder;
-            BOOL bugExists = (theHolder.signKey != nil || theHolder.verifyKey != nil ) && secretData == nil;
-            if (bugExists) {
-                return [[JWTCodingResultType alloc] initWithErrorResult:[[JWTCodingResultTypeError alloc] initWithError:[JWTErrorDescription errorWithCode:JWTHolderSecretDataNotSetError]]];
-                return nil;
-            }
-        }
+//        if ([holder isKindOfClass:JWTAlgorithmRSFamilyDataHolder.class]) {
+//            JWTAlgorithmRSFamilyDataHolder *theHolder = (JWTAlgorithmRSFamilyDataHolder *)holder;
+//            BOOL bugExists = (theHolder.internalSignKey != nil || theHolder.internalVerifyKey != nil ) && secretData == nil;
+//            if (bugExists) {
+//                return [[JWTCodingResultType alloc] initWithErrorResult:[[JWTCodingResultTypeError alloc] initWithError:[JWTErrorDescription errorWithCode:JWTHolderSecretDataNotSetError]]];
+//                return nil;
+//            }
+//        }
         
         encodedMessage = [self encodeWithAlgorithm:algorithm withHeaders:headers withPayload:payload withSecretData:secretData withError:&error];
         if (encodedMessage && (error == nil)) {
@@ -322,6 +317,9 @@
     // this happens somewhere outside.
 
     NSError *algorithmError = nil;
+    if ([theAlgorithm conformsToProtocol:@protocol(JWTRSAlgorithm)]) {
+        theSecretData = theSecretData ?: [NSData data];
+    }
     if (theSecretData && [theAlgorithm respondsToSelector:@selector(signHash:key:error:)]) {
           NSData *signedOutputData = [theAlgorithm signHash:[signingInput dataUsingEncoding:NSUTF8StringEncoding] key:theSecretData error:&algorithmError];
         signedOutput = [JWTBase64Coder base64UrlEncodedStringWithData:signedOutputData];
@@ -396,11 +394,7 @@
 
 @end
 
-@interface JWTDecodingBuilder (Fluent_Setup)
-- (instancetype)message:(NSString *)message;
-- (instancetype)claimsSet:(JWTClaimsSet *)claimsSet;
-@end
-@implementation JWTDecodingBuilder (Fluent_Setup)
+@implementation JWTDecodingBuilder (Setters)
 - (instancetype)message:(NSString *)message {
     self.internalMessage = message;
     return self;
@@ -409,6 +403,9 @@
     self.internalClaimsSet = claimsSet;
     return self;
 }
+@end
+
+@implementation JWTDecodingBuilder (Fluent_Setup)
 - (void)setupFluent {
     [super setupFluent];
     __weak typeof(self) weakSelf = self;
@@ -466,7 +463,7 @@
     }
     
     if (claimsSet) {
-        BOOL claimsVerified = [JWTClaimsSetVerifier verifyClaimsSet:[JWTClaimsSetSerializer claimsSetWithDictionary:decodedDictionary[JWTCodingResultPayload]] withTrustedClaimsSet:claimsSet];
+        BOOL claimsVerified = [JWTClaimsSetVerifier verifyClaimsSet:[JWTClaimsSetSerializer claimsSetWithDictionary:decodedDictionary[JWTCodingResultComponents.Payload]] withTrustedClaimsSet:claimsSet];
         if (!claimsVerified){
             error = [JWTErrorDescription errorWithCode:JWTClaimsSetVerificationFailed];
             return [[JWTCodingResultType alloc] initWithErrorResult:[[JWTCodingResultTypeError alloc] initWithError:error]];
@@ -474,8 +471,8 @@
     }
     
     if (decodedDictionary) {
-        NSDictionary *headers = decodedDictionary[JWTCodingResultHeaders];
-        NSDictionary *payload = decodedDictionary[JWTCodingResultPayload];
+        NSDictionary *headers = decodedDictionary[JWTCodingResultComponents.Headers];
+        NSDictionary *payload = decodedDictionary[JWTCodingResultComponents.Payload];
         JWTClaimsSet *claimsSetResult = nil;
         
         // extract claims from payload.
@@ -575,6 +572,7 @@
         id<JWTAlgorithm> algorithm = nil;
         if ([theAlgorithm conformsToProtocol:@protocol(JWTRSAlgorithm)]) {
             algorithm = [(id<JWTRSAlgorithm>)theAlgorithm copyWithZone:nil];
+            theSecretData = theSecretData ?: [NSData data];
         }
         else {
             algorithm = [JWTAlgorithmFactory algorithmByName:theAlgorithmName];
@@ -641,8 +639,8 @@
     }
     
     NSDictionary *result = @{
-                             JWTCodingResultHeaders : header,
-                             JWTCodingResultPayload : payload
+                             JWTCodingResultComponents.Headers : header,
+                             JWTCodingResultComponents.Payload : payload
                              };
     
     return result;

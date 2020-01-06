@@ -4,6 +4,7 @@ import React, { Fragment } from 'react'
 import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
+import DownloadUpdateModal from './DownloadUpdateModal'
 
 // create our store
 const store = createStore()
@@ -22,6 +23,7 @@ const App = () => {
     <Fragment>
       <Provider store={store}>
         <RootContainer />
+        <DownloadUpdateModal />
       </Provider>
     </Fragment>
   );

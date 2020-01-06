@@ -3,6 +3,7 @@ package com.vsignite;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.microsoft.codepush.react.CodePush;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
 import android.content.Context;
 import com.AlexanderZaytsev.RNI18n.RNI18nPackage;
@@ -20,7 +21,7 @@ import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
 
-  private final ReactNativeHost mReactNativeHost = 
+  private final ReactNativeHost mReactNativeHost =
     new ReactNativeHost(this) {
       @Override
       public boolean getUseDeveloperSupport() {
@@ -34,6 +35,11 @@ public class MainApplication extends Application implements ReactApplication {
         // Packages that cannot be autolinked yet can be added manually here, for example:
         // packages.add(new MyReactNativePackage());
         return packages;
+      }
+
+      @Override
+      protected String getJSBundleFile() {
+          return CodePush.getJSBundleFile();
       }
 
       @Override

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">VsIgnite</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">5mBc2sN1eiqEb97fQwYWmeBQjCsFM6u0-BHCgq</string>
 </resources>
