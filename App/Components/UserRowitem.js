@@ -8,7 +8,7 @@ const UserRowItem = (props) => {
   const { currentUser, data, onPress } = props
   const isMe = data.email === currentUser.email
   return (
-    <TouchableOpacity activeOpacity={0.8} onPress={onPress}>
+    <TouchableOpacity activeOpacity={0.8} onPress={onPress} disabled={isMe}>
       <Styled.Container padded style={{ flexDirection: 'row', alignItems: 'center' }} >
         <Avatar source={data.profileUrl} name={data.name} />
         <Styled.FlexContainer>

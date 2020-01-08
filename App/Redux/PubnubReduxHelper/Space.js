@@ -22,6 +22,35 @@ export const PubnubSpaceActions = {
   deletePubnubSpaceRequest: ['data'],
   deletePubnubSpaceSuccess: ['payload'],
   deletePubnubSpaceFailure: null,
+
+  // manage member
+  joinPubnubSpaceRequest: ['data'],
+  joinPubnubSpaceSuccess: ['payload'],
+  joinPubnubSpaceFailure: null,
+
+  leavePubnubSpaceRequest: ['data'],
+  leavePubnubSpaceSuccess: ['payload'],
+  leavePubnubSpaceFailure: null,
+
+  getPubnubSpaceMembershipRequest: ['data'],
+  getPubnubSpaceMembershipSuccess: ['payload'],
+  getPubnubSpaceMembershipFailure: null,
+
+  updatePubnubSpaceMembershipRequest: ['data'],
+  updatePubnubSpaceMembershipSuccess: ['payload'],
+  updatePubnubSpaceMembershipFailure: null,
+
+  getPubnubSpaceMemberRequest: ['data'],
+  getPubnubSpaceMemberSuccess: ['payload'],
+  getPubnubSpaceMemberFailure: null,
+
+  addPubnubSpaceMemberRequest: ['data'],
+  addPubnubSpaceMemberSuccess: ['payload'],
+  addPubnubSpaceMemberFailure: null,
+
+  removePubnubSpaceMemberRequest: ['data'],
+  removePubnubSpaceMemberSuccess: ['payload'],
+  removePubnubSpaceMemberFailure: null,
 }
 
 /** STATE */
@@ -32,7 +61,16 @@ export const PubnubSpaceStore = {
   updatePubnubSpace: DEFAULT_STATE,
   deletePubnubSpace: DEFAULT_STATE,
 
-  spaces: {}
+  spaces: {},
+
+  // manage member
+  joinPubnubSpace: DEFAULT_STATE,
+  leavePubnubSpace: DEFAULT_STATE,
+  getPubnubSpaceMembership: DEFAULT_STATE,
+  updatePubnubSpaceMembership: DEFAULT_STATE,
+  getPubnubSpaceMember: DEFAULT_STATE,
+  addPubnubSpaceMember: DEFAULT_STATE,
+  removePubnubSpaceMember: DEFAULT_STATE,
 }
 
 /** REDUCER */
@@ -60,7 +98,15 @@ export const getAllPubnubSpaceRequestReducer = (state, { data }) => {
   return state.merge({ ...state, getAllPubnubSpace: { ...state.getAllPubnubSpace, fetching: true, data } })
 }
 export const getAllPubnubSpaceSuccessReducer = (state, { payload }) => {
-  return state.merge({ ...state, getAllPubnubSpace: { ...state.getAllPubnubSpace, fetching: false, error: undefined, payload } })
+  let spaces = { ...state.spaces }
+  const { data } = payload
+  for (let i = 0; i < data.length; i++) {
+    spaces = {
+      ...spaces,
+      [data[i].id]: data[i]
+    }
+  }
+  return state.merge({ ...state, getAllPubnubSpace: { ...state.getAllPubnubSpace, fetching: false, error: undefined, payload }, spaces })
 }
 export const getAllPubnubSpaceFailureReducer = (state) => {
   return state.merge({ ...state, getAllPubnubSpace: { ...state.getAllPubnubSpace, fetching: false, error: true, payload: undefined } })
@@ -86,6 +132,76 @@ export const updatePubnubSpaceFailureReducer = (state) => {
   return state.merge({ ...state, updatePubnubSpace: { ...state.updatePubnubSpace, fetching: false, error: true, payload: undefined } })
 }
 
+export const joinPubnubSpaceRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, joinPubnubSpace: { ...state.joinPubnubSpace, fetching: true, data } })
+}
+export const joinPubnubSpaceSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, joinPubnubSpace: { ...state.joinPubnubSpace, fetching: false, error: undefined, payload } })
+}
+export const joinPubnubSpaceFailureReducer = (state) => {
+  return state.merge({ ...state, joinPubnubSpace: { ...state.joinPubnubSpace, fetching: false, error: true, payload: undefined } })
+}
+
+export const leavePubnubSpaceRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, leavePubnubSpace: { ...state.leavePubnubSpace, fetching: true, data } })
+}
+export const leavePubnubSpaceSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, leavePubnubSpace: { ...state.leavePubnubSpace, fetching: false, error: undefined, payload } })
+}
+export const leavePubnubSpaceFailureReducer = (state) => {
+  return state.merge({ ...state, leavePubnubSpace: { ...state.leavePubnubSpace, fetching: false, error: true, payload: undefined } })
+}
+
+export const getPubnubSpaceMembershipRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getPubnubSpaceMembership: { ...state.getPubnubSpaceMembership, fetching: true, data } })
+}
+export const getPubnubSpaceMembershipSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, getPubnubSpaceMembership: { ...state.getPubnubSpaceMembership, fetching: false, error: undefined, payload } })
+}
+export const getPubnubSpaceMembershipFailureReducer = (state) => {
+  return state.merge({ ...state, getPubnubSpaceMembership: { ...state.getPubnubSpaceMembership, fetching: false, error: true, payload: undefined } })
+}
+
+export const updatePubnubSpaceMembershipRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, updatePubnubSpaceMembership: { ...state.updatePubnubSpaceMembership, fetching: true, data } })
+}
+export const updatePubnubSpaceMembershipSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, updatePubnubSpaceMembership: { ...state.updatePubnubSpaceMembership, fetching: false, error: undefined, payload } })
+}
+export const updatePubnubSpaceMembershipFailureReducer = (state) => {
+  return state.merge({ ...state, updatePubnubSpaceMembership: { ...state.updatePubnubSpaceMembership, fetching: false, error: true, payload: undefined } })
+}
+
+export const getPubnubSpaceMemberRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getPubnubSpaceMember: { ...state.getPubnubSpaceMember, fetching: true, data } })
+}
+export const getPubnubSpaceMemberSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, getPubnubSpaceMember: { ...state.getPubnubSpaceMember, fetching: false, error: undefined, payload } })
+}
+export const getPubnubSpaceMemberFailureReducer = (state) => {
+  return state.merge({ ...state, getPubnubSpaceMember: { ...state.getPubnubSpaceMember, fetching: false, error: true, payload: undefined } })
+}
+
+export const addPubnubSpaceMemberRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, addPubnubSpaceMember: { ...state.addPubnubSpaceMember, fetching: true, data } })
+}
+export const addPubnubSpaceMemberSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, addPubnubSpaceMember: { ...state.addPubnubSpaceMember, fetching: false, error: undefined, payload } })
+}
+export const addPubnubSpaceMemberFailureReducer = (state) => {
+  return state.merge({ ...state, addPubnubSpaceMember: { ...state.addPubnubSpaceMember, fetching: false, error: true, payload: undefined } })
+}
+
+export const removePubnubSpaceMemberRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, removePubnubSpaceMember: { ...state.removePubnubSpaceMember, fetching: true, data } })
+}
+export const removePubnubSpaceMemberSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, removePubnubSpaceMember: { ...state.removePubnubSpaceMember, fetching: false, error: undefined, payload } })
+}
+export const removePubnubSpaceMemberFailureReducer = (state) => {
+  return state.merge({ ...state, removePubnubSpaceMember: { ...state.removePubnubSpaceMember, fetching: false, error: true, payload: undefined } })
+}
+
 /** TYPES */
 export const PubnubSpaceTypes = (PubnubTypes) => {
   return {
@@ -108,6 +224,34 @@ export const PubnubSpaceTypes = (PubnubTypes) => {
     [PubnubTypes.DELETE_PUBNUB_SPACE_REQUEST]: deletePubnubSpaceRequestReducer,
     [PubnubTypes.DELETE_PUBNUB_SPACE_SUCCESS]: deletePubnubSpaceSuccessReducer,
     [PubnubTypes.DELETE_PUBNUB_SPACE_FAILURE]: deletePubnubSpaceFailureReducer,
+
+    [PubnubTypes.JOIN_PUBNUB_SPACE_REQUEST]: joinPubnubSpaceRequestReducer,
+    [PubnubTypes.JOIN_PUBNUB_SPACE_SUCCESS]: joinPubnubSpaceSuccessReducer,
+    [PubnubTypes.JOIN_PUBNUB_SPACE_FAILURE]: joinPubnubSpaceFailureReducer,
+
+    [PubnubTypes.LEAVE_PUBNUB_SPACE_REQUEST]: leavePubnubSpaceRequestReducer,
+    [PubnubTypes.LEAVE_PUBNUB_SPACE_SUCCESS]: leavePubnubSpaceSuccessReducer,
+    [PubnubTypes.LEAVE_PUBNUB_SPACE_FAILURE]: leavePubnubSpaceFailureReducer,
+
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBERSHIP_REQUEST]: getPubnubSpaceMembershipRequestReducer,
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBERSHIP_SUCCESS]: getPubnubSpaceMembershipSuccessReducer,
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBERSHIP_FAILURE]: getPubnubSpaceMembershipFailureReducer,
+
+    [PubnubTypes.UPDATE_PUBNUB_SPACE_MEMBERSHIP_REQUEST]: updatePubnubSpaceMembershipRequestReducer,
+    [PubnubTypes.UPDATE_PUBNUB_SPACE_MEMBERSHIP_SUCCESS]: updatePubnubSpaceMembershipSuccessReducer,
+    [PubnubTypes.UPDATE_PUBNUB_SPACE_MEMBERSHIP_FAILURE]: updatePubnubSpaceMembershipFailureReducer,
+
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBER_REQUEST]: getPubnubSpaceMemberRequestReducer,
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBER_SUCCESS]: getPubnubSpaceMemberSuccessReducer,
+    [PubnubTypes.GET_PUBNUB_SPACE_MEMBER_FAILURE]: getPubnubSpaceMemberFailureReducer,
+
+    [PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_REQUEST]: addPubnubSpaceMemberRequestReducer,
+    [PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_SUCCESS]: addPubnubSpaceMemberSuccessReducer,
+    [PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_FAILURE]: addPubnubSpaceMemberFailureReducer,
+
+    [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_REQUEST]: removePubnubSpaceMemberRequestReducer,
+    [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_SUCCESS]: removePubnubSpaceMemberSuccessReducer,
+    [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_FAILURE]: removePubnubSpaceMemberFailureReducer,
   }
 }
 

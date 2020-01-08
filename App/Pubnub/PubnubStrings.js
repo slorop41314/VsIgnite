@@ -8,7 +8,15 @@ const PubnubStrings = {
       update: 'update',
       announcement: 'announcement',
       typing: 'typing',
+      read: 'read',
+      receipt: 'receipt',
     },
+  },
+  space: {
+    type: {
+      single: 'single',
+      group: 'group',
+    }
   }
 }
 

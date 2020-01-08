@@ -15,7 +15,7 @@ import { loginSaga, logoutSaga, registerSaga } from './AuthSagas'
 import { PubnubTypes } from '../Redux/PubnubRedux'
 import { getPubnubUserList, getPubnubUserDetail, createPubnubUser, updatePubnubUser, deletePubnubUser } from './PubnubSagasHelper/User'
 import { getPubnubMessage, sendPubnubMessage, sendPubnubTyping, updatePubnubMessage, deletePubnubMessage, getPubnubUnreadCount } from './PubnubSagasHelper/Message'
-import { createPubnubSpace, getPubnubSpace, getAllPubnubSpace, updatePubnubSpace, deletePubnubSpace } from './PubnubSagasHelper/Space'
+import { createPubnubSpace, getPubnubSpace, getAllPubnubSpace, updatePubnubSpace, deletePubnubSpace, joinPubnubSpace, leavePubnubSpace, getPubnubSpaceMembership, updatePubnubSpaceMembership, getPubnubSpaceMember, addPubnubSpaceMember, removePubnubSpaceMember } from './PubnubSagasHelper/Space'
 
 /* ------------- API ------------- */
 
@@ -56,5 +56,14 @@ export default function* root() {
     takeLatest(PubnubTypes.GET_ALL_PUBNUB_SPACE_REQUEST, getAllPubnubSpace),
     takeLatest(PubnubTypes.UPDATE_PUBNUB_SPACE_REQUEST, updatePubnubSpace),
     takeLatest(PubnubTypes.DELETE_PUBNUB_SPACE_REQUEST, deletePubnubSpace),
+
+    /** MANAGE SPACE MEMBER */
+    takeLatest(PubnubTypes.JOIN_PUBNUB_SPACE_REQUEST, joinPubnubSpace),
+    takeLatest(PubnubTypes.LEAVE_PUBNUB_SPACE_REQUEST, leavePubnubSpace),
+    takeLatest(PubnubTypes.GET_PUBNUB_SPACE_MEMBERSHIP_REQUEST, getPubnubSpaceMembership),
+    takeLatest(PubnubTypes.UPDATE_PUBNUB_SPACE_MEMBERSHIP_REQUEST, updatePubnubSpaceMembership),
+    takeLatest(PubnubTypes.GET_PUBNUB_SPACE_MEMBER_REQUEST, getPubnubSpaceMember),
+    takeLatest(PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_REQUEST, addPubnubSpaceMember),
+    takeLatest(PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_REQUEST, removePubnubSpaceMember),
   ])
 }

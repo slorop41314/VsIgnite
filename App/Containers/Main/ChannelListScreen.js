@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
-import { Styled, CustomButton } from 'react-native-awesome-component'
+import { Styled, CustomButton, CustomFlatList } from 'react-native-awesome-component'
 import { connect } from 'react-redux'
 import Strings from '../../Themes/Strings'
 import AuthActions from '../../Redux/AuthRedux'
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import PubnubActions from '../../Redux/PubnubRedux'
+import { values } from 'ramda'
+import ChannelRowItem from '../../Components/ChannelRowItem'
+import { Colors } from '../../Themes'
 
 const styles = StyleSheet.create({
   actionButtonIcon: {
@@ -24,6 +27,7 @@ class ChannelListScreen extends Component {
     this.onPressGroup = this.onPressGroup.bind(this)
     this.onPressLogout = this.onPressLogout.bind(this)
     this.fetchFunction = this.fetchFunction.bind(this)
+    this.onPressChannel = this.onPressChannel.bind(this)
   }
 
   componentDidMount() {
@@ -49,15 +53,29 @@ class ChannelListScreen extends Component {
     navigation.navigate('GroupCreateScreen')
   }
 
+  onPressChannel(item) {
+    const { navigation } = this.props
+    navigation.navigate('ChatScreen', { data: item })
+  }
+
   render() {
+    const { spaces, getAllSpacesStatus } = this.props
+    const { fetching, error, data, payload } = getAllSpacesStatus
     return (
       <Styled.FlexContainer padded>
-        <Styled.FlexContainer>
-          <CustomButton
-            title={Strings.button.logout}
-            onPress={this.onPressLogout}
-          />
-        </Styled.FlexContainer>
+        <CustomFlatList
+          fetchFunction={this.fetchFunction}
+          data={spaces}
+          renderItem={({ item }) => <ChannelRowItem data={item} onPress={this.onPressChannel} />}
+          meta={{ current_page: 1, next_page: undefined }}
+          loading={fetching}
+          error={error}
+          ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.steel }} />}
+        />
+        <CustomButton
+          title={Strings.button.logout}
+          onPress={this.onPressLogout}
+        />
         <ActionButton buttonColor="rgba(231,76,60,1)">
           <ActionButton.Item buttonColor='#9b59b6' title="New Chat" onPress={this.onPressNewChat}>
             <Icon name="user" style={styles.actionButtonIcon} />
@@ -72,7 +90,10 @@ class ChannelListScreen extends Component {
 }
 
 const mapStateToProps = (state) => {
+  const spaces = values(state.pubnubStore.spaces)
   return {
+    spaces,
+    getAllSpacesStatus: state.pubnub.getAllPubnubSpace,
   }
 }
 

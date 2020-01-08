@@ -11,6 +11,7 @@ export const reducers = combineReducers({
   search: require('./SearchRedux').reducer,
   session: require('./SessionRedux').reducer,
   pubnub: require('./PubnubRedux').reducer,
+  pubnubStore: require('./PubnubStoreRedux').reducer,
 })
 
 export default () => {

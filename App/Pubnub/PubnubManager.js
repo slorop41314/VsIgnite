@@ -6,10 +6,12 @@ const pubKey = 'pub-c-37b2bf05-51bc-4c7e-b88b-476002c80edf'
 const subKey = 'sub-c-98c567fe-4b00-11e9-82b8-86fda2e42ae9'
 
 class PubnubManager {
+  currentPubnubUser = undefined
   pubnub = undefined
 
   constructor() {
     this.init = this.init.bind(this)
+    this.getCurrentUser = this.getCurrentUser.bind(this)
 
     // user
     this.createUser = this.createUser.bind(this)
@@ -34,16 +36,49 @@ class PubnubManager {
     this.getAllSpaces = this.getAllSpaces.bind(this)
     this.updateSpace = this.updateSpace.bind(this)
     this.deleteSpace = this.deleteSpace.bind(this)
+
+    this.joinSpace = this.joinSpace.bind(this)
+    this.leaveSpace = this.leaveSpace.bind(this)
+    this.getMembership = this.getMembership.bind(this)
+    this.updateMembership = this.updateMembership.bind(this)
+    this.getMembers = this.getMembers.bind(this)
+    this.addMembers = this.addMembers.bind(this)
+    this.removeMembers = this.removeMembers.bind(this)
   }
 
   init(user) {
+    const { uid, displayName, photoURL, email } = user
+
     this.pubnub = new PubNub({
       subscribeKey: subKey,
       publishKey: pubKey,
-      uuid: user.uid,
+      uuid: uid,
       autoNetworkDetection: true, // enable for non-browser environment automatic reconnection
       restore: true, // enable catchup on missed messages
     });
+
+    this.getUserDetail(uid).then((res) => {
+      console.tron.warn('CURRENT PUBNUB USER FOUND')
+      this.currentPubnubUser = res.data
+    }).catch(async err => {
+      console.tron.warn('CURRENT PUBNUB USER NOT FOUND')
+      const { status } = err
+      if (status.statusCode === 404) {
+        try {
+          const response = await PubnubManager.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
+          this.currentPubnubUser = res.data
+          console.tron.warn('CREATE PUBNUB USER SUCCESS')
+        } catch (error) {
+          console.tron.warn('CREATE PUBNUB USER FAILURE')
+        }
+      } else {
+        console.tron.warn('SOMETHING ERROR ONCE GET CURRENT USER PUBNUB')
+      }
+    })
+  }
+
+  getCurrentUser() {
+    return this.currentPubnubUser
   }
 
   createUser({ id, name, email, profileUrl }) {
@@ -144,6 +179,7 @@ class PubnubManager {
           start,
           end,
           count: limit,
+          includeMessageActions: true
         }, (status, response) => {
           if (!status.error) {
             resolve(response)
@@ -156,8 +192,12 @@ class PubnubManager {
 
   sendMessage(channel, message) {
     return new Promise(async (resolve, reject) => {
+      const parseMessage = {
+        ...message,
+        user: this.currentPubnubUser,
+      }
       this.pubnub.publish({
-        message,
+        message: parseMessage,
         channel,
       }, (status, response) => {
         if (!status.error) {
@@ -204,14 +244,14 @@ class PubnubManager {
     })
   }
 
-  updateMessage(channel, timeToken, value) {
+  updateMessage(channel, actionType, timeToken, value) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.addMessageAction(
         {
           channel,
           messageTimetoken: timeToken,
           action: {
-            type: PubnubStrings.message.type.update,
+            type: actionType,
             value,
           },
         },
@@ -265,11 +305,13 @@ class PubnubManager {
     });
   }
 
-  createSpace(uid, name) {
+  createSpace(uid, name, description, custom) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.createSpace({
         id: uid,
         name,
+        description,
+        custom,
       }, (status, response) => {
         if (!status.error) {
           resolve(response)
@@ -296,10 +338,15 @@ class PubnubManager {
     })
   }
 
-  getAllSpaces(limit, start, end) {
+  getAllSpaces(limit, page) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.getSpaces({
-        limit, start, end
+        limit: limit,
+        include: {
+          totalCount: true,
+          customFields: true,
+        },
+        page,
       }, (status, response) => {
         if (!status.error) {
           resolve(response)
@@ -311,10 +358,10 @@ class PubnubManager {
     })
   }
 
-  updateSpace(uid, name) {
+  updateSpace(uid, name, description, custom) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.updateSpace({
-        id: uid, name
+        id: uid, name, description, custom
       }, (status, response) => {
         if (!status.error) {
           resolve(response)
@@ -338,6 +385,124 @@ class PubnubManager {
       );
     })
   }
+
+  /**
+   * 
+   * @param {string} userId : user id
+   * @param {[{id: string}]} spaces : array must contain key "id"
+   */
+  joinSpace(userId, spaces) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.joinSpaces({ userId, spaces }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+
+  /**
+   * 
+   * @param {string} userId 
+   * @param {string[]} spaces 
+   */
+  leaveSpace(userId, spaces) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.leaveSpaces({ userId, spaces }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  getMembership(userId) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.getMemberships({ userId }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  /**
+   * 
+   * @param {*} userId : userid
+   * @param {space[]} spaces : array of spaces object
+   */
+  updateMembership(userId, spaces) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.updateMemberships({ userId, spaces }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  getMembers(spaceId) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.getMembers({ spaceId }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  /**
+   * 
+   * @param {*} spaceId space id
+   * @param {user[]} users : array of user object
+   */
+  addMembers(spaceId, users) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.addMembers({ spaceId, users }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  /**
+   * 
+   * @param {*} spaceId 
+   * @param {strings[]} users : array of userid
+   */
+  removeMembers(spaceId, users) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.removeMembers({ spaceId, users }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
 }
 
 export default new PubnubManager()

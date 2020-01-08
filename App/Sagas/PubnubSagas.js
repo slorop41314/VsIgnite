@@ -16,25 +16,8 @@ import PubnubManager from '../Pubnub/PubnubManager'
 // import { PubnubSelectors } from '../Redux/PubnubRedux'
 
 export function* initPubnub(data) {
-  const { uid, displayName, photoURL, email } = data
   PubnubManager.init(data)
-  PubnubManager.getUserDetail(uid).then((res) => {
-    console.tron.warn('CURRENT PUBNUB USER FOUND')
-  }).catch(async err => {
-    console.tron.warn('CURRENT PUBNUB USER NOT FOUND')
-    const { status } = err
-    if (status.statusCode === 404) {
-      try {
-        const response = await PubnubManager.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
-        console.tron.warn('CREATE PUBNUB USER SUCCESS')
-      } catch (error) {
-        console.tron.warn('CREATE PUBNUB USER FAILURE')
-      }
-    } else {
-      console.tron.warn('SOMETHING ERROR ONCE GET CURRENT USER PUBNUB')
-    }
-  })
   yield all([
-    put(PubnubActions.getAllPubnubSpaceRequest({limit: 100}))
+    // put(PubnubActions.getAllPubnubSpaceRequest({limit: 100}))
   ])
 }

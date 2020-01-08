@@ -30,6 +30,7 @@
     "format-json": "1.0.3",
     "identity-obj-proxy": "3.0.0",
     "lodash": "4.17.15",
+    "moment": "^2.24.0",
     "prop-types": "15.7.2",
     "pubnub": "^4.27.2",
     "querystringify": "2.1.1",
@@ -58,7 +59,8 @@
     "redux-persist": "^5.10.0",
     "redux-saga": "1.0.5",
     "reduxsauce": "1.1.0",
-    "seamless-immutable": "^7.1.4"
+    "seamless-immutable": "^7.1.4",
+    "uuid": "^3.3.3"
   },
   "devDependencies": {
     "@babel/core": "7.6.2",

@@ -10,21 +10,31 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put } from 'redux-saga/effects'
+import { call, put, all } from 'redux-saga/effects'
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubManager from '../../Pubnub/PubnubManager'
+import PubnubStrings from '../../Pubnub/PubnubStrings'
+import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 // import { PubnubSelectors } from '../Redux/PubnubRedux'
 
 export function* getPubnubMessage(action) {
   try {
     const { channels, limit, start, end } = action.data
-    const response = yield PubnubManager.getMessage({ channels, limit, start, end })
-    yield put(PubnubActions.getPubnubMessageSuccess(response))
+    const response = yield PubnubManager.getMessage(channels, limit, start, end)
+    yield all([
+      put(PubnubStoreActions.saveMessages(response.channels)),
+      put(PubnubActions.getPubnubMessageSuccess(response))
+    ])
   } catch (error) {
     yield put(PubnubActions.getPubnubMessageFailure())
   }
 }
 
+/**
+ * 
+ * @param {string} channel: space uid
+ * @param {object} message: message object
+ */
 export function* sendPubnubMessage(action) {
   try {
     const { channel, message } = action.data

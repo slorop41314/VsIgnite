@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import PubnubActions from '../../Redux/PubnubRedux'
 import UserRowitem from '../../Components/UserRowitem'
 import { StackActions, NavigationActions } from 'react-navigation';
+import PubnubStrings from '../../Pubnub/PubnubStrings'
 
 class UserListScreen extends Component {
   constructor(props) {
@@ -23,13 +24,23 @@ class UserListScreen extends Component {
   }
 
   onPressItem(item) {
-    console.tron.error({ item })
-    const { navigation } = this.props
+    const { createPubnubSpaceRequest, currentUser } = this.props
+    const params = {
+      name: `${item.id}-${currentUser.uid}`,
+      users: [item],
+      type: PubnubStrings.space.type.single
+    }
+    createPubnubSpaceRequest(params)
+    // const { navigation } = this.props
 
-    const replaceAction = StackActions.replace({
-      routeName: 'ChatScreen'
-    });
-    navigation.dispatch(replaceAction);
+    // const replaceAction = StackActions.replace({
+    //   routeName: 'ChatScreen',
+    //   params: {
+    //     type: PubnubStrings.space.type.single,
+    //     data: item
+    //   }
+    // });
+    // navigation.dispatch(replaceAction);
   }
 
   render() {
@@ -52,6 +63,7 @@ class UserListScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
+    currentUser: state.session.currentUser,
     userList: state.pubnub.users,
     getUserList: state.pubnub.getPubnubUserList
   }
@@ -59,7 +71,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    getUserListRequest: () => dispatch(PubnubActions.getPubnubUserListRequest())
+    getUserListRequest: () => dispatch(PubnubActions.getPubnubUserListRequest()),
+    getPubnubSpaceRequest: (params) => dispatch(PubnubActions.getPubnubSpaceRequest(params)),
+    createPubnubSpaceRequest: (params) => dispatch(PubnubActions.createPubnubSpaceRequest(params)),
   }
 }
 

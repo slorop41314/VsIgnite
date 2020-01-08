@@ -49,13 +49,13 @@ export function* startup(action) {
         const { type, payload } = eventPayload;
         switch (type) {
           case FirebaseStrings.hasUser: {
-            NavigationService.navigate('Main')
             const { uid, displayName, photoURL, email } = payload
             const currentUser = { uid, displayName, photoURL, email }
             yield all([
               fork(initPubnub, currentUser),
               put(SessionActions.setLogin(currentUser)),
             ])
+            NavigationService.navigate('Main')
             yield
             break;
           }
