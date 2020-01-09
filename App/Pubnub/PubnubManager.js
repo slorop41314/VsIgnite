@@ -281,11 +281,11 @@ class PubnubManager {
     })
   }
 
-  getUnreadCount(channels, timeToken) {
+  getUnreadCount(channels, timeTokens) {
     return new Promise(async (resolve, reject) => {
-      pubnub.messageCounts({
+      this.pubnub.messageCounts({
         channels,
-        channelTimetokens: timeToken,
+        channelTimetokens: timeTokens,
       }, (status, response) => {
         if (!status.error) {
           resolve(response)

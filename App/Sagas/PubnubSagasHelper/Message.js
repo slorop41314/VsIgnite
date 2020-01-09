@@ -57,8 +57,8 @@ export function* sendPubnubTyping(action) {
 
 export function* updatePubnubMessage(action) {
   try {
-    const { channel, timeToken, value } = action.data
-    const response = yield PubnubManager.updateMessage(channel, timeToken, value)
+    const { channel, timeToken, actionType, value } = action.data
+    const response = yield PubnubManager.updateMessage(channel, actionType, timeToken, value)
     yield put(PubnubActions.updatePubnubMessageSuccess(response))
   } catch (error) {
     yield put(PubnubActions.updatePubnubMessageFailure())
@@ -77,8 +77,9 @@ export function* deletePubnubMessage(action) {
 
 export function* getPubnubUnreadCount(action) {
   try {
-    const { channels, timeToken } = action.data
-    const response = yield PubnubManager.getUnreadCount(channels, timeToken)
+    const { channels, timeTokens } = action.data
+    console.tron.error({ data: action.data })
+    const response = yield PubnubManager.getUnreadCount(channels, timeTokens)
     yield put(PubnubActions.getPubnubUnreadCountSuccess(response))
   } catch (error) {
     yield put(PubnubActions.getPubnubUnreadCountFailure())

@@ -94,13 +94,11 @@ export function* getAllPubnubSpace(action) {
     const { limit, page } = action.data
     const response = yield PubnubManager.getAllSpaces(limit, page)
     const spaceIds = response.data.map((s) => s.id)
-    // for (let i = 0; i < spaceIds.length; i++) {
-    //   yield PubnubManager.deleteSpace(spaceIds[i])
-    // }
     yield all([
       put(PubnubStoreActions.saveSpaces(response.data)),
       put(PubnubActions.getAllPubnubSpaceSuccess(response)),
-      put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 }))
+      put(PubnubActions.getPubnubUnreadCountRequest({ channels: spaceIds, timeTokens: ['15518041524300251'] })),
+      put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })),
     ])
   } catch (error) {
     yield put(PubnubActions.getAllPubnubSpaceFailure())
