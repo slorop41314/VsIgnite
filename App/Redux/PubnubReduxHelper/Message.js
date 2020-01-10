@@ -26,8 +26,6 @@ export const PubnubMessageActions = {
   getPubnubUnreadCountRequest: ['data'],
   getPubnubUnreadCountSuccess: ['payload'],
   getPubnubUnreadCountFailure: null,
-
-  onReceivePubnubMessage: ['payload']
 }
 
 /** STATE */

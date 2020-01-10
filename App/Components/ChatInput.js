@@ -9,7 +9,7 @@ import _ from 'lodash'
 const styles = StyleSheet.create({
   textInputContainer: {
     flexDirection: 'row',
-    paddingBottom: getBottomSpace(),
+    paddingBottom: isIphoneX() ? getBottomSpace() : 5,
     paddingHorizontal: 20,
     backgroundColor: Colors.snow,
     paddingTop: isIphoneX() ? 12 : 5,

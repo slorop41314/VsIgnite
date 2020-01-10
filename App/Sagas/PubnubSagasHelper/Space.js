@@ -94,6 +94,7 @@ export function* getAllPubnubSpace(action) {
     const { limit, page } = action.data
     const response = yield PubnubManager.getAllSpaces(limit, page)
     const spaceIds = response.data.map((s) => s.id)
+    PubnubManager.subscribeSpaces(spaceIds)
     yield all([
       put(PubnubStoreActions.saveSpaces(response.data)),
       put(PubnubActions.getAllPubnubSpaceSuccess(response)),

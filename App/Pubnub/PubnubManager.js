@@ -12,6 +12,7 @@ class PubnubManager {
   constructor() {
     this.init = this.init.bind(this)
     this.getCurrentUser = this.getCurrentUser.bind(this)
+    this.addListener = this.addListener.bind(this)
 
     // user
     this.createUser = this.createUser.bind(this)
@@ -23,7 +24,6 @@ class PubnubManager {
     // message
     this.getMessage = this.getMessage.bind(this)
     this.sendMessage = this.sendMessage.bind(this)
-    this.onReceiveMessage = this.onReceiveMessage.bind(this)
     this.sendTyping = this.sendTyping.bind(this)
     this.updateMessage = this.updateMessage.bind(this)
     this.deleteMessage = this.deleteMessage.bind(this)
@@ -209,29 +209,40 @@ class PubnubManager {
     })
   }
 
-  onReceiveMessage(callbackFunction) {
+  addListener(callback) {
     this.pubnub.addListener({
-      message: (message) => {
-        // handle message
-        // const channelName = message.channel;
-        // const channelGroup = message.subscription; 
-        // const publishTimetoken = message.timetoken;
-        // const msg = message.message;
-        // const publisher = message.publisher;
-        if (typeof callbackFunction === 'function') {
-          callbackFunction(message)
-        }
-      }
+      status: (response) => {
+        if (callback.statusCallback) callback.statusCallback(response)
+      },
+      presence: (response) => {
+        if (callback.presenceCallback) callback.presenceCallback(response)
+      },
+      message: (response) => {
+        if (callback.messageCallback) callback.messageCallback(response)
+      },
+      signal: (response) => {
+        if (callback.signalCallback) callback.signalCallback(response)
+      },
+      messageAction: (response) => {
+        if (callback.messageActionCallback) callback.messageActionCallback(response)
+      },
+      user: (response) => {
+        if (callback.userCallback) callback.userCallback(response)
+      },
+      space: (response) => {
+        if (callback.spaceCallback) callback.spaceCallback(response)
+      },
+      membership: (response) => {
+        if (callback.membershipCallback) callback.membershipCallback(response)
+      },
     });
   }
 
   sendTyping(channel, isTyping) {
+    console.tron.error({ channel, isTyping })
     return new Promise(async (resolve, reject) => {
       this.pubnub.signal({
-        message: {
-          type: PubnubStrings.message.type.typing,
-          isTyping: isTyping // indicates typing
-        },
+        message: { [PubnubStrings.message.type.typing]: isTyping },
         channel,
         storeInHistory: false, // override default storage options
       }, (status, response) => {

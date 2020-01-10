@@ -9,6 +9,7 @@ import UserProfileScreen from '../Containers/Main/UserProfileScreen';
 import UserListScreen from '../Containers/Main/UserListScreen';
 import GroupCreateScreen from '../Containers/Main/GroupCreateScreen';
 import ChatScreen from '../Containers/Main/ChatScreen';
+import ChatHeader from '../Components/ChatHeader';
 
 // Manifest of possible screens
 const MainNav = createStackNavigator({
@@ -77,9 +78,8 @@ const MainNav = createStackNavigator({
     navigationOptions: ({ navigation }) => {
       return {
         header: (
-          <CustomHeader
+          <ChatHeader
             navigation={navigation}
-            isCard={true}
           />
         ),
         // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT

@@ -17,3 +17,8 @@ export function isSingleChat(id) {
 export function convertArrToObj(arr, key = 'id') {
   return R.reduce((result, item) => ((result[item[key]] = item), result), {}, arr)
 }
+
+export function convertTimestampToDate(timestamp) {
+  const date = new Date(timestamp / 1e4)
+  return date
+}

@@ -1,14 +1,25 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
-import { keys } from 'ramda'
-import { convertArrToObj } from '../Pubnub/PubnubHelper'
+import { convertArrToObj, isSingleChat } from '../Pubnub/PubnubHelper'
 import R from 'ramda'
+import PubnubStrings from '../Pubnub/PubnubStrings'
 
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
+  //  SAVE
   saveSpaces: ['data'],
   saveMessages: ['data'],
+
+  // LISTENER
+  onReceiveStatus: ['data'],
+  onReceivePresence: ['data'],
+  onReceiveMessage: ['data'],
+  onReceiveSignal: ['data'],
+  onReceiveMessageAction: ['data'],
+  onReceiveUser: ['data'],
+  onReceiveSpace: ['data'],
+  onReceiveMembership: ['data'],
 })
 
 export const PubnubStoreTypes = Types
@@ -17,7 +28,8 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-  spaces: {}
+  spaces: {},
+  typings: {},
 })
 
 /* ------------- Selectors ------------- */
@@ -64,7 +76,7 @@ export const saveSpacesReducer = (state, { data }) => {
 
 export const saveMessagesReducer = (state, { data }) => {
   let spaces = { ...state.spaces }
-  const channelsIds = keys(data)
+  const channelsIds = R.keys(data)
   for (let i = 0; i < channelsIds.length; i++) {
     if (spaces[channelsIds[i]]) {
       spaces = {
@@ -82,9 +94,90 @@ export const saveMessagesReducer = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
+export const onReceiveStatusReducer = (state, { data }) => {
+  return state.merge({ ...state, })
+}
+
+export const onReceivePresenceReducer = (state, { data }) => {
+  return state.merge({ ...state, })
+}
+
+export const onReceiveMessageReducer = (state, { data }) => {
+  const { channel, timetoken, message } = data
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [timetoken]: {
+            channel,
+            timetoken,
+            message,
+          }
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
+export const onReceiveSignalReducer = (state, { data }) => {
+  const { channel, publisher, message } = data
+  let typings = { ...state.typings }
+  if (message[PubnubStrings.message.type.typing] !== undefined) {
+    if (isSingleChat(channel)) {
+      const space = state.spaces[channel]
+      const { custom } = space
+      if (message[PubnubStrings.message.type.typing] === true) {
+        typings = {
+          ...typings,
+          [channel]: {
+            [publisher]: JSON.parse(custom[publisher])
+          }
+        }
+      } else {
+        if (typings[channel][publisher]) {
+          typings = R.dissocPath([channel, publisher], typings)
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, typings })
+}
+
+export const onReceiveMessageActionReducer = (state, { data }) => {
+  return state.merge({ ...state, })
+}
+
+export const onReceiveUserReducer = (state, { data }) => {
+  return state.merge({ ...state })
+}
+
+export const onReceiveSpaceReducer = (state, { data }) => {
+  return state.merge({ ...state, })
+}
+
+export const onReceiveMembershipReducer = (state, { data }) => {
+  return state.merge({ ...state, })
+}
+
+
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.SAVE_SPACES]: saveSpacesReducer,
-  [Types.SAVE_MESSAGES]: saveMessagesReducer
+  [Types.SAVE_MESSAGES]: saveMessagesReducer,
+  [Types.ON_RECEIVE_STATUS]: onReceiveStatusReducer,
+  [Types.ON_RECEIVE_PRESENCE]: onReceivePresenceReducer,
+  [Types.ON_RECEIVE_MESSAGE]: onReceiveMessageReducer,
+  [Types.ON_RECEIVE_SIGNAL]: onReceiveSignalReducer,
+  [Types.ON_RECEIVE_MESSAGE_ACTION]: onReceiveMessageActionReducer,
+  [Types.ON_RECEIVE_USER]: onReceiveUserReducer,
+  [Types.ON_RECEIVE_SPACE]: onReceiveSpaceReducer,
+  [Types.ON_RECEIVE_MEMBERSHIP]: onReceiveMembershipReducer,
 })

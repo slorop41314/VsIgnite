@@ -17,6 +17,18 @@ const PubnubStrings = {
       single: 'single',
       group: 'group',
     }
+  },
+  event: {
+    type: {
+      status: "status",
+      presence: "presence",
+      message: "message",
+      signal: "signal",
+      messageAction: "messageAction",
+      user: "user",
+      space: "space",
+      membership: "membership",
+    }
   }
 }
 
