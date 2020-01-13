@@ -26,9 +26,12 @@ export function* craeteSpace(spaceId, name, description, newCustom, users) {
 
   const space = response.data
 
+  const currentUser = PubnubManager.getCurrentUser()
+  const inviteUsers = users.concat([currentUser])
+
   yield all([
     put(PubnubStoreActions.saveSpaces([space])),
-    put(PubnubActions.addPubnubSpaceMemberRequest({ spaceId, users })),
+    put(PubnubActions.addPubnubSpaceMemberRequest({ spaceId, users: inviteUsers })),
     put(PubnubActions.createPubnubSpaceSuccess(response.data)),
   ])
 
@@ -50,8 +53,9 @@ export function* createPubnubSpace(action) {
     let newCustom = {}
     if (custom) newCustom = { ...custom }
 
+    const currentUser = PubnubManager.getCurrentUser()
+
     if (type === PubnubStrings.space.type.single) {
-      const currentUser = PubnubManager.getCurrentUser()
       newCustom = {
         ...newCustom,
         [currentUser.id]: JSON.stringify(currentUser),
@@ -93,13 +97,26 @@ export function* getAllPubnubSpace(action) {
   try {
     const { limit, page } = action.data
     const response = yield PubnubManager.getAllSpaces(limit, page)
-    const spaceIds = response.data.map((s) => s.id)
-    PubnubManager.subscribeSpaces(spaceIds)
+    let spaceIds = []
+    let nextPubnubAction = []
+    if (response.totalCount > 0) {
+      spaceIds = response.data.map((s) => s.id)
+      PubnubManager.subscribeSpaces(spaceIds)
+
+      for (let i = 0; i < spaceIds.length; i++) {
+        // yield PubnubManager.deleteSpace(spaceIds[i])
+        nextPubnubAction.push(put(PubnubActions.getPubnubSpaceMemberRequest({ spaceId: spaceIds[i] })))
+      }
+
+      nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })))
+      nextPubnubAction.push(put(PubnubStoreActions.saveSpaces(response.data)))
+      nextPubnubAction.push(put(PubnubActions.getPubnubUnreadCountRequest({ channels: spaceIds, timeTokens: ['15518041524300251'] })))
+    }
+
+
     yield all([
-      put(PubnubStoreActions.saveSpaces(response.data)),
-      put(PubnubActions.getAllPubnubSpaceSuccess(response)),
-      put(PubnubActions.getPubnubUnreadCountRequest({ channels: spaceIds, timeTokens: ['15518041524300251'] })),
-      put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })),
+      ...nextPubnubAction,
+      nextPubnubAction.push(put(PubnubActions.getAllPubnubSpaceSuccess(response)))
     ])
   } catch (error) {
     yield put(PubnubActions.getAllPubnubSpaceFailure())
@@ -168,9 +185,12 @@ export function* updatePubnubSpaceMembership(action) {
 
 export function* getPubnubSpaceMember(action) {
   try {
-    const { spaceId } = action.data
-    const response = yield PubnubManager.getMembers(spaceId)
-    yield put(PubnubActions.getPubnubSpaceMemberSuccess(response))
+    const { spaceId, limit, page } = action.data
+    const response = yield PubnubManager.getMembers(spaceId, limit, page)
+    yield all([
+      put(PubnubStoreActions.saveMembers({ channel: spaceId, members: response.data })),
+      put(PubnubActions.getPubnubSpaceMemberSuccess(response)),
+    ])
   } catch (error) {
     yield put(PubnubActions.getPubnubSpaceMemberFailure())
   }

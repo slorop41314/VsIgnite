@@ -89,16 +89,16 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.presence: {
-            console.tron.error({ eventPayload })
             yield all([
               put(PubnubStoreActions.onReceivePresence(payload))
             ])
             break;
           }
           case PubnubStrings.event.type.message: {
-            const { message } = payload
+            const { message, channel, timetoken } = payload
             if (message) {
               yield all([
+                put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
                 put(PubnubStoreActions.onReceiveMessage(payload)),
               ])
             }
@@ -116,10 +116,13 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.messageAction: {
-            console.tron.error({ eventPayload })
-            yield all([
-              put(PubnubStoreActions.onReceiveMessageAction(payload))
-            ])
+            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const { publisher } = payload
+            if (publisher !== currentPubnubUser.id) {
+              yield all([
+                put(PubnubStoreActions.onReceiveMessageAction(payload))
+              ])
+            }
             break;
           }
           case PubnubStrings.event.type.user: {

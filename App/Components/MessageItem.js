@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { View, Text, StyleSheet } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
 import moment from 'moment'
 import { convertTimestampToDate } from '../Pubnub/PubnubHelper'
+import Icons from 'react-native-vector-icons/FontAwesome5'
+import PubnubManager from '../Pubnub/PubnubManager'
+import PubnubActions from '../Redux/PubnubRedux'
 
 const styles = StyleSheet.create({
   messageContainer: {
@@ -50,6 +53,19 @@ const styles = StyleSheet.create({
   dateSeparatorText: {
     fontSize: 12,
     color: Colors.snow
+  },
+  timeContainer: {
+    flexDirection: 'row',
+  },
+  timeContainerMe: {
+    alignSelf: 'flex-end'
+  },
+  timeContainerOther: {
+    alignSelf: 'flex-start'
+  },
+  iconCheck: {
+    marginTop: 5,
+    marginLeft: 5
   }
 })
 
@@ -82,67 +98,184 @@ function _isSameDay(timetoken) {
   }
 }
 
-export const MessageItem = (props) => {
-  const { data, currentUser, isLast, isFirst } = props
-  if (data.loading !== true) {
-    const { message, timetoken } = data
-    const { user, type } = message
-    const isMe = user.id === currentUser.uid
-    const sameDay = _isSameDay(timetoken)
+export class MessageItem extends Component {
+  hasRead = false
+  hasReceipt = false
 
-    let renderTopDateSeparator = null
-    let renderBottomDateSeparator = null
+  constructor(props) {
+    super(props)
 
-    if (!isFirst && !isLast && !sameDay.status) {
-      renderBottomDateSeparator = (
-        <View style={[styles.dateSeparatorContainer]}>
-          <Text style={[styles.dateSeparatorText]}>{moment(convertTimestampToDate(sameDay.prev)).format('DD/MM/YYYY')}</Text>
-        </View>
-      )
+    this.checkAndUpdateActions = this.checkAndUpdateActions.bind(this)
+  }
+
+  componentDidMount() {
+    const { data } = this.props
+    const { timetoken, actions, channel } = data
+    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.delivered, actions)
+    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, actions)
+  }
+
+  checkAndUpdateActions(channel, actiontype, timetoken, value, actions) {
+    const { updatePubnubMessageRequest, currentUser } = this.props
+    const params = {
+      channel, timetoken, actiontype, value
     }
 
-    if (isLast && sameDay.status) {
-      renderTopDateSeparator = (
-        <View style={[styles.dateSeparatorContainer]}>
-          <Text style={[styles.dateSeparatorText]}>{moment(convertTimestampToDate(sameDay.prev)).format('DD/MM/YYYY')}</Text>
-        </View>
-      )
-    }
-
-    if (type === PubnubStrings.message.type.text) {
-      return (
-        <View>
-          {renderTopDateSeparator}
-          <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
-            <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
-            <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
-          </View>
-          {renderBottomDateSeparator}
-        </View>
-      )
+    if (actions) {
+      if (actions[actiontype]) {
+        if (actions[actiontype][value]) {
+          const isExist = actions[actiontype][value].find((action) => action.uuid === currentUser.uid)
+          if (!isExist) {
+            updatePubnubMessageRequest(params)
+          }
+        } else {
+          updatePubnubMessageRequest(params)
+        }
+      }
     } else {
-      return (
-        <View>
-          <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
-            <Text>CANNOT DISPLAY DATA YET</Text>
-          </View>
-        </View>
-      )
+      updatePubnubMessageRequest(params)
     }
-  } else {
-    return <View />
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    const thisProps = this.props
+
+    let thisMessage = undefined
+    let nextMessage = undefined
+
+    let thisActions = undefined
+    let nextActions = undefined
+
+    const { data, currentUser, isLast, isFirst, members, storeData } = nextProps
+    const { message, timetoken, actions, channel } = data
+
+    if (thisProps.data && thisProps.data.message) thisMessage = thisProps.data.message
+    if (nextProps.data && nextProps.data.message) nextMessage = nextProps.data.message
+
+    if (thisProps.data && thisProps.data.actions) thisActions = thisProps.data.actions
+    if (nextProps.data && nextProps.data.actions) nextActions = nextProps.data.actions
+
+    let shouldUpdate = true
+
+    if (JSON.stringify(thisMessage) === JSON.stringify(nextMessage)) {
+      shouldUpdate = false
+
+      if (JSON.stringify(thisActions) !== JSON.stringify(nextActions)) {
+        shouldUpdate = true
+      }
+
+    } else {
+      if (isFirst) {
+        this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, nextActions)
+      }
+    }
+
+    return shouldUpdate
+  }
+
+  render() {
+    const { data, currentUser, isLast, isFirst, members } = this.props
+    if (data.loading !== true) {
+      const { message, timetoken, actions, channel } = data
+      const { user, type } = message
+      const isMe = user.id === currentUser.uid
+      const sameDay = _isSameDay(timetoken)
+
+      let renderTopDateSeparator = null
+      let renderBottomDateSeparator = null
+
+      let checkIcon = 'check'
+      let checkColor = Colors.steel
+
+      if (actions) {
+        if (actions[PubnubStrings.message.type.receipt]) {
+          if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered]) {
+            if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered].length) {
+              checkIcon = 'check-double'
+            }
+          }
+
+          if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read]) {
+            if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read].length) {
+              checkIcon = 'check-double'
+              checkColor = Colors.eggplant
+            }
+          }
+        }
+      }
+
+
+      if (!isFirst && !isLast && !sameDay.status) {
+        renderBottomDateSeparator = (
+          <View style={[styles.dateSeparatorContainer]}>
+            <Text style={[styles.dateSeparatorText]}>{moment(convertTimestampToDate(sameDay.prev)).format('DD/MM/YYYY')}</Text>
+          </View>
+        )
+      }
+
+      if (isLast && sameDay.status) {
+        renderTopDateSeparator = (
+          <View style={[styles.dateSeparatorContainer]}>
+            <Text style={[styles.dateSeparatorText]}>{moment(convertTimestampToDate(sameDay.prev)).format('DD/MM/YYYY')}</Text>
+          </View>
+        )
+      }
+
+      if (type === PubnubStrings.message.type.text) {
+        return (
+          <View>
+            {renderTopDateSeparator}
+            <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+              <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
+              <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
+                <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
+                {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}
+              </View>
+            </View>
+            {renderBottomDateSeparator}
+          </View>
+        )
+      } else {
+        return (
+          <View>
+            <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+              <Text>CANNOT DISPLAY DATA YET</Text>
+            </View>
+          </View>
+        )
+      }
+    } else {
+      return <View />
+    }
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  const { timetoken, channel } = props.data
+  let storeData = { ...props.data }
+
+  let members = []
+
+  if (state.pubnubStore.spaces[channel]) {
+    if (state.pubnubStore.spaces[channel].members) {
+      members = state.pubnubStore.spaces[channel].members
+    }
+
+    if (state.pubnubStore.spaces[channel].messages && state.pubnubStore.spaces[channel].messages[timetoken]) {
+      storeData = state.pubnubStore.spaces[channel].messages[timetoken]
+    }
+  }
+
   return {
-    currentUser: state.session.currentUser
+    currentUser: state.session.currentUser,
+    members,
+    storeData,
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-
+    updatePubnubMessageRequest: (params) => dispatch(PubnubActions.updatePubnubMessageRequest(params))
   }
 }
 

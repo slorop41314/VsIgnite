@@ -1,4 +1,4 @@
-import { takeLatest, all } from 'redux-saga/effects'
+import { takeLatest, all, takeEvery } from 'redux-saga/effects'
 import API from '../Services/Api'
 import FixtureAPI from '../Services/FixtureApi'
 import DebugConfig from '../Config/DebugConfig'
@@ -46,7 +46,7 @@ export default function* root() {
     takeLatest(PubnubTypes.GET_PUBNUB_MESSAGE_REQUEST, getPubnubMessage),
     takeLatest(PubnubTypes.SEND_PUBNUB_MESSAGE_REQUEST, sendPubnubMessage),
     takeLatest(PubnubTypes.SEND_PUBNUB_TYPING_REQUEST, sendPubnubTyping),
-    takeLatest(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),
+    takeEvery(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),
     takeLatest(PubnubTypes.DELETE_PUBNUB_MESSAGE_REQUEST, deletePubnubMessage),
     takeLatest(PubnubTypes.GET_PUBNUB_UNREAD_COUNT_REQUEST, getPubnubUnreadCount),
 
@@ -62,7 +62,7 @@ export default function* root() {
     takeLatest(PubnubTypes.LEAVE_PUBNUB_SPACE_REQUEST, leavePubnubSpace),
     takeLatest(PubnubTypes.GET_PUBNUB_SPACE_MEMBERSHIP_REQUEST, getPubnubSpaceMembership),
     takeLatest(PubnubTypes.UPDATE_PUBNUB_SPACE_MEMBERSHIP_REQUEST, updatePubnubSpaceMembership),
-    takeLatest(PubnubTypes.GET_PUBNUB_SPACE_MEMBER_REQUEST, getPubnubSpaceMember),
+    takeEvery(PubnubTypes.GET_PUBNUB_SPACE_MEMBER_REQUEST, getPubnubSpaceMember),
     takeLatest(PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_REQUEST, addPubnubSpaceMember),
     takeLatest(PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_REQUEST, removePubnubSpaceMember),
   ])

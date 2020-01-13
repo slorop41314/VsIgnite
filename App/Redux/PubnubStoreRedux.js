@@ -3,6 +3,7 @@ import Immutable from 'seamless-immutable'
 import { convertArrToObj, isSingleChat } from '../Pubnub/PubnubHelper'
 import R from 'ramda'
 import PubnubStrings from '../Pubnub/PubnubStrings'
+import { Method } from 'react-native-awesome-component'
 
 /* ------------- Types and Action Creators ------------- */
 
@@ -10,6 +11,7 @@ const { Types, Creators } = createActions({
   //  SAVE
   saveSpaces: ['data'],
   saveMessages: ['data'],
+  saveMembers: ['data'],
 
   // LISTENER
   onReceiveStatus: ['data'],
@@ -94,6 +96,30 @@ export const saveMessagesReducer = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
+export const saveMembers = (state, { data }) => {
+  const { channel, members } = data
+  let spaces = { ...state.spaces }
+  if (spaces[channel] && spaces[channel].members) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        members: Method.Array.mergeAndReplace(spaces[channel].members, members, 'id')
+      }
+    }
+  } else {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        members,
+      }
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
 export const onReceiveStatusReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
@@ -151,7 +177,49 @@ export const onReceiveSignalReducer = (state, { data }) => {
 }
 
 export const onReceiveMessageActionReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const { channel, event } = data
+  let spaces = { ...state.spaces }
+  if (event === PubnubStrings.event.value.added) {
+    const { actionTimetoken, type, uuid, value, messageTimetoken } = data.data
+    const { messages } = spaces[channel]
+
+    let curMessage = messages[messageTimetoken]
+
+    if (curMessage.actions) {
+      curMessage = {
+        ...curMessage,
+        actions: {
+          ...curMessage.actions,
+          [type]: {
+            ...curMessage.actions[type],
+            [value]: R.is(Array, curMessage.actions[type][value]) ? Method.Array.mergeAndReplace(curMessage.actions[type][value], [{ uuid, actionTimetoken }], 'uuid', 'actionTimetoken', 'desc', true) : [{ uuid, actionTimetoken }]
+          }
+        }
+      }
+    } else {
+      curMessage = {
+        ...curMessage,
+        actions: {
+          [type]: {
+            [value]: [{ uuid, actionTimetoken }]
+          }
+        }
+      }
+    }
+
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [curMessage.timetoken]: curMessage
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, spaces })
 }
 
 export const onReceiveUserReducer = (state, { data }) => {
@@ -172,6 +240,7 @@ export const onReceiveMembershipReducer = (state, { data }) => {
 export const reducer = createReducer(INITIAL_STATE, {
   [Types.SAVE_SPACES]: saveSpacesReducer,
   [Types.SAVE_MESSAGES]: saveMessagesReducer,
+  [Types.SAVE_MEMBERS]: saveMembers,
   [Types.ON_RECEIVE_STATUS]: onReceiveStatusReducer,
   [Types.ON_RECEIVE_PRESENCE]: onReceivePresenceReducer,
   [Types.ON_RECEIVE_MESSAGE]: onReceiveMessageReducer,

@@ -178,8 +178,9 @@ class PubnubManager {
           channels,
           start,
           end,
-          count: limit,
-          includeMessageActions: true
+          count: 20,
+          includeMessageActions: channels.length > 0,
+          includeMeta: true
         }, (status, response) => {
           if (!status.error) {
             resolve(response)
@@ -255,12 +256,12 @@ class PubnubManager {
     })
   }
 
-  updateMessage(channel, actionType, timeToken, value) {
+  updateMessage(channel, actionType, timetoken, value) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.addMessageAction(
         {
           channel,
-          messageTimetoken: timeToken,
+          messageTimetoken: timetoken,
           action: {
             type: actionType,
             value,
@@ -465,9 +466,19 @@ class PubnubManager {
     })
   }
 
-  getMembers(spaceId) {
+  getMembers(spaceId, limit = 100, page) {
     return new Promise(async (resolve, reject) => {
-      this.pubnub.getMembers({ spaceId }, (status, response) => {
+      this.pubnub.getMembers({
+        spaceId,
+        limit,
+        page,
+        include: {
+          totalCount: true,
+          customFields: true,
+          userFields: true,
+          customUserFields: true,
+        }
+      }, (status, response) => {
         if (!status.error) {
           resolve(response)
         } else {

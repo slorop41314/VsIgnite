@@ -1,15 +1,13 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Styled, CustomFlatList, Method } from 'react-native-awesome-component'
-import { Text, KeyboardAvoidingView, View, StyleSheet } from 'react-native'
+import { KeyboardAvoidingView, View, StyleSheet } from 'react-native'
 import ChatInput from '../../Components/ChatInput'
 import { isIphoneX } from 'react-native-iphone-x-helper'
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import { values } from 'ramda'
 import MessageItem from '../../Components/MessageItem'
-import moment from 'moment'
-import { convertTimestampToDate } from '../../Pubnub/PubnubHelper'
 
 const styles = StyleSheet.create({
   itemSeparator: {
@@ -35,8 +33,9 @@ class ChatScreen extends Component {
   }
 
   fetchFunction() {
-    const { getMessageRequest } = this.props
-    getMessageRequest({ limit: 100, channels: [this.chatData.id] })
+    const { getMessageRequest, getPubnubSpaceMemberRequest } = this.props
+    getMessageRequest({ limit: 150, channels: [this.chatData.id] })
+    getPubnubSpaceMemberRequest({ spaceId: this.chatData.id })
   }
 
   onPressSendMessage(message) {
@@ -53,13 +52,11 @@ class ChatScreen extends Component {
 
   onStartTyping() {
     const { sendPubnubTyping } = this.props
-    console.tron.error('START TYPING')
     sendPubnubTyping({ channel: this.chatData.id, isTyping: true })
   }
 
   onEndTyping() {
     const { sendPubnubTyping } = this.props
-    console.tron.error('END TYPING')
     sendPubnubTyping({ channel: this.chatData.id, isTyping: false })
   }
 
@@ -83,7 +80,7 @@ class ChatScreen extends Component {
           error={false}
           ItemSeparatorComponent={() => <View style={[styles.itemSeparator]} />}
           inverted
-          contentContainerStyle={[styles.contentContainer, {paddingBottom: 0}]}
+          contentContainerStyle={[styles.contentContainer, { paddingBottom: 0 }]}
         />
         <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
           <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
@@ -111,6 +108,7 @@ const mapDispatchToProps = (dispatch) => {
     sendPubnubMessage: (params) => dispatch(PubnubActions.sendPubnubMessageRequest(params)),
     sendPubnubTyping: (params) => dispatch(PubnubActions.sendPubnubTypingRequest(params)),
     getMessageRequest: (params) => dispatch(PubnubActions.getPubnubMessageRequest(params)),
+    getPubnubSpaceMemberRequest: (params) => dispatch(PubnubActions.getPubnubSpaceMemberRequest(params)),
   }
 }
 

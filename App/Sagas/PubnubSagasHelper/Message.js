@@ -57,9 +57,18 @@ export function* sendPubnubTyping(action) {
 
 export function* updatePubnubMessage(action) {
   try {
-    const { channel, timeToken, actionType, value } = action.data
-    const response = yield PubnubManager.updateMessage(channel, actionType, timeToken, value)
-    yield put(PubnubActions.updatePubnubMessageSuccess(response))
+    const { channel, timetoken, actiontype, value } = action.data
+    const response = yield PubnubManager.updateMessage(channel, actiontype, timetoken, value)
+    const payloadUdpateAction = {
+      channel,
+      publisher: response.data.uuid,
+      data: response.data,
+      event: 'added'
+    }
+    yield all([
+      put(PubnubStoreActions.onReceiveMessageAction(payloadUdpateAction)),
+      put(PubnubActions.updatePubnubMessageSuccess(response))
+    ])
   } catch (error) {
     yield put(PubnubActions.updatePubnubMessageFailure())
   }
