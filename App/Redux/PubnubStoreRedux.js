@@ -13,6 +13,11 @@ const { Types, Creators } = createActions({
   saveMessages: ['data'],
   saveMembers: ['data'],
 
+  // action message count
+  decreaseMessageCount: ['data'],
+  increaseMessageCount: ['data'],
+  setMessageCount: ['data'],
+
   // LISTENER
   onReceiveStatus: ['data'],
   onReceivePresence: ['data'],
@@ -46,6 +51,11 @@ export const PubnubStoreSelectors = {
     } else {
       return undefined
     }
+  },
+  getChannelsToken: ({ pubnubStore }) => {
+    const { spaces } = pubnubStore
+    const channelWithTimetoken = R.values(spaces).filter(space => (space.lastReadMessageTimetoken !== null))
+    return channelWithTimetoken.map(space => { return { channel: space.id, timetoken: space.lastReadMessageTimetoken } })
   }
 }
 
@@ -59,6 +69,7 @@ export const saveSpacesReducer = (state, { data }) => {
       spaces = {
         ...spaces,
         [data[i].id]: {
+          ...spaces[data[i].id],
           ...data[i]
         }
       }
@@ -68,11 +79,13 @@ export const saveSpacesReducer = (state, { data }) => {
         [data[i].id]: {
           ...data[i],
           messages: {},
-          lastReadMessageTimetoken: null
+          lastReadMessageTimetoken: null,
+          unreadCount: 0,
         }
       }
     }
   }
+
   return state.merge({ ...state, spaces })
 }
 
@@ -234,6 +247,83 @@ export const onReceiveMembershipReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
 
+export const decreaseMessageCountReducer = (state, { data }) => {
+  const { channel, timetoken } = data
+  let spaces = { ...state.spaces }
+
+  if (spaces[channel]) {
+    let newTimetoken = spaces[channel].lastReadMessageTimetoken
+    let newUnreadCount = spaces[channel].unreadCount
+
+    if (newTimetoken !== null) {
+      if (timetoken > newTimetoken) {
+        newTimetoken = timetoken
+      }
+    } else {
+      newTimetoken = timetoken
+    }
+
+    if (newUnreadCount > 0) {
+      newUnreadCount = newUnreadCount - 1
+    }
+
+
+    let space = {
+      ...spaces[channel],
+      lastReadMessageTimetoken: newTimetoken,
+      unreadCount: newUnreadCount,
+    }
+
+    spaces = {
+      ...spaces,
+      [space.id]: space
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
+export const increaseMessageCountReducer = (state, { data }) => {
+  const { channel } = data
+  let spaces = { ...state.spaces }
+
+  if (spaces[channel]) {
+    let newUnreadCount = spaces[channel].unreadCount
+
+    newUnreadCount = newUnreadCount + 1
+
+    let space = {
+      ...spaces[channel],
+      unreadCount: newUnreadCount,
+    }
+
+
+    spaces = {
+      ...spaces,
+      [space.id]: space
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
+export const setMessageCountReducer = (state, { data }) => {
+  const { channelIds, channels } = data
+  let spaces = { ...state.spaces }
+  for (let i = 0; i < channelIds.length; i++) {
+    if (spaces[channelIds[i]]) {
+      spaces = {
+        ...spaces,
+        [channelIds[i]]: {
+          ...spaces[channelIds[i]],
+          unreadCount: channels[channelIds[i]]
+        }
+      }
+    }
+  }
+  return state.merge({ ...state, spaces })
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -249,4 +339,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.ON_RECEIVE_USER]: onReceiveUserReducer,
   [Types.ON_RECEIVE_SPACE]: onReceiveSpaceReducer,
   [Types.ON_RECEIVE_MEMBERSHIP]: onReceiveMembershipReducer,
+  [Types.DECREASE_MESSAGE_COUNT]: decreaseMessageCountReducer,
+  [Types.INCREASE_MESSAGE_COUNT]: increaseMessageCountReducer,
+  [Types.SET_MESSAGE_COUNT]: setMessageCountReducer,
 })

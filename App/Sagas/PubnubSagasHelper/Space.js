@@ -110,7 +110,7 @@ export function* getAllPubnubSpace(action) {
 
       nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })))
       nextPubnubAction.push(put(PubnubStoreActions.saveSpaces(response.data)))
-      nextPubnubAction.push(put(PubnubActions.getPubnubUnreadCountRequest({ channels: spaceIds, timeTokens: ['15518041524300251'] })))
+      nextPubnubAction.push(put(PubnubActions.getPubnubUnreadCountRequest()))
     }
 
 

@@ -66,8 +66,8 @@ class ChannelRowItem extends Component {
 
   renderLastMessage() {
     const { data, currentUser, onPress } = this.props
-    if (!data.loading) {
-      const { custom, name, messages, members } = data
+    if (data.loading !== true) {
+      const { messages } = data
 
       if (messages) {
         const message = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
@@ -90,18 +90,26 @@ class ChannelRowItem extends Component {
   }
 
   renderUnread() {
-    // return (
-    //   <View style={styles.unreadBorder}>
-    //     <Text style={styles.unreadText}>99+</Text>
-    //   </View>
-    // )
+    const { data } = this.props
+    if (data.loading !== true) {
+      const { unreadCount } = data
+
+      if (unreadCount > 0) {
+        return (
+          <View style={styles.unreadBorder}>
+            <Text style={styles.unreadText}>{unreadCount > 99 ? `99+` : unreadCount}</Text>
+          </View>
+        )
+      }
+    }
+
     return null
   }
 
   renderDate() {
     const { data, currentUser, onPress } = this.props
-    if (!data.loading) {
-      const { custom, name, messages, members } = data
+    if (data.loading !== true) {
+      const { messages } = data
 
       if (messages) {
         const message = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
@@ -124,7 +132,7 @@ class ChannelRowItem extends Component {
     const { data, currentUser, onPress } = this.props
     let channelName = undefined
     let channelAvatar = undefined
-    if (!data.loading || data.loading === undefined) {
+    if (data.loading !== true) {
       const isSingle = isSingleChat(data.id)
       if (isSingle) {
         const { custom, name, messages } = data

@@ -10,12 +10,12 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all } from 'redux-saga/effects'
+import { call, put, all, select } from 'redux-saga/effects'
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubManager from '../../Pubnub/PubnubManager'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
-// import { PubnubSelectors } from '../Redux/PubnubRedux'
+import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
 
 export function* getPubnubMessage(action) {
   try {
@@ -59,6 +59,18 @@ export function* updatePubnubMessage(action) {
   try {
     const { channel, timetoken, actiontype, value } = action.data
     const response = yield PubnubManager.updateMessage(channel, actiontype, timetoken, value)
+    let actionToAdded = []
+
+    if (actiontype === PubnubStrings.message.type.receipt) {
+      if (value === PubnubStrings.event.value.delivered) {
+        actionToAdded.push(put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })))
+      }
+
+      if (value === PubnubStrings.event.value.read) {
+        actionToAdded.push(put(PubnubStoreActions.decreaseMessageCount({ channel, timetoken })))
+      }
+    }
+
     const payloadUdpateAction = {
       channel,
       publisher: response.data.uuid,
@@ -66,6 +78,7 @@ export function* updatePubnubMessage(action) {
       event: 'added'
     }
     yield all([
+      ...actionToAdded,
       put(PubnubStoreActions.onReceiveMessageAction(payloadUdpateAction)),
       put(PubnubActions.updatePubnubMessageSuccess(response))
     ])
@@ -86,9 +99,16 @@ export function* deletePubnubMessage(action) {
 
 export function* getPubnubUnreadCount(action) {
   try {
-    const { channels, timeTokens } = action.data
-    const response = yield PubnubManager.getUnreadCount(channels, timeTokens)
-    yield put(PubnubActions.getPubnubUnreadCountSuccess(response))
+    const channelTimetokens = yield select(PubnubStoreSelectors.getChannelsToken)
+    if (channelTimetokens.length > 0) {
+      const channels = channelTimetokens.map((c) => c.channel)
+      const timetokens = channelTimetokens.map((c) => c.timetoken)
+      const response = yield PubnubManager.getUnreadCount(channels, timetokens)
+      yield all([
+        put(PubnubStoreActions.setMessageCount({ ...response, channelIds: channels })),
+        put(PubnubActions.getPubnubUnreadCountSuccess(response)),
+      ])
+    }
   } catch (error) {
     yield put(PubnubActions.getPubnubUnreadCountFailure())
   }
