@@ -87,7 +87,6 @@ export function* deletePubnubMessage(action) {
 export function* getPubnubUnreadCount(action) {
   try {
     const { channels, timeTokens } = action.data
-    console.tron.error({ data: action.data })
     const response = yield PubnubManager.getUnreadCount(channels, timeTokens)
     yield put(PubnubActions.getPubnubUnreadCountSuccess(response))
   } catch (error) {

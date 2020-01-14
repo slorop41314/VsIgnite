@@ -4,7 +4,7 @@ import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
 import moment from 'moment'
-import { convertTimestampToDate } from '../Pubnub/PubnubHelper'
+import { convertTimestampToDate, getMessageStatusByActions } from '../Pubnub/PubnubHelper'
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubActions from '../Redux/PubnubRedux'
@@ -187,23 +187,20 @@ export class MessageItem extends Component {
       let checkIcon = 'check'
       let checkColor = Colors.steel
 
-      if (actions) {
-        if (actions[PubnubStrings.message.type.receipt]) {
-          if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered]) {
-            if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered].length) {
-              checkIcon = 'check-double'
-            }
-          }
+      const messageStatus = getMessageStatusByActions(actions, members)
 
-          if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read]) {
-            if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read].length) {
-              checkIcon = 'check-double'
-              checkColor = Colors.eggplant
-            }
-          }
+      switch (messageStatus) {
+        case PubnubStrings.message.status.delivered: {
+          checkIcon = 'check-double'
+          checkColor = Colors.steel
+          break
+        }
+        case PubnubStrings.message.status.read: {
+          checkIcon = 'check-double'
+          checkColor = Colors.eggplant
+          break
         }
       }
-
 
       if (!isFirst && !isLast && !sameDay.status) {
         renderBottomDateSeparator = (

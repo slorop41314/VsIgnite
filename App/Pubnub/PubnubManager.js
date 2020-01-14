@@ -240,7 +240,6 @@ class PubnubManager {
   }
 
   sendTyping(channel, isTyping) {
-    console.tron.error({ channel, isTyping })
     return new Promise(async (resolve, reject) => {
       this.pubnub.signal({
         message: { [PubnubStrings.message.type.typing]: isTyping },

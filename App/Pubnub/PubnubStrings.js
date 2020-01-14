@@ -11,6 +11,11 @@ const PubnubStrings = {
       read: 'read',
       receipt: 'receipt',
     },
+    status: {
+      sent: 'sent',
+      delivered: 'delivered',
+      read: 'read',
+    }
   },
   space: {
     type: {

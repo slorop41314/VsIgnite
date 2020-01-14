@@ -22,3 +22,24 @@ export function convertTimestampToDate(timestamp) {
   const date = new Date(timestamp / 1e4)
   return date
 }
+
+export function getMessageStatusByActions(actions, members) {
+  let status = 'sent'
+  if (actions && members) {
+    if (actions[PubnubStrings.message.type.receipt]) {
+      if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered]) {
+        if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.delivered].length) {
+          status = PubnubStrings.message.status.delivered
+        }
+      }
+
+      if (actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read]) {
+        if (members.length === actions[PubnubStrings.message.type.receipt][PubnubStrings.event.value.read].length) {
+          status = PubnubStrings.message.status.read
+        }
+      }
+    }
+  }
+
+  return status
+}
