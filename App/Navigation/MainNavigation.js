@@ -21,6 +21,7 @@ const MainNav = createStackNavigator({
           <CustomHeader
             navigation={navigation}
             isCard={true}
+            title={'Chat'}
           />
         ),
         // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT
@@ -36,6 +37,24 @@ const MainNav = createStackNavigator({
           <CustomHeader
             navigation={navigation}
             isCard={true}
+            title={'Group Info'}
+          />
+        ),
+        // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT
+        headerLeft: null,
+      };
+    },
+  },
+  GroupInviteScreen: {
+    screen: UserListScreen,
+    params: { isGroup: true },
+    navigationOptions: ({ navigation }) => {
+      return {
+        header: (
+          <CustomHeader
+            navigation={navigation}
+            isCard={true}
+            title={'Select Member'}
           />
         ),
         // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT
@@ -51,6 +70,7 @@ const MainNav = createStackNavigator({
           <CustomHeader
             navigation={navigation}
             isCard={true}
+            title={'User List'}
           />
         ),
         // ONCE YOU USE CUSTOM HEADER, MAKE SURE YOU SET HEADER LEFT AS NULL, TO PREVENT DEFAULT HEADER LEFT

@@ -8,6 +8,7 @@ import { eventChannel } from 'redux-saga';
 import { FirebaseStrings } from '../Data/Const'
 import PubnubActions from '../Redux/PubnubRedux'
 import { initPubnub } from './PubnubSagas'
+import { AuthTypes } from '../Redux/AuthRedux'
 
 // exported to make available for tests
 export const selectAvatar = GithubSelectors.selectAvatar

@@ -124,7 +124,7 @@ export class MessageItem extends Component {
     if (actions) {
       if (actions[actiontype]) {
         if (actions[actiontype][value]) {
-          const isExist = actions[actiontype][value].find((action) => action.uuid === currentUser.uid)
+          const isExist = actions[actiontype][value].find((action) => action.uuid === currentUser.id)
           if (!isExist) {
             updatePubnubMessageRequest(params)
           }
@@ -178,7 +178,7 @@ export class MessageItem extends Component {
     if (data.loading !== true) {
       const { message, timetoken, actions, channel } = data
       const { user, type } = message
-      const isMe = user.id === currentUser.uid
+      const isMe = user.id === currentUser.id
       const sameDay = _isSameDay(timetoken)
 
       let renderTopDateSeparator = null
@@ -264,7 +264,7 @@ const mapStateToProps = (state, props) => {
   }
 
   return {
-    currentUser: state.session.currentUser,
+    currentUser: state.pubnubStore.user,
     members,
     storeData,
   }

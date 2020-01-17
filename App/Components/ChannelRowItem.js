@@ -74,7 +74,7 @@ class ChannelRowItem extends Component {
         if (message && message.message) {
           let textMessage = ''
           if (message.message.type === PubnubStrings.message.type.text) {
-            textMessage = `${message.message.user.name}: ${message.message.text}`
+            textMessage = `${currentUser.id !== message.message.user.id ? message.message.user.name : 'You'}: ${message.message.text}`
           } else {
             textMessage = `${message.message.user.name}: send images`
           }
@@ -137,10 +137,12 @@ class ChannelRowItem extends Component {
       if (isSingle) {
         const { custom, name, messages } = data
         const uids = name.split('-')
-        const targetUserId = uids.filter(id => id !== currentUser.uid)[0]
+        const targetUserId = uids.filter(id => id !== currentUser.id)[0]
         const targetUser = JSON.parse(custom[targetUserId])
         channelName = targetUser.name
         channelAvatar = targetUser.profileUrl
+      } else {
+        channelName = data.name
       }
     }
     return (
@@ -171,7 +173,7 @@ class ChannelRowItem extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    currentUser: state.session.currentUser,
+    currentUser: state.pubnubStore.user,
   }
 }
 

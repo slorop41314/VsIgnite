@@ -21,13 +21,13 @@ import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
 import { generateSingleSpaceUID, generateGroupSpaceUID } from '../../Pubnub/PubnubHelper'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 
-export function* craeteSpace(spaceId, name, description, newCustom, users) {
+export function* craeteSpace(spaceId, name, description, newCustom, users, type) {
   const response = yield PubnubManager.createSpace(spaceId, name, description, newCustom)
 
   const space = response.data
 
   const currentUser = PubnubManager.getCurrentUser()
-  const inviteUsers = users.concat([currentUser])
+  const inviteUsers = type === PubnubStrings.space.type.single ? users.concat([currentUser]) : users
 
   yield all([
     put(PubnubStoreActions.saveSpaces([space])),
@@ -72,10 +72,10 @@ export function* createPubnubSpace(action) {
         });
         NavigationServices.dispatch(replaceAction)
       } else {
-        yield* craeteSpace(spaceId, name, description, newCustom, users)
+        yield* craeteSpace(spaceId, name, description, newCustom, users, PubnubStrings.space.type.single)
       }
     } else {
-      yield* craeteSpace(spaceId, name, description, newCustom, users)
+      yield* craeteSpace(spaceId, name, description, newCustom, users, PubnubStrings.space.type.group)
     }
 
   } catch (error) {
@@ -106,9 +106,10 @@ export function* getAllPubnubSpace(action) {
       for (let i = 0; i < spaceIds.length; i++) {
         // yield PubnubManager.deleteSpace(spaceIds[i])
         nextPubnubAction.push(put(PubnubActions.getPubnubSpaceMemberRequest({ spaceId: spaceIds[i] })))
+        nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: [spaceIds[i]], limit: 100 })))
       }
 
-      nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })))
+      // nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })))
       nextPubnubAction.push(put(PubnubStoreActions.saveSpaces(response.data)))
       nextPubnubAction.push(put(PubnubActions.getPubnubUnreadCountRequest()))
     }

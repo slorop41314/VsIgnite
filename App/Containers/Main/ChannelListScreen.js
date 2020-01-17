@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Styled, CustomButton, CustomFlatList } from 'react-native-awesome-component'
+import { Styled, CustomButton, CustomFlatList, Method } from 'react-native-awesome-component'
 import { connect } from 'react-redux'
 import Strings from '../../Themes/Strings'
 import AuthActions from '../../Redux/AuthRedux'
@@ -50,7 +50,7 @@ class ChannelListScreen extends Component {
 
   onPressGroup() {
     const { navigation } = this.props
-    navigation.navigate('GroupCreateScreen')
+    navigation.navigate('GroupInviteScreen')
   }
 
   onPressChannel(item) {
@@ -90,7 +90,7 @@ class ChannelListScreen extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const spaces = values(state.pubnubStore.spaces)
+  const spaces = values(state.pubnubStore.spaces).sort(Method.Array.compareValues('lastMessageTimetoken', 'desc', true, true))
   return {
     spaces,
     getAllSpacesStatus: state.pubnub.getAllPubnubSpace,

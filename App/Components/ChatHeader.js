@@ -40,10 +40,12 @@ const ChatHeader = (props) => {
   if (isSingle) {
     const { custom, name } = data
     const uids = name.split('-')
-    const targetUserId = uids.filter(id => id !== currentUser.uid)[0]
+    const targetUserId = uids.filter(id => id !== currentUser.id)[0]
     const targetUser = JSON.parse(custom[targetUserId])
     channelName = targetUser.name
     channelAvatar = targetUser.profileUrl
+  } else {
+    channelName = data.name
   }
 
   if (typings.length > 0) {
@@ -79,7 +81,7 @@ const mapStateToProps = (state, props) => {
     typings = values(state.pubnubStore.typings[data.id]).map((u) => u.name)
   }
   return {
-    currentUser: state.session.currentUser,
+    currentUser: state.pubnubStore.user,
     typings
   }
 }

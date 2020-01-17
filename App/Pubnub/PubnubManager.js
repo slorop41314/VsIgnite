@@ -13,6 +13,7 @@ class PubnubManager {
     this.init = this.init.bind(this)
     this.getCurrentUser = this.getCurrentUser.bind(this)
     this.addListener = this.addListener.bind(this)
+    this.disconnect = this.disconnect.bind(this)
 
     // user
     this.createUser = this.createUser.bind(this)
@@ -47,38 +48,48 @@ class PubnubManager {
   }
 
   init(user) {
-    const { uid, displayName, photoURL, email } = user
+    return new Promise(async (resolve, reject) => {
+      const { uid, displayName, photoURL, email } = user
 
-    this.pubnub = new PubNub({
-      subscribeKey: subKey,
-      publishKey: pubKey,
-      uuid: uid,
-      autoNetworkDetection: true, // enable for non-browser environment automatic reconnection
-      restore: true, // enable catchup on missed messages
-    });
+      this.pubnub = new PubNub({
+        subscribeKey: subKey,
+        publishKey: pubKey,
+        uuid: uid,
+        autoNetworkDetection: true, // enable for non-browser environment automatic reconnection
+        restore: true, // enable catchup on missed messages
+      });
 
-    this.getUserDetail(uid).then((res) => {
-      console.tron.warn('CURRENT PUBNUB USER FOUND')
-      this.currentPubnubUser = res.data
-    }).catch(async err => {
-      console.tron.warn('CURRENT PUBNUB USER NOT FOUND')
-      const { status } = err
-      if (status.statusCode === 404) {
-        try {
-          const response = await PubnubManager.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
-          this.currentPubnubUser = res.data
-          console.tron.warn('CREATE PUBNUB USER SUCCESS')
-        } catch (error) {
-          console.tron.warn('CREATE PUBNUB USER FAILURE')
+      this.getUserDetail(uid).then((res) => {
+        console.tron.warn('CURRENT PUBNUB USER FOUND')
+        this.currentPubnubUser = res.data
+        resolve({ user: res.data })
+      }).catch(async err => {
+        console.tron.warn('CURRENT PUBNUB USER NOT FOUND')
+        const { status } = err
+        if (status.statusCode === 404) {
+          try {
+            const response = await PubnubManager.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
+            this.currentPubnubUser = res.data
+            resolve({ user: res.data })
+            console.tron.warn('CREATE PUBNUB USER SUCCESS')
+          } catch (error) {
+            resolve({ user: undefined })
+            console.tron.warn('CREATE PUBNUB USER FAILURE')
+          }
+        } else {
+          resolve({ user: undefined })
+          console.tron.warn('SOMETHING ERROR ONCE GET CURRENT USER PUBNUB')
         }
-      } else {
-        console.tron.warn('SOMETHING ERROR ONCE GET CURRENT USER PUBNUB')
-      }
+      })
     })
   }
 
   getCurrentUser() {
     return this.currentPubnubUser
+  }
+
+  disconnect() {
+    this.pubnub.unsubscribeAll()
   }
 
   createUser({ id, name, email, profileUrl }) {
@@ -179,7 +190,7 @@ class PubnubManager {
           start,
           end,
           count: 20,
-          includeMessageActions: channels.length > 0,
+          includeMessageActions: channels.length <= 1,
           includeMeta: true
         }, (status, response) => {
           if (!status.error) {

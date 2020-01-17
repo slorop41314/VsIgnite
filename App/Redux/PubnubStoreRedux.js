@@ -9,6 +9,7 @@ import { Method } from 'react-native-awesome-component'
 
 const { Types, Creators } = createActions({
   //  SAVE
+  saveUser: ['data'],
   saveSpaces: ['data'],
   saveMessages: ['data'],
   saveMembers: ['data'],
@@ -27,6 +28,9 @@ const { Types, Creators } = createActions({
   onReceiveUser: ['data'],
   onReceiveSpace: ['data'],
   onReceiveMembership: ['data'],
+
+  // RESET
+  resetStore: null
 })
 
 export const PubnubStoreTypes = Types
@@ -35,6 +39,7 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
+  pubnubUser: {},
   spaces: {},
   typings: {},
 })
@@ -62,15 +67,27 @@ export const PubnubStoreSelectors = {
 /* ------------- Reducers ------------- */
 
 // request the data from an api
+export const saveUserReducer = (state, { data }) => {
+  return state.merge({ ...state, user: data })
+}
+
 export const saveSpacesReducer = (state, { data }) => {
   let spaces = { ...state.spaces }
   for (let i = 0; i < data.length; i++) {
     if (spaces[data[i].id]) {
+      let lastMessageTimetoken = spaces[data[i].id].updated
+
+      if (spaces[data[i].id].messages) {
+        const keys = R.keys(spaces[data[i].id].messages)
+        lastMessageTimetoken = Math.max.apply(0, keys);
+      }
+
       spaces = {
         ...spaces,
         [data[i].id]: {
           ...spaces[data[i].id],
-          ...data[i]
+          ...data[i],
+          lastMessageTimetoken,
         }
       }
     } else {
@@ -80,6 +97,7 @@ export const saveSpacesReducer = (state, { data }) => {
           ...data[i],
           messages: {},
           lastReadMessageTimetoken: null,
+          lastMessageTimetoken: data[i].updated,
           unreadCount: 0,
         }
       }
@@ -94,6 +112,14 @@ export const saveMessagesReducer = (state, { data }) => {
   const channelsIds = R.keys(data)
   for (let i = 0; i < channelsIds.length; i++) {
     if (spaces[channelsIds[i]]) {
+      let lastMessageTimetoken = spaces[channelsIds[i]].lastMessageTimetoken
+
+      const keys = data[channelsIds[i]].map((m) => m.timetoken)
+
+      if (keys.length > 0) {
+        lastMessageTimetoken = Math.max.apply(0, keys);
+      }
+
       spaces = {
         ...spaces,
         [channelsIds[i]]: {
@@ -101,7 +127,8 @@ export const saveMessagesReducer = (state, { data }) => {
           messages: {
             ...spaces[channelsIds[i]].messages,
             ...convertArrToObj(data[channelsIds[i]], 'timetoken')
-          }
+          },
+          lastMessageTimetoken
         }
       }
     }
@@ -156,7 +183,8 @@ export const onReceiveMessageReducer = (state, { data }) => {
             timetoken,
             message,
           }
-        }
+        },
+        lastMessageTimetoken: timetoken,
       }
     }
   }
@@ -324,10 +352,16 @@ export const setMessageCountReducer = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
+export const resetStoreReducer = (state) => {
+  console.tron.error('RESER STORE')
+  return state.merge(INITIAL_STATE)
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
 export const reducer = createReducer(INITIAL_STATE, {
+  [Types.SAVE_USER]: saveUserReducer,
   [Types.SAVE_SPACES]: saveSpacesReducer,
   [Types.SAVE_MESSAGES]: saveMessagesReducer,
   [Types.SAVE_MEMBERS]: saveMembers,
@@ -342,4 +376,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.DECREASE_MESSAGE_COUNT]: decreaseMessageCountReducer,
   [Types.INCREASE_MESSAGE_COUNT]: increaseMessageCountReducer,
   [Types.SET_MESSAGE_COUNT]: setMessageCountReducer,
+  [Types.RESET_STORE]: resetStoreReducer,
 })

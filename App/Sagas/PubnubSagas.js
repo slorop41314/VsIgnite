@@ -72,7 +72,10 @@ export function pubnubEventHandler() {
 }
 
 export function* initPubnub(data) {
-  PubnubManager.init(data)
+  const pubnubUser = yield PubnubManager.init(data)
+  if (pubnubUser) {
+    yield put(PubnubStoreActions.saveUser(pubnubUser.user))
+  }
   const pubnubEvent = yield call(pubnubEventHandler);
   try {
     while (true) {

@@ -43,7 +43,7 @@ export default function* root() {
     takeLatest(PubnubTypes.GET_PUBNUB_USER_DETAIL_REQUEST, getPubnubUserDetail),
 
     /** MESSAGE */
-    takeLatest(PubnubTypes.GET_PUBNUB_MESSAGE_REQUEST, getPubnubMessage),
+    takeEvery(PubnubTypes.GET_PUBNUB_MESSAGE_REQUEST, getPubnubMessage),
     takeLatest(PubnubTypes.SEND_PUBNUB_MESSAGE_REQUEST, sendPubnubMessage),
     takeLatest(PubnubTypes.SEND_PUBNUB_TYPING_REQUEST, sendPubnubTyping),
     takeEvery(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),

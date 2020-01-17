@@ -10,14 +10,16 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all } from 'redux-saga/effects'
-import AuthActions from '../Redux/AuthRedux'
-import SessionActions from '../Redux/SessionRedux'
+import { call, put, all, take } from 'redux-saga/effects'
+import AuthActions, { AuthTypes } from '../Redux/AuthRedux'
+import SessionActions, { SessionTypes } from '../Redux/SessionRedux'
 import firebase from 'react-native-firebase'
 // import { AuthSelectors } from '../Redux/AuthRedux'
 import FireStoreManager from '../FireStore/FireStoreManager'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubActions from '../Redux/PubnubRedux'
+import PubnubStoreActions from '../Redux/PubnubStoreRedux'
+
 
 export function* loginSaga(action) {
   const { data } = action
@@ -34,9 +36,11 @@ export function* loginSaga(action) {
 export function* logoutSaga() {
   try {
     yield response = yield firebase.auth().signOut()
+    PubnubManager.disconnect()
     yield all([
       put(SessionActions.setLogout()),
-      put(AuthActions.logoutSuccess(response))
+      put(AuthActions.logoutSuccess(response)),
+      put(PubnubStoreActions.resetStore())
     ])
   } catch (error) {
     yield put(AuthActions.logoutFailure())
