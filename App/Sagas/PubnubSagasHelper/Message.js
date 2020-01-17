@@ -62,10 +62,6 @@ export function* updatePubnubMessage(action) {
     let actionToAdded = []
 
     if (actiontype === PubnubStrings.message.type.receipt) {
-      if (value === PubnubStrings.event.value.delivered) {
-        actionToAdded.push(put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })))
-      }
-
       if (value === PubnubStrings.event.value.read) {
         actionToAdded.push(put(PubnubStoreActions.decreaseMessageCount({ channel, timetoken })))
       }

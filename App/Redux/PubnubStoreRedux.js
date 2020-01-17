@@ -42,6 +42,7 @@ export const INITIAL_STATE = Immutable({
   pubnubUser: {},
   spaces: {},
   typings: {},
+  userPresence: {}
 })
 
 /* ------------- Selectors ------------- */

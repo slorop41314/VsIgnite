@@ -101,6 +101,7 @@ export function* initPubnub(data) {
             const { message, channel, timetoken } = payload
             if (message) {
               yield all([
+                put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),
                 put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
                 put(PubnubStoreActions.onReceiveMessage(payload)),
               ])
