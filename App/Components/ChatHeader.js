@@ -6,6 +6,7 @@ import { isSingleChat } from '../Pubnub/PubnubHelper'
 import { values } from 'ramda'
 import Avatar from './Avatar'
 import { Colors } from '../Themes'
+import moment from 'moment'
 
 const styles = StyleSheet.create({
   headerContaienr: {
@@ -31,11 +32,12 @@ const styles = StyleSheet.create({
 })
 
 const ChatHeader = (props) => {
-  const { navigation, currentUser, typings } = props
+  const { navigation, currentUser, typings, userPresence } = props
   const data = navigation.getParam('data')
   let channelName = ''
   let channelAvatar = undefined
   let typingsMessage = undefined
+  let status = ''
   const isSingle = isSingleChat(data.id)
   if (isSingle) {
     const { custom, name } = data
@@ -44,6 +46,16 @@ const ChatHeader = (props) => {
     const targetUser = JSON.parse(custom[targetUserId])
     channelName = targetUser.name
     channelAvatar = targetUser.profileUrl
+    console.tron.error({ userPresence })
+    const presence = userPresence[targetUserId]
+
+    if (presence) {
+      if (presence.online) {
+        status = 'online'
+      } else {
+        status = `last online ${moment.unix(presence.timestamp).format('DD/MM/YYYY HH:mm')}`
+      }
+    }
   } else {
     channelName = data.name
   }
@@ -64,7 +76,11 @@ const ChatHeader = (props) => {
             </View>
             <View style={[styles.titleContainer]}>
               <Text style={[styles.textTitle]}>{channelName}</Text>
-              {typingsMessage && <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{`${typingsMessage} typing`}</Text>}
+              {typingsMessage ? (
+                <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{`${typingsMessage} typing`}</Text>
+              ) : (
+                  <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{status}</Text>
+                )}
             </View>
           </View>
         )
@@ -77,12 +93,19 @@ const mapStateToProps = (state, props) => {
   const { navigation } = props
   const data = navigation.getParam('data')
   let typings = []
+  let userPresence = {}
   if (state.pubnubStore.typings[data.id]) {
     typings = values(state.pubnubStore.typings[data.id]).map((u) => u.name)
   }
+
+  if (state.pubnubStore.userPresence[data.id]) {
+    userPresence = state.pubnubStore.userPresence[data.id]
+  }
+
   return {
     currentUser: state.pubnubStore.user,
-    typings
+    typings,
+    userPresence,
   }
 }
 

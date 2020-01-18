@@ -111,7 +111,6 @@ class ChannelRowItem extends Component {
     const { data, currentUser, onPress } = this.props
     if (data.loading !== true) {
       const { lastMessage } = data
-
       if (lastMessage) {
         if (lastMessage && lastMessage.message) {
           let textMessage = ''

@@ -41,6 +41,10 @@ const PubnubStrings = {
       read: 'message_read',
       added: 'added',
     }
+  },
+  presence: {
+    join: 'join',
+    leave: 'leave',
   }
 }
 

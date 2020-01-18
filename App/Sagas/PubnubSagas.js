@@ -98,11 +98,11 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.message: {
-            const { message, channel, timetoken, publisher } = payload
-            const currentPubnubUser = PubnubMßanager.getCurrentUser()
+            const { message } = payload
 
-            console.tron.error({ payload })
             if (message) {
+              const currentPubnubUser = PubnubMßanager.getCurrentUser()
+              const { channel, timetoken, publisher } = payload
               if (publisher !== currentPubnubUser.id) {
                 yield all([
                   put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),

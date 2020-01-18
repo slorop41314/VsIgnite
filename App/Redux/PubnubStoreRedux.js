@@ -133,13 +133,15 @@ export const saveMessagesReducer = (state, { data, isInit }) => {
           ...convertArrToObj(data[channelsIds[i]], 'timetoken')
         }
 
+        const messageTimetoken = Math.max.apply(0, keys)
+
         spaces = {
           ...spaces,
           [channelsIds[i]]: {
             ...spaces[channelsIds[i]],
             messages,
             lastMessageTimetoken,
-            lastMessage: messages[lastMessageTimetoken]
+            lastMessage: messages[messageTimetoken]
           }
         }
       }
@@ -178,7 +180,37 @@ export const onReceiveStatusReducer = (state, { data }) => {
 }
 
 export const onReceivePresenceReducer = (state, { data }) => {
-  return state.merge({ ...state, })
+  const { channel, uuid, action, timestamp } = data
+  let userPresence = { ...state.userPresence }
+  if (action === PubnubStrings.presence.join) {
+    userPresence = {
+      ...userPresence,
+      [channel]: {
+        ...userPresence[channel],
+        [uuid]: {
+          uuid,
+          timestamp,
+          online: true,
+        }
+      }
+    }
+  }
+
+  if (action === PubnubStrings.presence.leave) {
+    userPresence = {
+      ...userPresence,
+      [channel]: {
+        ...userPresence[channel],
+        [uuid]: {
+          uuid,
+          timestamp,
+          online: false,
+        }
+      }
+    }
+  }
+
+  return state.merge({ ...state, userPresence })
 }
 
 export const onReceiveMessageReducer = (state, { data }) => {
@@ -231,8 +263,6 @@ export const onReceiveSignalReducer = (state, { data }) => {
       }
     }
   }
-
-  console.tron.error({ typings })
 
   return state.merge({ ...state, typings })
 }
