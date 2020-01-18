@@ -98,20 +98,24 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.message: {
-            const { message, channel, timetoken } = payload
+            const { message, channel, timetoken, publisher } = payload
+            const currentPubnubUser = PubnubMßanager.getCurrentUser()
+
+            console.tron.error({ payload })
             if (message) {
-              yield all([
-                put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),
-                put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
-                put(PubnubStoreActions.onReceiveMessage(payload)),
-              ])
+              if (publisher !== currentPubnubUser.id) {
+                yield all([
+                  put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),
+                  put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
+                  put(PubnubStoreActions.onReceiveMessage(payload)),
+                ])
+              }
             }
             break;
           }
           case PubnubStrings.event.type.signal: {
             const { message, publisher } = payload
-            // prevent update 
-            const currentPubnubUser = PubnubMßanager.getCurrentUser()
+            const currentPubnubUser = PubnubManager.getCurrentUser()
             if (message && publisher !== currentPubnubUser.id) {
               yield all([
                 put(PubnubStoreActions.onReceiveSignal(payload))

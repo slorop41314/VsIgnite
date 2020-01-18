@@ -90,7 +90,7 @@ class ChannelListScreen extends Component {
 }
 
 const mapStateToProps = (state) => {
-  const spaces = values(state.pubnubStore.spaces).sort(Method.Array.compareValues('lastMessageTimetoken', 'desc', true, true))
+  const spaces = values(state.pubnubStore.spaces).sort(Method.Array.compareValues('lastMessageTimetoken', 'desc', true))
   return {
     spaces,
     getAllSpacesStatus: state.pubnub.getAllPubnubSpace,

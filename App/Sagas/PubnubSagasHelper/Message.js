@@ -21,8 +21,9 @@ export function* getPubnubMessage(action) {
   try {
     const { channels, limit, start, end } = action.data
     const response = yield PubnubManager.getMessage(channels, limit, start, end)
+
     yield all([
-      put(PubnubStoreActions.saveMessages(response.channels)),
+      put(PubnubStoreActions.saveMessages(response.channels, limit === 1)),
       put(PubnubActions.getPubnubMessageSuccess(response))
     ])
   } catch (error) {
@@ -38,8 +39,12 @@ export function* getPubnubMessage(action) {
 export function* sendPubnubMessage(action) {
   try {
     const { channel, message } = action.data
-    const response = yield PubnubManager.sendMessage(channel, message)
-    yield put(PubnubActions.sendPubnubMessageSuccess(response))
+    const response = yield PubnubManager.sendMessage(channel, message)    
+    yield all([
+      put(PubnubStoreActions.onReceiveMessage(response)),
+      put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
+      put(PubnubActions.sendPubnubMessageSuccess(response))
+    ])
   } catch (error) {
     yield put(PubnubActions.sendPubnubMessageFailure())
   }

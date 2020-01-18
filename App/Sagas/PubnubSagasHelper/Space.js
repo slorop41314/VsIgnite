@@ -108,19 +108,17 @@ export function* getAllPubnubSpace(action) {
       for (let i = 0; i < spaceIds.length; i++) {
         // yield PubnubManager.deleteSpace(spaceIds[i])
         nextPubnubAction.push(put(PubnubActions.getPubnubSpaceMemberRequest({ spaceId: spaceIds[i] })))
-        nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: [spaceIds[i]], limit: 100 })))
       }
-
-      // nextPubnubAction.push(put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 100 })))
-      nextPubnubAction.push(put(PubnubStoreActions.saveSpaces(response.data)))
-      nextPubnubAction.push(put(PubnubActions.getPubnubUnreadCountRequest()))
     }
 
-
     yield all([
+      put(PubnubStoreActions.saveSpaces(response.data)),
+      put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 1 })),
+      put(PubnubActions.getPubnubUnreadCountRequest()),
+      put(PubnubActions.getAllPubnubSpaceSuccess(response)),
       ...nextPubnubAction,
-      nextPubnubAction.push(put(PubnubActions.getAllPubnubSpaceSuccess(response)))
     ])
+    
   } catch (error) {
     yield put(PubnubActions.getAllPubnubSpaceFailure())
   }

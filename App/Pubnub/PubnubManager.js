@@ -211,7 +211,7 @@ class PubnubManager {
           channels,
           start,
           end,
-          count: 20,
+          count: limit,
           includeMessageActions: channels.length <= 1,
           includeMeta: true
         }, (status, response) => {
@@ -235,7 +235,11 @@ class PubnubManager {
         channel,
       }, (status, response) => {
         if (!status.error) {
-          resolve(response)
+          resolve({
+            ...response,
+            channel,
+            message: parseMessage
+          })
         } else {
           reject({ status, response })
         }

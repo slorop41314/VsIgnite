@@ -1,6 +1,6 @@
 import { createReducer, createActions } from 'reduxsauce'
 import Immutable from 'seamless-immutable'
-import { convertArrToObj, isSingleChat } from '../Pubnub/PubnubHelper'
+import { convertArrToObj, isSingleChat, convertTimestampToDate } from '../Pubnub/PubnubHelper'
 import R from 'ramda'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { Method } from 'react-native-awesome-component'
@@ -11,7 +11,7 @@ const { Types, Creators } = createActions({
   //  SAVE
   saveUser: ['data'],
   saveSpaces: ['data'],
-  saveMessages: ['data'],
+  saveMessages: ['data', 'isInit'],
   saveMembers: ['data'],
 
   // action message count
@@ -76,19 +76,11 @@ export const saveSpacesReducer = (state, { data }) => {
   let spaces = { ...state.spaces }
   for (let i = 0; i < data.length; i++) {
     if (spaces[data[i].id]) {
-      let lastMessageTimetoken = spaces[data[i].id].updated
-
-      if (spaces[data[i].id].messages) {
-        const keys = R.keys(spaces[data[i].id].messages)
-        lastMessageTimetoken = Math.max.apply(0, keys);
-      }
-
       spaces = {
         ...spaces,
         [data[i].id]: {
           ...spaces[data[i].id],
           ...data[i],
-          lastMessageTimetoken,
         }
       }
     } else {
@@ -98,7 +90,8 @@ export const saveSpacesReducer = (state, { data }) => {
           ...data[i],
           messages: {},
           lastReadMessageTimetoken: null,
-          lastMessageTimetoken: data[i].updated,
+          lastMessage: null,
+          lastMessageTimetoken: new Date(data[i].updated).valueOf(),
           unreadCount: 0,
         }
       }
@@ -108,32 +101,51 @@ export const saveSpacesReducer = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
-export const saveMessagesReducer = (state, { data }) => {
+export const saveMessagesReducer = (state, { data, isInit }) => {
   let spaces = { ...state.spaces }
   const channelsIds = R.keys(data)
   for (let i = 0; i < channelsIds.length; i++) {
     if (spaces[channelsIds[i]]) {
       let lastMessageTimetoken = spaces[channelsIds[i]].lastMessageTimetoken
+      let nextMessageTimetoken = null
 
       const keys = data[channelsIds[i]].map((m) => m.timetoken)
-
       if (keys.length > 0) {
-        lastMessageTimetoken = Math.max.apply(0, keys);
+        nextMessageTimetoken = convertTimestampToDate(Math.max.apply(0, keys)).valueOf()
+
+        if (nextMessageTimetoken > lastMessageTimetoken) {
+          lastMessageTimetoken = nextMessageTimetoken
+        }
       }
 
-      spaces = {
-        ...spaces,
-        [channelsIds[i]]: {
-          ...spaces[channelsIds[i]],
-          messages: {
-            ...spaces[channelsIds[i]].messages,
-            ...convertArrToObj(data[channelsIds[i]], 'timetoken')
-          },
-          lastMessageTimetoken
+      if (isInit) {
+        spaces = {
+          ...spaces,
+          [channelsIds[i]]: {
+            ...spaces[channelsIds[i]],
+            lastMessageTimetoken,
+            lastMessage: data[channelsIds[i]][0]
+          }
+        }
+      } else {
+        const messages = {
+          ...spaces[channelsIds[i]].messages,
+          ...convertArrToObj(data[channelsIds[i]], 'timetoken')
+        }
+
+        spaces = {
+          ...spaces,
+          [channelsIds[i]]: {
+            ...spaces[channelsIds[i]],
+            messages,
+            lastMessageTimetoken,
+            lastMessage: messages[lastMessageTimetoken]
+          }
         }
       }
     }
   }
+
   return state.merge({ ...state, spaces })
 }
 
@@ -185,7 +197,12 @@ export const onReceiveMessageReducer = (state, { data }) => {
             message,
           }
         },
-        lastMessageTimetoken: timetoken,
+        lastMessage: {
+          channel,
+          timetoken,
+          message,
+        },
+        lastMessageTimetoken: convertTimestampToDate(timetoken).valueOf(),
       }
     }
   }
@@ -214,6 +231,8 @@ export const onReceiveSignalReducer = (state, { data }) => {
       }
     }
   }
+
+  console.tron.error({ typings })
 
   return state.merge({ ...state, typings })
 }
@@ -354,7 +373,6 @@ export const setMessageCountReducer = (state, { data }) => {
 }
 
 export const resetStoreReducer = (state) => {
-  console.tron.error('RESER STORE')
   return state.merge(INITIAL_STATE)
 }
 

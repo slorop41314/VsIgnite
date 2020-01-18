@@ -64,19 +64,61 @@ class ChannelRowItem extends Component {
     this.renderUnread = this.renderUnread.bind(this)
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    let isRender = true
+    const thisProps = this.props
+    if (nextProps.data && (nextProps.data.loading === undefined)) {
+      const thisData = thisProps.data
+      const nextData = nextProps.data
+      const isSingle = isSingleChat(nextData.id)
+      if (isSingle) {
+        if (nextData.id === thisData.id) {
+          if (JSON.stringify(nextData.custom) === JSON.stringify(thisData.custom)) {
+            isRender = false
+
+            if (
+              (JSON.stringify(nextData.lastMessage) !== JSON.stringify(thisData.lastMessage)) ||
+              (nextData.lastMessageTimetoken !== thisData.lastMessageTimetoken) ||
+              (nextData.lastReadMessageTimetoken !== thisData.lastReadMessageTimetoken) ||
+              (nextData.unreadCount !== thisData.unreadCount)
+            ) {
+              isRender = true
+            }
+          }
+        }
+      } else {
+        if (nextData.id === thisData.id) {
+          if ((nextData.name === thisData.data) && (nextData.description === thisData.description)) {
+            isRender = false
+
+            if (
+              (JSON.stringify(nextData.lastMessage) !== JSON.stringify(thisData.lastMessage)) ||
+              (nextData.lastMessageTimetoken !== thisData.lastMessageTimetoken) ||
+              (nextData.lastReadMessageTimetoken !== thisData.lastReadMessageTimetoken) ||
+              (nextData.unreadCount !== thisData.unreadCount)
+            ) {
+              isRender = true
+            }
+          }
+        }
+      }
+    }
+
+    return isRender
+  }
+
   renderLastMessage() {
     const { data, currentUser, onPress } = this.props
     if (data.loading !== true) {
-      const { messages } = data
+      const { lastMessage } = data
 
-      if (messages) {
-        const message = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
-        if (message && message.message) {
+      if (lastMessage) {
+        if (lastMessage && lastMessage.message) {
           let textMessage = ''
-          if (message.message.type === PubnubStrings.message.type.text) {
-            textMessage = `${currentUser.id !== message.message.user.id ? message.message.user.name : 'You'}: ${message.message.text}`
+          if (lastMessage.message.type === PubnubStrings.message.type.text) {
+            textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: ${lastMessage.message.text}`
           } else {
-            textMessage = `${message.message.user.name}: send images`
+            textMessage = `${lastMessage.message.user.name}: send images`
           }
 
           return (
@@ -109,19 +151,15 @@ class ChannelRowItem extends Component {
   renderDate() {
     const { data, currentUser, onPress } = this.props
     if (data.loading !== true) {
-      const { messages } = data
+      const { lastMessageTimetoken } = data
 
-      if (messages) {
-        const message = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
-        if (message && message.message) {
-          let dateMessage = ''
+      if (lastMessageTimetoken) {
+        let dateMessage = ''
+        dateMessage = moment(lastMessageTimetoken).format('DD/MM/YYYY HH:mm')
 
-          dateMessage = moment(convertTimestampToDate(message.timetoken)).format('DD/MM/YYYY HH:mm')
-
-          return (
-            <Text style={[styles.lastMessageDate]}>{dateMessage}</Text>
-          )
-        }
+        return (
+          <Text style={[styles.lastMessageDate]}>{dateMessage}</Text>
+        )
       }
     }
 
