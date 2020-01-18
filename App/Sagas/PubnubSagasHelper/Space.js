@@ -24,7 +24,9 @@ import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 export function* craeteSpace(spaceId, name, description, newCustom, users, type) {
   const response = yield PubnubManager.createSpace(spaceId, name, description, newCustom)
 
+  // Subscribe space
   const space = response.data
+  PubnubManager.subscribeSpaces([space.id])
 
   const currentUser = PubnubManager.getCurrentUser()
   const inviteUsers = type === PubnubStrings.space.type.single ? users.concat([currentUser]) : users

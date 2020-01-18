@@ -33,6 +33,8 @@ const PubnubStrings = {
       user: "user",
       space: "space",
       membership: "membership",
+
+      create: 'create',
     },
     value: {
       delivered: 'message_delivered',

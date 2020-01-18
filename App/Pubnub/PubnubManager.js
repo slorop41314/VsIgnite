@@ -14,6 +14,8 @@ class PubnubManager {
     this.getCurrentUser = this.getCurrentUser.bind(this)
     this.addListener = this.addListener.bind(this)
     this.disconnect = this.disconnect.bind(this)
+    this.getInstance = this.getInstance.bind(this)
+    this.publishSignal = this.publishSignal.bind(this)
 
     // user
     this.createUser = this.createUser.bind(this)
@@ -90,6 +92,26 @@ class PubnubManager {
 
   disconnect() {
     this.pubnub.unsubscribeAll()
+  }
+
+  getInstance() {
+    return this.pubnub
+  }
+
+  publishSignal(channel, message) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.signal({
+        message,
+        channel,
+        storeInHistory: false, // override default storage options
+      }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      });
+    })
   }
 
   createUser({ id, name, email, profileUrl }) {
@@ -322,7 +344,7 @@ class PubnubManager {
   /** SPCES */
   subscribeSpaces(spaces) {
     this.pubnub.subscribe({
-      channels: spaces,
+      channels: [...spaces, this.currentPubnubUser.id],
       withPresence: true,
     });
   }

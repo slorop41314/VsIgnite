@@ -82,10 +82,10 @@ export function* initPubnub(data) {
       try {
         // An error from socketChannel will cause the saga jump to the catch block
         const eventPayload = yield take(pubnubEvent);
+        console.tron.error({ eventPayload })
         const { type, payload } = eventPayload;
         switch (type) {
           case PubnubStrings.event.type.status: {
-            console.tron.error({ eventPayload })
             yield all([
               put(PubnubStoreActions.onReceiveStatus(payload))
             ])
@@ -111,7 +111,7 @@ export function* initPubnub(data) {
           case PubnubStrings.event.type.signal: {
             const { message, publisher } = payload
             // prevent update 
-            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const currentPubnubUser = PubnubMßanager.getCurrentUser()
             if (message && publisher !== currentPubnubUser.id) {
               yield all([
                 put(PubnubStoreActions.onReceiveSignal(payload))
@@ -130,24 +130,34 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.user: {
-            console.tron.error({ eventPayload })
             yield all([
               put(PubnubStoreActions.onReceiveUser(payload))
             ])
             break;
           }
           case PubnubStrings.event.type.space: {
-            console.tron.error({ eventPayload })
             yield all([
               put(PubnubStoreActions.onReceiveSpace(payload))
             ])
             break;
           }
           case PubnubStrings.event.type.membership: {
-            console.tron.error({ eventPayload })
-            yield all([
-              put(PubnubStoreActions.onReceiveMembership(payload))
-            ])
+            const { message, channel } = payload
+            const currentPubnubUser = PubnubManager.getCurrentUser()
+            if (channel === currentPubnubUser.id) {
+              const { event, type } = message
+              if (type === PubnubStrings.event.type.membership) {
+                if (event === PubnubStrings.event.type.create) {
+                  yield all([
+                    put(PubnubActions.getAllPubnubSpaceRequest({ limit: 100 }))
+                  ])
+                }
+              }
+            } else {
+              yield all([
+                put(PubnubStoreActions.onReceiveMembership(payload))
+              ])
+            }
             break;
           }
         }
