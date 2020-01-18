@@ -21,7 +21,7 @@ import PubnubStoreActions from '../Redux/PubnubStoreRedux'
 export function pubnubEventHandler() {
   return eventChannel(emit => {
     const statusCallback = payload => {
-      emit({ type: PubnubStrings.event.type.message, payload });
+      emit({ type: PubnubStrings.event.type.status, payload });
     };
 
     const presenceCallback = payload => {
@@ -98,18 +98,14 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.message: {
-            const { message } = payload
-
-            if (message) {
-              const currentPubnubUser = PubnubMßanager.getCurrentUser()
-              const { channel, timetoken, publisher } = payload
-              if (publisher !== currentPubnubUser.id) {
-                yield all([
-                  put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),
-                  put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
-                  put(PubnubStoreActions.onReceiveMessage(payload)),
-                ])
-              }
+            const currentPubnubUser = PubnubMßanager.getCurrentUser()
+            const { channel, timetoken, publisher } = payload
+            if (publisher !== currentPubnubUser.id) {
+              yield all([
+                put(PubnubStoreActions.increaseMessageCount({ channel, timetoken })),
+                put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
+                put(PubnubStoreActions.onReceiveMessage(payload)),
+              ])
             }
             break;
           }

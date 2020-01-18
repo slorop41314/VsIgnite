@@ -45,6 +45,7 @@ const PubnubStrings = {
   presence: {
     join: 'join',
     leave: 'leave',
+    timeout: 'timeout',
   }
 }
 

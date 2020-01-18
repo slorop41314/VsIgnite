@@ -51,6 +51,10 @@ export const PubnubSpaceActions = {
   removePubnubSpaceMemberRequest: ['data'],
   removePubnubSpaceMemberSuccess: ['payload'],
   removePubnubSpaceMemberFailure: null,
+
+  getOnlineHereRequest: ['data'],
+  getOnlineHereSuccess: ['payload'],
+  getOnlineHereFailure: null,
 }
 
 /** STATE */
@@ -71,6 +75,8 @@ export const PubnubSpaceStore = {
   getPubnubSpaceMember: DEFAULT_STATE,
   addPubnubSpaceMember: DEFAULT_STATE,
   removePubnubSpaceMember: DEFAULT_STATE,
+
+  getOnlineHere: DEFAULT_STATE,
 }
 
 /** REDUCER */
@@ -202,6 +208,16 @@ export const removePubnubSpaceMemberFailureReducer = (state) => {
   return state.merge({ ...state, removePubnubSpaceMember: { ...state.removePubnubSpaceMember, fetching: false, error: true, payload: undefined } })
 }
 
+export const getOnlineHereRequestReducer = (state, { data }) => {
+  return state.merge({ ...state, getOnlineHere: { ...state.getOnlineHere, fetching: true, data } })
+}
+export const getOnlineHereSuccessReducer = (state, { payload }) => {
+  return state.merge({ ...state, getOnlineHere: { ...state.getOnlineHere, fetching: false, error: undefined, payload } })
+}
+export const getOnlineHereFailureReducer = (state) => {
+  return state.merge({ ...state, getOnlineHere: { ...state.getOnlineHere, fetching: false, error: true, payload: undefined } })
+}
+
 /** TYPES */
 export const PubnubSpaceTypes = (PubnubTypes) => {
   return {
@@ -252,6 +268,10 @@ export const PubnubSpaceTypes = (PubnubTypes) => {
     [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_REQUEST]: removePubnubSpaceMemberRequestReducer,
     [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_SUCCESS]: removePubnubSpaceMemberSuccessReducer,
     [PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_FAILURE]: removePubnubSpaceMemberFailureReducer,
+
+    [PubnubTypes.GET_ONLINE_HERE_REQUEST]: getOnlineHereRequestReducer,
+    [PubnubTypes.GET_ONLINE_HERE_SUCCESS]: getOnlineHereSuccessReducer,
+    [PubnubTypes.GET_ONLINE_HERE_FAILURE]: getOnlineHereFailureReducer,
   }
 }
 

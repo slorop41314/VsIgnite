@@ -13,6 +13,7 @@ const { Types, Creators } = createActions({
   saveSpaces: ['data'],
   saveMessages: ['data', 'isInit'],
   saveMembers: ['data'],
+  saveOnlineUser: ['data'],
 
   // action message count
   decreaseMessageCount: ['data'],
@@ -175,6 +176,32 @@ export const saveMembers = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
+export const saveOnlineUserReducer = (state, { data }) => {
+  let userPresence = { ...state.userPresence }
+  const { channels } = data
+  const channelKeys = R.keys(channels)
+  for (let i = 0; i < channelKeys.length; i++) {
+    const channel = channels[channelKeys[i]]
+    const { occupants } = channel
+    for (let j = 0; j < occupants.length; j++) {
+      userPresence = {
+        ...userPresence,
+        [channelKeys[i]]: {
+          ...userPresence[channelKeys[i]],
+          [occupants[j].uuid]: {
+            uuid: occupants[j].uuid,
+            timestamp: new Date().valueOf(),
+            online: true,
+          }
+        }
+      }
+    }
+  }
+
+
+  return state.merge({ ...state, userPresence })
+}
+
 export const onReceiveStatusReducer = (state, { data }) => {
   return state.merge({ ...state, })
 }
@@ -196,7 +223,7 @@ export const onReceivePresenceReducer = (state, { data }) => {
     }
   }
 
-  if (action === PubnubStrings.presence.leave) {
+  if ((action === PubnubStrings.presence.leave) || (action === PubnubStrings.presence.timeout)) {
     userPresence = {
       ...userPresence,
       [channel]: {
@@ -414,6 +441,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.SAVE_SPACES]: saveSpacesReducer,
   [Types.SAVE_MESSAGES]: saveMessagesReducer,
   [Types.SAVE_MEMBERS]: saveMembers,
+  [Types.SAVE_ONLINE_USER]: saveOnlineUserReducer,
   [Types.ON_RECEIVE_STATUS]: onReceiveStatusReducer,
   [Types.ON_RECEIVE_PRESENCE]: onReceivePresenceReducer,
   [Types.ON_RECEIVE_MESSAGE]: onReceiveMessageReducer,

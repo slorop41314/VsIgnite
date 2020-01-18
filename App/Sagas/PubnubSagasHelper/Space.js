@@ -113,12 +113,13 @@ export function* getAllPubnubSpace(action) {
 
     yield all([
       put(PubnubStoreActions.saveSpaces(response.data)),
+      put(PubnubActions.getOnlineHereRequest({ spaceIds })),
       put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 1 })),
       put(PubnubActions.getPubnubUnreadCountRequest()),
       put(PubnubActions.getAllPubnubSpaceSuccess(response)),
       ...nextPubnubAction,
     ])
-    
+
   } catch (error) {
     yield put(PubnubActions.getAllPubnubSpaceFailure())
   }
@@ -216,3 +217,16 @@ export function* removePubnubSpaceMember(action) {
     yield put(PubnubActions.removePubnubSpaceMemberFailure())
   }
 }
+
+export function* getOnlineHere(action) {
+  try {
+    const { spaceIds } = action.data
+    const response = yield PubnubManager.getUserOnline(spaceIds)
+    yield all([
+      put(PubnubStoreActions.saveOnlineUser(response)),
+      put(PubnubActions.getOnlineHereSuccess(response)),
+    ])
+  } catch (error) {
+    yield put(PubnubActions.getOnlineHereFailure())
+  }
+} 

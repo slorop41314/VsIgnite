@@ -47,6 +47,8 @@ class PubnubManager {
     this.getMembers = this.getMembers.bind(this)
     this.addMembers = this.addMembers.bind(this)
     this.removeMembers = this.removeMembers.bind(this)
+
+    this.getUserOnline = this.getUserOnline.bind(this)
   }
 
   init(user) {
@@ -59,6 +61,9 @@ class PubnubManager {
         uuid: uid,
         autoNetworkDetection: true, // enable for non-browser environment automatic reconnection
         restore: true, // enable catchup on missed messages
+        ssl: true,
+        heartbeatInterval: 10,
+        presenceTimeout: 30,
       });
 
       this.getUserDetail(uid).then((res) => {
@@ -551,6 +556,23 @@ class PubnubManager {
   removeMembers(spaceId, users) {
     return new Promise(async (resolve, reject) => {
       this.pubnub.removeMembers({ spaceId, users }, (status, response) => {
+        if (!status.error) {
+          resolve(response)
+        } else {
+          reject({ status, response })
+        }
+      }
+      );
+    })
+  }
+
+  getUserOnline(spaceIds) {
+    return new Promise(async (resolve, reject) => {
+      this.pubnub.hereNow({
+        channels: spaceIds,
+        includeUUIDs: true,
+        includeState: true,
+      }, (status, response) => {
         if (!status.error) {
           resolve(response)
         } else {

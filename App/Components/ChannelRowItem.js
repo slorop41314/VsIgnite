@@ -8,6 +8,7 @@ import Avatar from './Avatar'
 import R from 'ramda'
 import { Colors } from '../Themes'
 import moment from 'moment'
+import OnlineIndicator from './OnlineIndicator'
 
 const styles = StyleSheet.create({
   flex: {
@@ -53,6 +54,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12.5
+  },
+  onlineContainer: {
+    position: 'absolute', zIndex: 1
   }
 })
 
@@ -169,6 +173,7 @@ class ChannelRowItem extends Component {
     const { data, currentUser, onPress } = this.props
     let channelName = undefined
     let channelAvatar = undefined
+    let onlineIndicator = undefined
     if (data.loading !== true) {
       const isSingle = isSingleChat(data.id)
       if (isSingle) {
@@ -178,6 +183,11 @@ class ChannelRowItem extends Component {
         const targetUser = JSON.parse(custom[targetUserId])
         channelName = targetUser.name
         channelAvatar = targetUser.profileUrl
+        onlineIndicator = (
+          <View style={[styles.onlineContainer]}>
+            <OnlineIndicator channel={data.id} uuid={targetUserId} />
+          </View>
+        )
       } else {
         channelName = data.name
       }
@@ -185,6 +195,7 @@ class ChannelRowItem extends Component {
     return (
       <TouchableOpacity activeOpacity={0.8} onPress={() => onPress ? onPress(data) : {}}>
         <View style={styles.container}>
+          {onlineIndicator}
           <View style={styles.channelAvatar}>
             <Avatar source={channelAvatar} name={channelName} />
           </View>

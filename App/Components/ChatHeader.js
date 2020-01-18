@@ -46,7 +46,6 @@ const ChatHeader = (props) => {
     const targetUser = JSON.parse(custom[targetUserId])
     channelName = targetUser.name
     channelAvatar = targetUser.profileUrl
-    console.tron.error({ userPresence })
     const presence = userPresence[targetUserId]
 
     if (presence) {
