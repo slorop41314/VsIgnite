@@ -111,16 +111,13 @@ export const saveMessagesReducer = (state, { data, isInit }) => {
       let lastMessageTimetoken = spaces[channelsIds[i]].lastMessageTimetoken
       let nextMessageTimetoken = null
 
-      const keys = data[channelsIds[i]].map((m) => m.timetoken)
-      if (keys.length > 0) {
-        nextMessageTimetoken = convertTimestampToDate(Math.max.apply(0, keys)).valueOf()
+      if (isInit) {
+        nextMessageTimetoken = convertTimestampToDate(data[channelsIds[i]][0].timetoken).valueOf()
 
         if (nextMessageTimetoken > lastMessageTimetoken) {
           lastMessageTimetoken = nextMessageTimetoken
         }
-      }
 
-      if (isInit) {
         spaces = {
           ...spaces,
           [channelsIds[i]]: {
@@ -135,7 +132,11 @@ export const saveMessagesReducer = (state, { data, isInit }) => {
           ...convertArrToObj(data[channelsIds[i]], 'timetoken')
         }
 
-        const messageTimetoken = Math.max.apply(0, keys)
+        const lastMessage = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
+        nextMessageTimetoken = convertTimestampToDate(lastMessage.timetoken).valueOf()
+        if (nextMessageTimetoken > lastMessageTimetoken) {
+          lastMessageTimetoken = nextMessageTimetoken
+        }
 
         spaces = {
           ...spaces,
@@ -143,7 +144,7 @@ export const saveMessagesReducer = (state, { data, isInit }) => {
             ...spaces[channelsIds[i]],
             messages,
             lastMessageTimetoken,
-            lastMessage: messages[messageTimetoken]
+            lastMessage,
           }
         }
       }
