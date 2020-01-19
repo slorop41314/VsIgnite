@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
 })
 
 class ChatScreen extends Component {
+  currentTimetoken = null
   constructor(props) {
     super(props)
     this.chatData = props.navigation.getParam('data')
@@ -29,13 +30,20 @@ class ChatScreen extends Component {
   }
 
   componentDidMount() {
-    this.fetchFunction()
+    const { getPubnubSpaceMemberRequest } = this.props
+    getPubnubSpaceMemberRequest({ spaceId: this.chatData.id })
   }
 
-  fetchFunction() {
-    const { getMessageRequest, getPubnubSpaceMemberRequest } = this.props
-    getMessageRequest({ limit: 150, channels: [this.chatData.id] })
-    getPubnubSpaceMemberRequest({ spaceId: this.chatData.id })
+  fetchFunction({ page }) {
+    const { getMessageRequest } = this.props
+    if (page === 1) {
+      getMessageRequest({ limit: 150, channels: [this.chatData.id] })
+    } else {
+      if (page !== this.currentTimetoken) {
+        this.currentTimetoken = page
+        getMessageRequest({ limit: 150, channels: [this.chatData.id], start: page })
+      }
+    }
   }
 
   onPressSendMessage(type, message) {
@@ -75,25 +83,32 @@ class ChatScreen extends Component {
 
   render() {
     const { messages } = this.props
+    let meta = { current_page: null, next_page: null }
     let keyboardAvoidingViewProps = {}
     if (Platform.OS === 'ios') {
       keyboardAvoidingViewProps = { behavior: 'padding', keyboardVerticalOffset: isIphoneX() ? 64 : 74 }
+    }
+
+    if (messages.length > 2) {
+      meta = { current_page: null, next_page: messages[messages.length - 1].timetoken }
     }
 
     return (
       <Styled.FlexContainer>
         <CustomFlatList
           data={messages}
-          fetchFunction={() => null}
-          meta={{ current_page: 1, next_page: null }}
+          fetchFunction={this.fetchFunction}
+          meta={meta}
           renderItem={({ item, index }) => {
             return <MessageItem isLast={index === (messages.length - 1)} isFirst={index === 0} data={item} />
           }}
-          loading={false}
+          // loading={false}
           error={false}
           ItemSeparatorComponent={() => <View style={[styles.itemSeparator]} />}
           inverted
           contentContainerStyle={[styles.contentContainer, { paddingBottom: 0 }]}
+          onRefresh={undefined}
+          refreshing={undefined}
         />
         <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
           <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
