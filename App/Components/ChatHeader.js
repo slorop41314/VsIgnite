@@ -1,12 +1,13 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import { CustomHeader } from 'react-native-awesome-component'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import { isSingleChat } from '../Pubnub/PubnubHelper'
 import { values } from 'ramda'
 import Avatar from './Avatar'
 import { Colors } from '../Themes'
 import moment from 'moment'
+import Icons from 'react-native-vector-icons/FontAwesome5'
 
 const styles = StyleSheet.create({
   headerContaienr: {
@@ -28,11 +29,16 @@ const styles = StyleSheet.create({
   textTitle: {
     fontSize: 14,
     color: Colors.coal
+  },
+  rightAction: {
+    marginRight: 10,
+    justifyContent: 'center',
+    marginLeft: 5,
   }
 })
 
 const ChatHeader = (props) => {
-  const { navigation, currentUser, typings, userPresence } = props
+  const { navigation, currentUser, typings, userPresence, channel } = props
   const data = navigation.getParam('data')
   let channelName = ''
   let channelAvatar = undefined
@@ -56,11 +62,18 @@ const ChatHeader = (props) => {
       }
     }
   } else {
-    channelName = data.name
+    channelName = channel.name
+    if (channel.members) {
+      status = channel.members.map(m => m.user.name).join(', ')
+    }
   }
 
   if (typings.length > 0) {
     typingsMessage = typings.join(', ')
+  }
+
+  function onPressInvite() {
+    navigation.navigate('GroupInviteScreen', { action: 'invite', channelId: channel.id })
   }
 
   return (
@@ -81,6 +94,11 @@ const ChatHeader = (props) => {
                   <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{status}</Text>
                 )}
             </View>
+            {!isSingle && (
+              <TouchableOpacity activeOpacity={0.8} style={styles.rightAction} onPress={onPressInvite}> 
+                <Icons name='user-plus' size={20} color={Colors.eggplant} />
+              </TouchableOpacity>
+            )}
           </View>
         )
       }}
@@ -105,6 +123,7 @@ const mapStateToProps = (state, props) => {
     currentUser: state.pubnubStore.user,
     typings,
     userPresence,
+    channel: state.pubnubStore.spaces[data.id]
   }
 }
 

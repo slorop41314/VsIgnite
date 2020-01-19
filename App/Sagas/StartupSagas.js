@@ -9,6 +9,7 @@ import { FirebaseStrings } from '../Data/Const'
 import PubnubActions from '../Redux/PubnubRedux'
 import { initPubnub } from './PubnubSagas'
 import { AuthTypes } from '../Redux/AuthRedux'
+import { PubnubStoreTypes } from '../Redux/PubnubStoreRedux'
 
 // exported to make available for tests
 export const selectAvatar = GithubSelectors.selectAvatar
@@ -56,6 +57,8 @@ export function* startup(action) {
               fork(initPubnub, currentUser),
               put(SessionActions.setLogin(currentUser)),
             ])
+
+            yield take(PubnubStoreTypes.SAVE_USER)
             NavigationService.navigate('Main')
             yield
             break;

@@ -54,7 +54,7 @@ class PubnubManager {
   init(user) {
     return new Promise(async (resolve, reject) => {
       const { uid, displayName, photoURL, email } = user
-
+      console.tron.error({ user })
       this.pubnub = new PubNub({
         subscribeKey: subKey,
         publishKey: pubKey,
@@ -75,7 +75,7 @@ class PubnubManager {
         const { status } = err
         if (status.statusCode === 404) {
           try {
-            const response = await PubnubManager.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
+            const res = await this.createUser({ id: uid, name: displayName, email, profileUrl: photoURL })
             this.currentPubnubUser = res.data
             resolve({ user: res.data })
             console.tron.warn('CREATE PUBNUB USER SUCCESS')

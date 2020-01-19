@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Styled, CustomFlatList, CustomButton } from 'react-native-awesome-component'
-import { Text, StyleSheet } from 'react-native'
+import { Styled, CustomFlatList, CustomButton, Method } from 'react-native-awesome-component'
+import { Text, StyleSheet, Group } from 'react-native'
 import { connect } from 'react-redux'
 import PubnubActions from '../../Redux/PubnubRedux'
 import UserRowitem from '../../Components/UserRowitem'
@@ -16,10 +16,17 @@ const styles = StyleSheet.create({
   }
 })
 
+const GroupActionsString = {
+  invite: 'invite',
+  create: 'create',
+}
+
 class UserListScreen extends Component {
   constructor(props) {
     super(props)
+
     this.isGroup = props.navigation.getParam('isGroup')
+    this.action = props.navigation.getParam('action')
 
     this.state = {
       selectedMember: {}
@@ -64,10 +71,16 @@ class UserListScreen extends Component {
   }
 
   onPressCreateGroup() {
-    const { selectedMember } = this.state
-    const { navigation } = this.props
-    const currentPubnubUser = PubnubManager.getCurrentUser()
-    navigation.navigate('GroupCreateScreen', { members: [currentPubnubUser].concat(R.values(selectedMember)) })
+    if (this.action === GroupActionsString.invite) {
+
+    }
+
+    if (this.action === GroupActionsString.create) {
+      const { selectedMember } = this.state
+      const { navigation } = this.props
+      const currentPubnubUser = PubnubManager.getCurrentUser()
+      navigation.navigate('GroupCreateScreen', { members: [currentPubnubUser].concat(R.values(selectedMember)) })
+    }
   }
 
   render() {
@@ -94,7 +107,7 @@ class UserListScreen extends Component {
         />
         {this.isGroup && (
           <CustomButton
-            title={'Next'}
+            title={this.action === GroupActionsString.invite ? 'Invite' : 'Next'}
             onPress={this.onPressCreateGroup}
             disabled={userCount <= 0}
           />
@@ -104,10 +117,32 @@ class UserListScreen extends Component {
   }
 }
 
-const mapStateToProps = (state) => {
+const mapStateToProps = (state, props) => {
+  const currentUser = state.pubnubStore.user
+  let excludeUser = [currentUser]
+  let userList = state.pubnub.users
+
+  const isGroup = props.navigation.getParam('isGroup')
+  const action = props.navigation.getParam('action')
+
+  if (isGroup) {
+    if (action === GroupActionsString.invite) {
+      const channelId = props.navigation.getParam('channelId')
+      if (state.pubnubStore.spaces[channelId]) {
+        const channel = state.pubnubStore.spaces[channelId]
+        if (channel.members) {
+          const members = channel.members.map((m) => m.user)
+          excludeUser = Method.Array.mergeAndReplace(excludeUser, members, 'id')
+        }
+      }
+    }
+  }
+
+  userList = R.differenceWith((a, b) => a.id === b.id, userList, excludeUser)
+  
   return {
-    currentUser: state.pubnubStore.user,
-    userList: state.pubnub.users,
+    currentUser,
+    userList,
     getUserList: state.pubnub.getPubnubUserList
   }
 }

@@ -98,7 +98,7 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.message: {
-            const currentPubnubUser = PubnubMßanager.getCurrentUser()
+            const currentPubnubUser = PubnubManager.getCurrentUser()
             const { channel, timetoken, publisher } = payload
             if (publisher !== currentPubnubUser.id) {
               yield all([

@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Styled, CustomButton, PlaceholderImage, PlaceholderText } from 'react-native-awesome-component'
-import { Text, ScrollView, Dimensions, StyleSheet } from 'react-native'
+import { Text, ScrollView, Dimensions, StyleSheet, View } from 'react-native'
 import { connect } from 'react-redux'
 import Strings from '../../Themes/Strings'
 import AuthActions from '../../Redux/AuthRedux'
@@ -27,6 +27,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 40
   },
+  emptyPhotoContainer: {
+    width,
+    height: width,
+    backgroundColor: Colors.steel
+  }
 })
 
 class UserProfileScreen extends Component {
@@ -47,11 +52,17 @@ class UserProfileScreen extends Component {
     return (
       <Styled.FlexContainer>
         <ScrollView>
-          <PlaceholderImage
-            uri={user.profileUrl}
-            width={width}
-            height={width}
-          />
+          {user.profileUrl ? (
+            <PlaceholderImage
+              uri={user.profileUrl}
+              width={width}
+              height={width}
+            />
+          ) : (
+            <View style={styles.emptyPhotoContainer}>
+
+            </View>
+          )}
           <Styled.Container padded style={styles.nameContainer}>
             <PlaceholderText style={styles.textName} numberOfLines={1}>{user.name}</PlaceholderText>
             <PlaceholderText style={styles.textEmail} numberOfLines={1}>{user.email}</PlaceholderText>

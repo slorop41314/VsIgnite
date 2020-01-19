@@ -94,6 +94,7 @@ export const saveSpacesReducer = (state, { data }) => {
           lastMessage: null,
           lastMessageTimetoken: new Date(data[i].updated).valueOf(),
           unreadCount: 0,
+          members: [],
         }
       }
     }

@@ -4,7 +4,7 @@ import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
 import moment from 'moment'
-import { convertTimestampToDate, getMessageStatusByActions } from '../Pubnub/PubnubHelper'
+import { convertTimestampToDate, getMessageStatusByActions, isSingleChat } from '../Pubnub/PubnubHelper'
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubActions from '../Redux/PubnubRedux'
@@ -66,6 +66,11 @@ const styles = StyleSheet.create({
   iconCheck: {
     marginTop: 5,
     marginLeft: 5
+  },
+  groupUserName: {
+    fontWeight: 'bold',
+    color: Colors.snow,
+    marginBottom: 3,
   }
 })
 
@@ -223,6 +228,9 @@ export class MessageItem extends Component {
           <View>
             {renderTopDateSeparator}
             <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+              {!isMe && !isSingleChat(channel) && (
+                <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
+              )}
               <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
               <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
                 <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>

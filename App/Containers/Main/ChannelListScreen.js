@@ -42,7 +42,7 @@ class ChannelListScreen extends Component {
 
   onPressGroup() {
     const { navigation } = this.props
-    navigation.navigate('GroupInviteScreen')
+    navigation.navigate('GroupInviteScreen', { action: 'create' })
   }
 
   onPressChannel(item) {
