@@ -42,7 +42,7 @@ target 'VsIgnite' do
   pod 'Fabric'
   pod 'Crashlytics'
   pod 'Firebase/Firestore'
-
+  pod 'Firebase/Storage'
 
   target 'VsIgniteTests' do
     inherit! :search_paths
