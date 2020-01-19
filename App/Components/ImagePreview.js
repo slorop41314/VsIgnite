@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, TouchableOpacity, Platform, ToastAndroid, Alert, StyleSheet, Image } from 'react-native'
+import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native'
 import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
 import ImageViewer from 'react-native-image-zoom-viewer'
@@ -7,42 +7,7 @@ import Icons from 'react-native-vector-icons/FontAwesome5'
 import { Colors } from '../Themes'
 import { getStatusBarHeight, getBottomSpace } from 'react-native-iphone-x-helper'
 import { Styled, PlaceholderImage } from 'react-native-awesome-component'
-// import RNFS from 'react-native-fs';
-// import { Method } from 'react-native-awesome-component'
-// import CameraRoll from "@react-native-community/cameraroll";
-// import I18n from '../../I18n'
-
-// function getLocalFileFromUrl(url) {
-//   const rootDir = Platform.OS === 'ios' ? RNFS.TemporaryDirectoryPath : `file://${RNFS.TemporaryDirectoryPath}`;
-//   return localFile = `${rootDir}/TVMS/${Method.Helper.getFileNameFromPath(url)}`;
-// }
-
-// function onPressDownload(url) {
-//   const options = {
-//     fromUrl: url,
-//     toFile: getLocalFileFromUrl(url)
-//   };
-//   if (Platform.OS === 'ios') {
-//     CameraRoll.save(url, { album: 'TVMS', type: 'photo' })
-//       .then(() => {
-//         Alert.alert('Download completed', 'kindly check your TVMS album')
-//       })
-//       .catch(() => {
-//         Alert.alert('Download failure', 'Please check your persmission and internet connection, and try again')
-//       })
-//   } else {
-//     RNFS.downloadFile(options).promise
-//       .then(() => {
-//         CameraRoll.save(options.toFile, { album: 'TVMS', type: 'photo' })
-//           .then(() => {
-//             ToastAndroid.show('Download completed. kindly check your TVMS album', ToastAndroid.LONG)
-//           })
-//       })
-//       .catch(() => {
-//         ToastAndroid.show('Download failure. Please check your persmission and internet connection, and try again', ToastAndroid.LONG)
-//       })
-//   }
-// }
+import { downloadWithAlert } from '../Lib/DownloadHelper'
 
 const styles = StyleSheet.create({
   headerContainer: {
@@ -99,26 +64,26 @@ const ImagePreview = (props) => {
               </View>
             )
           }}
-          renderFooter={(currentIndex) => {
-            return (
-              <View style={styles.footerContainer}>
-                <TouchableOpacity activeOpacity={0.8} style={styles.footerButton}>
-                  <Icons name={'file-download'} size={30} color={Colors.snow} />
-                </TouchableOpacity>
-              </View>
-            )
-          }}
+          // renderFooter={(currentIndex) => {
+          //   return (
+          //     <View style={styles.footerContainer}>
+          //       <TouchableOpacity activeOpacity={0.8} style={styles.footerButton} onPress={() => downloadWithAlert(images[currentIndex].url)}>
+          //         <Icons name={'file-download'} size={30} color={Colors.snow} />
+          //       </TouchableOpacity>
+          //     </View>
+          //   )
+          // }}
           renderImage={(image) => {
             const { style, source } = image
             return (
-              <Image
-                style={style}
-                source={source}
-                resizeMethod={'resize'}
+              <PlaceholderImage
+                uri={source.uri}
+                width={style.width}
+                height={style.height}
               />
             )
           }}
-          footerContainerStyle={styles.footer}
+          // footerContainerStyle={styles.footer}
           saveToLocalByLongPress={false}
           onLongPress={false}
         />
