@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import { Styled, CustomButton, CustomFlatList, Method } from 'react-native-awesome-component'
 import { connect } from 'react-redux'
-import Strings from '../../Themes/Strings'
-import AuthActions from '../../Redux/AuthRedux'
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { StyleSheet, View } from 'react-native'
@@ -25,7 +23,6 @@ class ChannelListScreen extends Component {
 
     this.onPressNewChat = this.onPressNewChat.bind(this)
     this.onPressGroup = this.onPressGroup.bind(this)
-    this.onPressLogout = this.onPressLogout.bind(this)
     this.fetchFunction = this.fetchFunction.bind(this)
     this.onPressChannel = this.onPressChannel.bind(this)
   }
@@ -36,11 +33,6 @@ class ChannelListScreen extends Component {
   fetchFunction() {
     const { getAllSpaceRequest } = this.props
     getAllSpaceRequest({ limit: 100 })
-  }
-
-  onPressLogout() {
-    const { logoutRequest } = this.props
-    logoutRequest()
   }
 
   onPressNewChat() {
@@ -72,10 +64,6 @@ class ChannelListScreen extends Component {
           error={error}
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.steel }} />}
         />
-        <CustomButton
-          title={Strings.button.logout}
-          onPress={this.onPressLogout}
-        />
         <ActionButton buttonColor="rgba(231,76,60,1)">
           <ActionButton.Item buttonColor='#9b59b6' title="New Chat" onPress={this.onPressNewChat}>
             <Icon name="user" style={styles.actionButtonIcon} />
@@ -99,7 +87,6 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    logoutRequest: () => dispatch(AuthActions.logoutRequest()),
     getAllSpaceRequest: (params) => dispatch(PubnubActions.getAllPubnubSpaceRequest(params))
   }
 }
