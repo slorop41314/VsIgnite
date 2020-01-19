@@ -115,9 +115,7 @@ class ChannelRowItem extends Component {
     const { data, currentUser, onPress } = this.props
     if (data.loading !== true) {
       const { lastMessage } = data
-      if (data.id === 'single-260cc010-3496-11ea-a6ee-3f8f5af680e7') {
-        console.tron.error({ data })
-      }
+
       if (lastMessage) {
         if (lastMessage && lastMessage.message) {
           let textMessage = ''
