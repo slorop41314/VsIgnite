@@ -7,6 +7,7 @@ import AuthActions from '../../Redux/AuthRedux'
 import { getBottomSpace } from 'react-native-iphone-x-helper'
 import PubnubActions from '../../Redux/PubnubRedux'
 import { Colors } from '../../Themes'
+import FullButton from '../../Components/FullButton'
 
 const { width, height } = Dimensions.get('window')
 

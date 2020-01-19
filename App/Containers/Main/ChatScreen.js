@@ -38,16 +38,29 @@ class ChatScreen extends Component {
     getPubnubSpaceMemberRequest({ spaceId: this.chatData.id })
   }
 
-  onPressSendMessage(message) {
+  onPressSendMessage(type, message) {
     const { sendPubnubMessage } = this.props
-    const params = {
-      message: {
-        type: PubnubStrings.message.type.text,
-        text: message
-      },
-      channel: this.chatData.id,
+    if (type === PubnubStrings.message.type.text) {
+      const params = {
+        message: {
+          type: PubnubStrings.message.type.text,
+          text: message
+        },
+        channel: this.chatData.id,
+      }
+      sendPubnubMessage(params)
     }
-    sendPubnubMessage(params)
+
+    if (type === PubnubStrings.message.type.images) {
+      const params = {
+        message: {
+          type: PubnubStrings.message.type.images,
+          image: message
+        },
+        channel: this.chatData.id,
+      }
+      sendPubnubMessage(params)
+    }
   }
 
   onStartTyping() {

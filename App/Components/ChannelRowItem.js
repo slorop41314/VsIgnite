@@ -121,7 +121,7 @@ class ChannelRowItem extends Component {
           if (lastMessage.message.type === PubnubStrings.message.type.text) {
             textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: ${lastMessage.message.text}`
           } else {
-            textMessage = `${lastMessage.message.user.name}: send images`
+            textMessage = `${lastMessage.message.user.name}: send image`
           }
 
           return (

@@ -16,6 +16,8 @@ import PubnubManager from '../../Pubnub/PubnubManager'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
+import { firebaseUploadFile } from '../../Firebase/FirebaseHelper'
+import { Method } from 'react-native-awesome-component'
 
 export function* getPubnubMessage(action) {
   try {
@@ -38,8 +40,18 @@ export function* getPubnubMessage(action) {
  */
 export function* sendPubnubMessage(action) {
   try {
-    const { channel, message } = action.data
-    const response = yield PubnubManager.sendMessage(channel, message)    
+    let { channel, message } = action.data
+    const { type } = message
+    if (type === PubnubStrings.message.type.images) {
+      const { image } = message
+      const res = yield firebaseUploadFile(`${channel}/${Method.Helper.getFileNameFromPath(image.uri)}`, image.uri)
+      const { downloadURL } = res
+      message = {
+        ...message,
+        image: downloadURL
+      }
+    }
+    const response = yield PubnubManager.sendMessage(channel, message)
     yield all([
       put(PubnubStoreActions.onReceiveMessage(response)),
       put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),

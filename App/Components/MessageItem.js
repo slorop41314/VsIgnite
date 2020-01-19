@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
@@ -8,6 +8,13 @@ import { convertTimestampToDate, getMessageStatusByActions, isSingleChat } from 
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubActions from '../Redux/PubnubRedux'
+import ImagePreview from './ImagePreview'
+import { PlaceholderImage } from 'react-native-awesome-component'
+import R from 'ramda'
+
+const { width, height } = Dimensions.get('window')
+
+const imageWidth = width * 0.5
 
 const styles = StyleSheet.create({
   messageContainer: {
@@ -71,6 +78,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.snow,
     marginBottom: 3,
+  },
+  imageContainer: {
+    height: imageWidth
   }
 })
 
@@ -151,7 +161,7 @@ export class MessageItem extends Component {
     let thisActions = undefined
     let nextActions = undefined
 
-    const { data, currentUser, isLast, isFirst, members, storeData } = nextProps
+    const { data, currentUser, isLast, isFirst, members } = nextProps
     const { message, timetoken, actions, channel } = data
 
     if (thisProps.data && thisProps.data.message) thisMessage = thisProps.data.message
@@ -179,7 +189,7 @@ export class MessageItem extends Component {
   }
 
   render() {
-    const { data, currentUser, isLast, isFirst, members } = this.props
+    const { data, currentUser, isLast, isFirst, members, imageIndex, parseImageMessages } = this.props
     if (data.loading !== true) {
       const { message, timetoken, actions, channel } = data
       const { user, type } = message
@@ -240,12 +250,35 @@ export class MessageItem extends Component {
             {renderBottomDateSeparator}
           </View>
         )
-      } else {
+      }
+
+      if (type === PubnubStrings.message.type.images) {
+        const { image } = message
         return (
           <View>
+            {renderTopDateSeparator}
             <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
-              <Text>CANNOT DISPLAY DATA YET</Text>
+              {!isMe && !isSingleChat(channel) && (
+                <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
+              )}
+              <View style={styles.imageContainer}>
+                <ImagePreview
+                  index={imageIndex}
+                  images={parseImageMessages}
+                >
+                  <PlaceholderImage
+                    uri={image}
+                    width={imageWidth}
+                    height={imageWidth}
+                  />
+                </ImagePreview>
+              </View>
+              <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
+                <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
+                {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}
+              </View>
             </View>
+            {renderBottomDateSeparator}
           </View>
         )
       }
@@ -256,8 +289,10 @@ export class MessageItem extends Component {
 }
 
 const mapStateToProps = (state, props) => {
-  const { timetoken, channel } = props.data
-  let storeData = { ...props.data }
+  const { timetoken, channel, message } = props.data
+  let imageMessages = []
+  let parseImageMessages = []
+  let imageIndex = undefined
 
   let members = []
 
@@ -266,15 +301,35 @@ const mapStateToProps = (state, props) => {
       members = state.pubnubStore.spaces[channel].members
     }
 
-    if (state.pubnubStore.spaces[channel].messages && state.pubnubStore.spaces[channel].messages[timetoken]) {
-      storeData = state.pubnubStore.spaces[channel].messages[timetoken]
+    const { type } = message
+    if (type === PubnubStrings.message.type.images) {
+      if (state.pubnubStore.spaces[channel].messages) {
+
+        const messages = R.values(state.pubnubStore.spaces[channel].messages)
+        imageMessages = messages.filter(m => m.message.type === PubnubStrings.message.type.images)
+        imageIndex = imageMessages.findIndex(m => m.timetoken === timetoken)
+        parseImageMessages = imageMessages.map(m => {
+          let newMessage = {
+            ...m,
+            ...m.message,
+            url: m.message.image,
+          }
+          delete newMessage.message
+          delete newMessage.image
+          delete newMessage.type
+          return newMessage
+        })
+
+      }
     }
   }
 
   return {
     currentUser: state.pubnubStore.user,
     members,
-    storeData,
+    imageMessages,
+    imageIndex,
+    parseImageMessages,
   }
 }
 

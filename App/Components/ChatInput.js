@@ -5,6 +5,8 @@ import { getBottomSpace, isIphoneX } from 'react-native-iphone-x-helper';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import { Colors } from '../Themes';
 import _ from 'lodash'
+import ImagePicker from 'react-native-image-picker';
+import PubnubStrings from '../Pubnub/PubnubStrings';
 
 const styles = StyleSheet.create({
   textInputContainer: {
@@ -35,25 +37,76 @@ const styles = StyleSheet.create({
   },
   disableSendButton: {
     backgroundColor: Colors.steel,
-  }
+  },
+  addImageContainer: {
+    backgroundColor: Colors.eggplant,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 20,
+    marginRight: 4
+  },
 })
 
 export const ChatInputContext = React.createContext({ message: '' })
 
 const SubmitButton = (props) => {
   const { onPress } = props
+  function onPressCamera() {
+    const options = {
+      mediaType: 'photo',
+      noData: true
+    }
+    ImagePicker.launchCamera(options, (response) => {
+      if (!response.didCancel) {
+        onPress(PubnubStrings.message.type.images, response)
+      }
+    })
+  }
+
+  function onPressImage() {
+    const options = {
+      mediaType: 'photo',
+      noData: true
+    }
+    ImagePicker.launchImageLibrary(options, (response) => {
+      if (!response.didCancel) {
+        onPress(PubnubStrings.message.type.images, response)
+      }
+    })
+  }
+
   return (
     <ChatInputContext.Consumer>
       {({ message }) => {
         const disableSubmit = message.length <= 0
-        return (
-          <TouchableOpacity
-            disabled={disableSubmit}
-            style={[styles.sendButtonContainer, disableSubmit && styles.disableSendButton]} activeOpacity={0.8}
-            onPress={() => onPress(message)}>
-            <Icons name='paper-plane' size={18} color={Colors.snow} />
-          </TouchableOpacity>
-        )
+        if (disableSubmit) {
+          return (
+            <View style={{ flexDirection: 'row' }}>
+              <TouchableOpacity
+                style={[styles.sendButtonContainer, { marginRight: 5 }]} activeOpacity={0.8}
+                onPress={onPressImage}
+              >
+                <Icons name='image' size={23} color={Colors.snow} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.sendButtonContainer} activeOpacity={0.8}
+                onPress={onPressCamera}
+              >
+                <Icons name='camera' size={20} color={Colors.snow} />
+              </TouchableOpacity>
+            </View>
+          )
+        } else {
+          return (
+            <TouchableOpacity
+              style={[styles.sendButtonContainer]} activeOpacity={0.8}
+              onPress={() => onPress(PubnubStrings.message.type.text, message)}>
+              <Icons name='paper-plane' size={18} color={Colors.snow} />
+            </TouchableOpacity>
+          )
+        }
       }}
     </ChatInputContext.Consumer>
   )
@@ -114,12 +167,16 @@ const ChatInput = (props) => {
 
   const [message, setMessage] = useState('')
 
-  function sendMessage() {
+  function sendMessage(type, data) {
+    
     if (typeof sendMessage === 'function') {
-      onSendMessage(message)
+      onSendMessage(type, data)
     }
-    textinputRef.clear()
-    setMessage('')
+
+    if (type === PubnubStrings.message.type.text) {
+      textinputRef.clear()
+      setMessage('')
+    }
   }
 
   function onChangeText(text) {
