@@ -88,10 +88,13 @@ export function* getPubnubSpace(action) {
 export function* getAllPubnubSpace(action) {
   try {
     const { limit, page } = action.data
-    const response = yield PubnubManager.getAllSpaces(limit, page)
+    const currentUser = PubnubManager.getCurrentUser()
+    const response = yield PubnubManager.getMembership(currentUser.id, limit, page)
     let spaceIds = []
+    let spaces = []
     let nextPubnubAction = []
     if (response.totalCount > 0) {
+      spaces = response.data.map((s) => s.space)
       spaceIds = response.data.map((s) => s.id)
       PubnubManager.subscribeSpaces(spaceIds)
 
@@ -102,7 +105,7 @@ export function* getAllPubnubSpace(action) {
     }
 
     yield all([
-      put(PubnubStoreActions.saveSpaces(response.data)),
+      put(PubnubStoreActions.saveSpaces(spaces)),
       put(PubnubActions.getOnlineHereRequest({ spaceIds })),
       put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 1 })),
       put(PubnubActions.getPubnubUnreadCountRequest()),

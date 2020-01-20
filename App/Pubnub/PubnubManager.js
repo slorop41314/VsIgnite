@@ -476,9 +476,19 @@ class PubnubManager {
     })
   }
 
-  getMembership(userId) {
+  getMembership(userId, limit, page) {
     return new Promise(async (resolve, reject) => {
-      this.pubnub.getMemberships({ userId }, (status, response) => {
+      this.pubnub.getMemberships({
+        userId,
+        limit,
+        page,
+        include: {
+          totalCount: true,
+          customFields: true,
+          spaceFields: true,
+          customSpaceFields: true,
+        }
+      }, (status, response) => {
         if (!status.error) {
           resolve(response)
         } else {
