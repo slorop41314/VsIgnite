@@ -31,7 +31,12 @@ const { Types, Creators } = createActions({
   onReceiveMembership: ['data'],
 
   // RESET
-  resetStore: null
+  resetStore: null,
+
+  // MESSAGE QUEUE
+  addMessageQueue: ['data'],
+  messageQueueSuccess: ['data'],
+  messageQueueFailure: ['data'],
 })
 
 export const PubnubStoreTypes = Types
@@ -43,7 +48,8 @@ export const INITIAL_STATE = Immutable({
   pubnubUser: {},
   spaces: {},
   typings: {},
-  userPresence: {}
+  userPresence: {},
+  messageQueue: {},
 })
 
 /* ------------- Selectors ------------- */
@@ -63,7 +69,8 @@ export const PubnubStoreSelectors = {
     const { spaces } = pubnubStore
     const channelWithTimetoken = R.values(spaces).filter(space => (space.lastReadMessageTimetoken !== null))
     return channelWithTimetoken.map(space => { return { channel: space.id, timetoken: space.lastReadMessageTimetoken } })
-  }
+  },
+  getMessageQueue: ({ pubnubStore }) => R.values(pubnubStore.messageQueue)
 }
 
 /* ------------- Reducers ------------- */
@@ -435,6 +442,86 @@ export const resetStoreReducer = (state) => {
   return state.merge(INITIAL_STATE)
 }
 
+export const addMessageQueueReducer = (state, { data }) => {
+  const { channel, timetoken, message, status } = data
+
+  let messageQueue = {
+    ...state.messageQueue,
+    [data.timetoken]: data
+  }
+
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [timetoken]: {
+            channel,
+            timetoken,
+            message,
+            status,
+          }
+        },
+        lastMessage: {
+          channel,
+          timetoken,
+          message,
+          status
+        },
+        lastMessageTimetoken: convertTimestampToDate(timetoken).valueOf(),
+      }
+    }
+
+    console.tron.error({messages: spaces[channel].messages})
+  }
+
+  return state.merge({ ...state, messageQueue, spaces })
+}
+
+export const messageQueueSuccessReducer = (state, { data }) => {
+  const { channel, timetoken } = data
+  let messageQueue = { ...state.messageQueue }
+  delete messageQueue[data.timetoken]
+
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = R.dissocPath([channel, 'messages', timetoken], spaces)
+  }
+
+  return state.merge({ ...state, messageQueue, spaces })
+}
+
+export const messageQueueFailureReducer = (state, { data }) => {
+  const { channel, timetoken } = data
+
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [timetoken]: {
+            ...spaces[channel].messages[timetoken],
+            status: PubnubStrings.message.status.failure,
+          }
+        },
+        lastMessage: {
+          ...spaces[channel].lastMessage,
+          status: PubnubStrings.message.status.failure,
+        },
+        lastMessageTimetoken: convertTimestampToDate(timetoken).valueOf(),
+      }
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -456,4 +543,7 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.INCREASE_MESSAGE_COUNT]: increaseMessageCountReducer,
   [Types.SET_MESSAGE_COUNT]: setMessageCountReducer,
   [Types.RESET_STORE]: resetStoreReducer,
+  [Types.ADD_MESSAGE_QUEUE]: addMessageQueueReducer,
+  [Types.MESSAGE_QUEUE_SUCCESS]: messageQueueSuccessReducer,
+  [Types.MESSAGE_QUEUE_FAILURE]: messageQueueFailureReducer,
 })

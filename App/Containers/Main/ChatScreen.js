@@ -5,6 +5,7 @@ import { KeyboardAvoidingView, View, StyleSheet } from 'react-native'
 import ChatInput from '../../Components/ChatInput'
 import { isIphoneX } from 'react-native-iphone-x-helper'
 import PubnubActions from '../../Redux/PubnubRedux'
+import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import { values } from 'ramda'
 import MessageItem from '../../Components/MessageItem'
@@ -47,14 +48,17 @@ class ChatScreen extends Component {
   }
 
   onPressSendMessage(type, message) {
-    const { sendPubnubMessage } = this.props
+    const { sendPubnubMessage, currentUser } = this.props
     if (type === PubnubStrings.message.type.text) {
       const params = {
         message: {
           type: PubnubStrings.message.type.text,
-          text: message
+          text: message,
+          user: currentUser,
         },
         channel: this.chatData.id,
+        timetoken: new Date().valueOf() * 1e4,
+        status: PubnubStrings.message.status.waiting
       }
       sendPubnubMessage(params)
     }
@@ -63,9 +67,12 @@ class ChatScreen extends Component {
       const params = {
         message: {
           type: PubnubStrings.message.type.images,
-          image: message
+          image: message,
+          user: currentUser,
         },
         channel: this.chatData.id,
+        timetoken: new Date().valueOf() * 1e4,
+        status: PubnubStrings.message.status.waiting
       }
       sendPubnubMessage(params)
     }
@@ -126,7 +133,8 @@ const mapStateToProps = (state, props) => {
     messages = values(state.pubnubStore.spaces[data.id].messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))
   }
   return {
-    messages
+    messages,
+    currentUser: state.pubnubStore.user,
   }
 }
 

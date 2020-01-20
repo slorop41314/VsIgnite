@@ -44,7 +44,7 @@ export default function* root() {
 
     /** MESSAGE */
     takeEvery(PubnubTypes.GET_PUBNUB_MESSAGE_REQUEST, getPubnubMessage),
-    takeLatest(PubnubTypes.SEND_PUBNUB_MESSAGE_REQUEST, sendPubnubMessage),
+    takeEvery(PubnubTypes.SEND_PUBNUB_MESSAGE_REQUEST, sendPubnubMessage),
     takeLatest(PubnubTypes.SEND_PUBNUB_TYPING_REQUEST, sendPubnubTyping),
     takeEvery(PubnubTypes.UPDATE_PUBNUB_MESSAGE_REQUEST, updatePubnubMessage),
     takeLatest(PubnubTypes.DELETE_PUBNUB_MESSAGE_REQUEST, deletePubnubMessage),

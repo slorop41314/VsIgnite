@@ -10,13 +10,13 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all, cancelled, take } from 'redux-saga/effects'
+import { call, put, all, cancelled, take, fork, select, delay } from 'redux-saga/effects'
 import { eventChannel } from 'redux-saga';
 import PubnubActions from '../Redux/PubnubRedux'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubStrings from '../Pubnub/PubnubStrings';
 import PubnubStoreActions from '../Redux/PubnubStoreRedux'
-// import { PubnubSelectors } from '../Redux/PubnubRedux'
+import { PubnubStoreSelectors } from '../Redux/PubnubStoreRedux'
 
 export function pubnubEventHandler() {
   return eventChannel(emit => {
@@ -75,6 +75,7 @@ export function* initPubnub(data) {
   const pubnubUser = yield PubnubManager.init(data)
   if (pubnubUser) {
     yield put(PubnubStoreActions.saveUser(pubnubUser.user))
+    // yield fork(handleUnsendMessage)
   }
   const pubnubEvent = yield call(pubnubEventHandler);
   try {
@@ -169,6 +170,28 @@ export function* initPubnub(data) {
   } finally {
     if (yield cancelled()) {
       console.tron.error('PUBNUB CANCELED');
+    }
+  }
+}
+
+export function* handleUnsendMessage() {
+  try {
+    // while (true) {
+    //   try {
+    //     const messageQueue = yield select(PubnubStoreSelectors.getMessageQueue)
+    //     console.tron.error({ messageQueue })
+    //     if (messageQueue.length > 0) {
+    //       const message = messageQueue.shift()
+    //       yield delay(1000)
+    //       yield put(PubnubStoreActions.messageQueueSuccess(message))
+    //     }
+    //   } catch (err) {
+    //     console.tron.log('PUBNUB QUEUE MANAGER ERROR', err);
+    //   }
+    // }
+  } finally {
+    if (yield cancelled()) {
+      console.tron.error('PUBNUB QUEUE MANAGER CANCELED');
     }
   }
 }

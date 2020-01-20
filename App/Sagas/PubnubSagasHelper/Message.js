@@ -41,6 +41,7 @@ export function* getPubnubMessage(action) {
  */
 export function* sendPubnubMessage(action) {
   try {
+    yield put(PubnubStoreActions.addMessageQueue(action.data))
     let { channel, message } = action.data
     const { type } = message
     if (type === PubnubStrings.message.type.images) {
@@ -55,12 +56,16 @@ export function* sendPubnubMessage(action) {
     }
     const response = yield PubnubManager.sendMessage(channel, message)
     yield all([
+      put(PubnubStoreActions.messageQueueSuccess(action.data)),
       put(PubnubStoreActions.onReceiveMessage(response)),
       put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
       put(PubnubActions.sendPubnubMessageSuccess(response))
     ])
   } catch (error) {
-    yield put(PubnubActions.sendPubnubMessageFailure())
+    yield all([
+      put(PubnubStoreActions.messageQueueFailure(action.data)),
+      put(PubnubActions.sendPubnubMessageFailure()),
+    ])
   }
 }
 

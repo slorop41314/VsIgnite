@@ -11,12 +11,20 @@ import PubnubActions from '../Redux/PubnubRedux'
 import ImagePreview from './ImagePreview'
 import { PlaceholderImage } from 'react-native-awesome-component'
 import R from 'ramda'
+import { TouchableOpacity } from 'react-native-gesture-handler'
 
 const { width, height } = Dimensions.get('window')
 
 const imageWidth = width * 0.5
 
 const styles = StyleSheet.create({
+  container: (isMe) => {
+    return {
+      flexDirection: 'row',
+      justifyContent: isMe ? 'flex-end' : 'flex-start',
+      alignItems: 'center',
+    }
+  },
   messageContainer: {
     maxWidth: '80%',
     padding: 10,
@@ -81,6 +89,15 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     height: imageWidth
+  },
+  resend: {
+    backgroundColor: Colors.eggplant,
+    height: 30,
+    width: 30,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 5
   }
 })
 
@@ -121,16 +138,19 @@ export class MessageItem extends Component {
     super(props)
 
     this.checkAndUpdateActions = this.checkAndUpdateActions.bind(this)
+    this.onPressResend = this.onPressResend.bind(this)
   }
 
   componentDidMount() {
     const { data } = this.props
-    const { timetoken, actions, channel } = data
-    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.delivered, actions)
-    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, actions)
+    const { timetoken, actions, channel, status } = data
+    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.delivered, actions, status)
+    this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, actions, status)
   }
 
-  checkAndUpdateActions(channel, actiontype, timetoken, value, actions) {
+  checkAndUpdateActions(channel, actiontype, timetoken, value, actions, status) {
+    if ((status === PubnubStrings.message.status.waiting) || (status === PubnubStrings.message.status.failure)) return
+
     const { updatePubnubMessageRequest, currentUser } = this.props
     const params = {
       channel, timetoken, actiontype, value
@@ -162,7 +182,7 @@ export class MessageItem extends Component {
     let nextActions = undefined
 
     const { data, currentUser, isLast, isFirst, members } = nextProps
-    const { message, timetoken, actions, channel } = data
+    const { message, timetoken, actions, channel, status } = data
 
     if (thisProps.data && thisProps.data.message) thisMessage = thisProps.data.message
     if (nextProps.data && nextProps.data.message) nextMessage = nextProps.data.message
@@ -181,17 +201,23 @@ export class MessageItem extends Component {
 
     } else {
       if (isFirst) {
-        this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, nextActions)
+        this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, nextActions, status)
       }
     }
 
     return shouldUpdate
   }
 
+  onPressResend() {
+    const { data, sendPubnubMessage } = this.props
+    sendPubnubMessage(data)
+  }
+
   render() {
     const { data, currentUser, isLast, isFirst, members, imageIndex, parseImageMessages } = this.props
     if (data.loading !== true) {
-      const { message, timetoken, actions, channel } = data
+      const { message, timetoken, actions, channel, status } = data
+
       const { user, type } = message
       const isMe = user.id === currentUser.id
       const sameDay = _isSameDay(timetoken)
@@ -217,6 +243,11 @@ export class MessageItem extends Component {
         }
       }
 
+      if (status) {
+        checkIcon = 'clock'
+      }
+
+
       if (!isFirst && !isLast && !sameDay.status) {
         renderBottomDateSeparator = (
           <View style={[styles.dateSeparatorContainer]}>
@@ -237,15 +268,22 @@ export class MessageItem extends Component {
         return (
           <View>
             {renderTopDateSeparator}
-            <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
-              {!isMe && !isSingleChat(channel) && (
-                <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
-              )}
-              <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
-              <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
-                <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
-                {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}
+            <View style={styles.container(isMe)}>
+              <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+                {!isMe && !isSingleChat(channel) && (
+                  <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
+                )}
+                <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
+                <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
+                  <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
+                  {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}
+                </View>
               </View>
+              {isMe && status === PubnubStrings.message.status.failure && (
+                <TouchableOpacity activeOpacity={0.8} style={styles.resend} onPress={this.onPressResend}>
+                  <Icons name='redo' size={20} color={Colors.snow} />
+                </TouchableOpacity>
+              )}
             </View>
             {renderBottomDateSeparator}
           </View>
@@ -335,7 +373,8 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    updatePubnubMessageRequest: (params) => dispatch(PubnubActions.updatePubnubMessageRequest(params))
+    updatePubnubMessageRequest: (params) => dispatch(PubnubActions.updatePubnubMessageRequest(params)),
+    sendPubnubMessage: (params) => dispatch(PubnubActions.sendPubnubMessageRequest(params)),
   }
 }
 

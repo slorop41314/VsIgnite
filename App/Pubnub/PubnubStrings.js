@@ -15,6 +15,9 @@ const PubnubStrings = {
       sent: 'sent',
       delivered: 'delivered',
       read: 'read',
+
+      waiting: 'waiting',
+      failure: 'failure',
     }
   },
   space: {
