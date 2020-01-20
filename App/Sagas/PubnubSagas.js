@@ -155,7 +155,8 @@ export function* initPubnub(data) {
               }
             } else {
               yield all([
-                put(PubnubStoreActions.onReceiveMembership(payload))
+                put(PubnubActions.getPubnubSpaceMemberRequest({ spaceId: channel })),
+                // put(PubnubStoreActions.onReceiveMembership(payload))
               ])
             }
             break;

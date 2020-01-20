@@ -46,6 +46,10 @@ const PubnubStrings = {
     join: 'join',
     leave: 'leave',
     timeout: 'timeout',
+  },
+  invite_type: {
+    create: 'create',
+    invite: 'invite'
   }
 }
 

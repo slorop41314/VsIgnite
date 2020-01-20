@@ -8,6 +8,7 @@ import Avatar from './Avatar'
 import { Colors } from '../Themes'
 import moment from 'moment'
 import Icons from 'react-native-vector-icons/FontAwesome5'
+import PubnubStrings from '../Pubnub/PubnubStrings'
 
 const styles = StyleSheet.create({
   headerContaienr: {
@@ -73,7 +74,7 @@ const ChatHeader = (props) => {
   }
 
   function onPressInvite() {
-    navigation.navigate('GroupInviteScreen', { action: 'invite', channelId: channel.id })
+    navigation.navigate('GroupInviteScreen', { action: PubnubStrings.invite_type.invite, channelId: channel.id })
   }
 
   return (

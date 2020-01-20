@@ -16,11 +16,6 @@ const styles = StyleSheet.create({
   }
 })
 
-const GroupActionsString = {
-  invite: 'invite',
-  create: 'create',
-}
-
 class UserListScreen extends Component {
   constructor(props) {
     super(props)
@@ -71,13 +66,14 @@ class UserListScreen extends Component {
   }
 
   onPressCreateGroup() {
-    if (this.action === GroupActionsString.invite) {
-
+    const { selectedMember } = this.state
+    const { navigation, addPubnubSpaceMemberRequest } = this.props
+    if (this.action === PubnubStrings.invite_type.invite) {
+      const channelId = navigation.getParam('channelId')
+      addPubnubSpaceMemberRequest({ spaceId: channelId, users: R.values(selectedMember), invite_type: PubnubStrings.invite_type.invite })
     }
 
-    if (this.action === GroupActionsString.create) {
-      const { selectedMember } = this.state
-      const { navigation } = this.props
+    if (this.action === PubnubStrings.invite_type.create) {
       const currentPubnubUser = PubnubManager.getCurrentUser()
       navigation.navigate('GroupCreateScreen', { members: [currentPubnubUser].concat(R.values(selectedMember)) })
     }
@@ -107,7 +103,7 @@ class UserListScreen extends Component {
         />
         {this.isGroup && (
           <CustomButton
-            title={this.action === GroupActionsString.invite ? 'Invite' : 'Next'}
+            title={this.action === PubnubStrings.invite_type.invite ? 'Invite' : 'Next'}
             onPress={this.onPressCreateGroup}
             disabled={userCount <= 0}
           />
@@ -126,7 +122,7 @@ const mapStateToProps = (state, props) => {
   const action = props.navigation.getParam('action')
 
   if (isGroup) {
-    if (action === GroupActionsString.invite) {
+    if (action === PubnubStrings.invite_type.invite) {
       const channelId = props.navigation.getParam('channelId')
       if (state.pubnubStore.spaces[channelId]) {
         const channel = state.pubnubStore.spaces[channelId]
@@ -139,7 +135,7 @@ const mapStateToProps = (state, props) => {
   }
 
   userList = R.differenceWith((a, b) => a.id === b.id, userList, excludeUser)
-  
+
   return {
     currentUser,
     userList,
@@ -152,6 +148,7 @@ const mapDispatchToProps = (dispatch) => {
     getUserListRequest: () => dispatch(PubnubActions.getPubnubUserListRequest()),
     getPubnubSpaceRequest: (params) => dispatch(PubnubActions.getPubnubSpaceRequest(params)),
     createPubnubSpaceRequest: (params) => dispatch(PubnubActions.createPubnubSpaceRequest(params)),
+    addPubnubSpaceMemberRequest: (params) => dispatch(PubnubActions.addPubnubSpaceMemberRequest(params))
   }
 }
 

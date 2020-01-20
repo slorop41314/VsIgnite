@@ -33,19 +33,14 @@ export function* craeteSpace(spaceId, name, description, newCustom, users, type)
 
   yield all([
     put(PubnubStoreActions.saveSpaces([space])),
-    put(PubnubActions.addPubnubSpaceMemberRequest({ spaceId, users: inviteUsers })),
+    put(PubnubActions.addPubnubSpaceMemberRequest({ spaceId, users: inviteUsers, invite_type: PubnubStrings.invite_type.create })),
     put(PubnubActions.createPubnubSpaceSuccess(response.data)),
   ])
 
   yield take(PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_SUCCESS)
 
-  const replaceAction = StackActions.replace({
-    routeName: 'ChatScreen',
-    params: {
-      data: response.data
-    }
-  });
-  NavigationServices.dispatch(replaceAction)
+  NavigationServices.popToTop()
+  NavigationServices.navigate('ChatScreen', { data: response.data })
 }
 
 export function* createPubnubSpace(action) {
@@ -66,13 +61,8 @@ export function* createPubnubSpace(action) {
 
       const space = yield select(PubnubStoreSelectors.getSingleSpaceByUserId, users[0].id)
       if (space) {
-        const replaceAction = StackActions.replace({
-          routeName: 'ChatScreen',
-          params: {
-            data: space
-          }
-        });
-        NavigationServices.dispatch(replaceAction)
+        NavigationServices.popToTop()
+        NavigationServices.navigate('ChatScreen', { data: space })
       } else {
         yield* craeteSpace(spaceId, name, description, newCustom, users, PubnubStrings.space.type.single)
       }
@@ -200,8 +190,11 @@ export function* getPubnubSpaceMember(action) {
 
 export function* addPubnubSpaceMember(action) {
   try {
-    const { spaceId, users } = action.data
+    const { spaceId, users, invite_type } = action.data
     const response = yield PubnubManager.addMembers(spaceId, users)
+    if (invite_type === PubnubStrings.invite_type.invite) {
+      NavigationServices.goBack()
+    }
     yield put(PubnubActions.addPubnubSpaceMemberSuccess(response.data))
   } catch (error) {
     yield put(PubnubActions.addPubnubSpaceMemberFailure())

@@ -8,6 +8,7 @@ import PubnubActions from '../../Redux/PubnubRedux'
 import { values } from 'ramda'
 import ChannelRowItem from '../../Components/ChannelRowItem'
 import { Colors } from '../../Themes'
+import PubnubStrings from '../../Pubnub/PubnubStrings';
 
 const styles = StyleSheet.create({
   actionButtonIcon: {
@@ -42,7 +43,7 @@ class ChannelListScreen extends Component {
 
   onPressGroup() {
     const { navigation } = this.props
-    navigation.navigate('GroupInviteScreen', { action: 'create' })
+    navigation.navigate('GroupInviteScreen', { action: PubnubStrings.invite_type.create })
   }
 
   onPressChannel(item) {

@@ -220,7 +220,6 @@ class PubnubManager {
           includeMessageActions: channels.length <= 1,
           includeMeta: true
         }, (status, response) => {
-          console.tron.error({ status, response })
           if (!status.error) {
             resolve(response)
           } else {
