@@ -18,6 +18,7 @@ import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
 import { firebaseUploadFile } from '../../Firebase/FirebaseHelper'
 import { Method } from 'react-native-awesome-component'
+import { Platform } from 'react-native'
 
 export function* getPubnubMessage(action) {
   try {
@@ -44,7 +45,8 @@ export function* sendPubnubMessage(action) {
     const { type } = message
     if (type === PubnubStrings.message.type.images) {
       const { image } = message
-      const res = yield firebaseUploadFile(`${channel}/${Method.Helper.getFileNameFromPath(image.uri)}`, image.uri)
+      const filePath = Platform.OS === 'ios' ? image.uri : `file://${image.path}`
+      const res = yield firebaseUploadFile(`${channel}/${Method.Helper.getFileNameFromPath(filePath)}`, filePath)
       const { downloadURL } = res
       message = {
         ...message,
