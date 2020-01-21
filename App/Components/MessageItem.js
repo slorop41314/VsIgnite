@@ -423,7 +423,7 @@ const mapStateToProps = (state, props) => {
       if (state.pubnubStore.spaces[channel].messages) {
 
         const messages = R.values(state.pubnubStore.spaces[channel].messages)
-        imageMessages = messages.filter(m => m.message.type === PubnubStrings.message.type.images)
+        imageMessages = messages.filter(m => m && (m.message.type === PubnubStrings.message.type.images) && (typeof m.message.image === 'string'))
         imageIndex = imageMessages.findIndex(m => m.timetoken === timetoken)
         parseImageMessages = imageMessages.map(m => {
           let newMessage = {

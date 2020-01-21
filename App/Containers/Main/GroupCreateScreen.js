@@ -44,7 +44,7 @@ class GroupCreateScreen extends Component {
   }
 
   onPressCreateGroup() {
-    const {groupDesc, groupName} = this.state
+    const { groupDesc, groupName } = this.state
     const { createPubnubSpaceRequest } = this.props
     const params = {
       name: groupName,
@@ -90,7 +90,7 @@ class GroupCreateScreen extends Component {
                 }
 
                 return (
-                  <View style={[styles.userItem]}>
+                  <View style={[styles.userItem]} key={u.id}>
                     <Avatar source={u.profileUrl} name={u.name} />
                     <Text>{spliceName}</Text>
                   </View>

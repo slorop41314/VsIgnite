@@ -6,6 +6,9 @@ import { Method } from "react-native-awesome-component";
 const MAX_WIDTH = 2048
 const MAX_HEIGHT = 2048
 
+firebase.storage().setMaxUploadRetryTime(10000)
+firebase.storage().setMaxOperationRetryTime(10000)
+
 export const firebaseUploadFile = (folderName, filePath) => {
 
   return new Promise((resolve, reject) => {

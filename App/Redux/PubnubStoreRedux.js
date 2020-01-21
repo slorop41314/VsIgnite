@@ -504,7 +504,7 @@ export const messageQueueFailureReducer = (state, { data }) => {
   const { channel, timetoken } = data
 
   let spaces = { ...state.spaces }
-  if (spaces[channel]) {
+  if (spaces[channel] && spaces[channel].messages && spaces[channel].messages[timetoken]) {
     spaces = {
       ...spaces,
       [channel]: {

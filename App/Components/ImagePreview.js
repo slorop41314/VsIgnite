@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, TouchableOpacity, Platform, StyleSheet } from 'react-native'
+import { View, TouchableOpacity, Platform, StyleSheet, Image } from 'react-native'
 import PropTypes from 'prop-types'
 import Modal from 'react-native-modal'
 import ImageViewer from 'react-native-image-zoom-viewer'
@@ -86,6 +86,7 @@ const ImagePreview = (props) => {
           // footerContainerStyle={styles.footer}
           saveToLocalByLongPress={false}
           onLongPress={false}
+          backgroundColor={'transparent'}
         />
       </Modal>
       <TouchableOpacity activeOpacity={0.8} onPress={onPressChild}>
