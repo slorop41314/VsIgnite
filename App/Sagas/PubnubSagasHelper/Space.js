@@ -10,7 +10,7 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all, take, select } from 'redux-saga/effects'
+import { call, put, all, take, select, cancel } from 'redux-saga/effects'
 import PubnubActions, { PubnubTypes } from '../../Redux/PubnubRedux'
 import PubnubManager from '../../Pubnub/PubnubManager'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
@@ -20,6 +20,7 @@ import { PubnubSelectors } from '../../Redux/PubnubRedux'
 import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
 import { generateSingleSpaceUID, generateGroupSpaceUID } from '../../Pubnub/PubnubHelper'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
+import { AuthTypes } from '../../Redux/AuthRedux'
 
 export function* craeteSpace(spaceId, name, description, newCustom, users, type) {
   const response = yield PubnubManager.createSpace(spaceId, name, description, newCustom)
@@ -31,7 +32,7 @@ export function* craeteSpace(spaceId, name, description, newCustom, users, type)
   const currentUser = PubnubManager.getCurrentUser()
   const inviteUsers = type === PubnubStrings.space.type.single ? users.concat([currentUser]) : users
 
-  yield all([
+  const alltask = yield all([
     put(PubnubStoreActions.saveSpaces([space])),
     put(PubnubActions.addPubnubSpaceMemberRequest({ spaceId, users: inviteUsers, invite_type: PubnubStrings.invite_type.create })),
     put(PubnubActions.createPubnubSpaceSuccess(response.data)),
@@ -41,6 +42,9 @@ export function* craeteSpace(spaceId, name, description, newCustom, users, type)
 
   NavigationServices.popToTop()
   NavigationServices.navigate('ChatScreen', { data: response.data })
+
+  yield take(AuthTypes.LOGOUT_REQUEST)
+  yield cancel(...alltask)
 }
 
 export function* createPubnubSpace(action) {
@@ -79,7 +83,10 @@ export function* getPubnubSpace(action) {
   try {
     const { uid } = action.data
     const response = yield PubnubManager.getSpace(uid)
-    yield put(PubnubActions.getPubnubSpaceSuccess(response))
+    const task = yield put(PubnubActions.getPubnubSpaceSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.getPubnubSpaceFailure())
   }
@@ -104,7 +111,7 @@ export function* getAllPubnubSpace(action) {
       }
     }
 
-    yield all([
+    const alltask = yield all([
       put(PubnubStoreActions.saveSpaces(spaces)),
       put(PubnubActions.getOnlineHereRequest({ spaceIds })),
       put(PubnubActions.getPubnubMessageRequest({ channels: spaceIds, limit: 1 })),
@@ -112,6 +119,9 @@ export function* getAllPubnubSpace(action) {
       put(PubnubActions.getAllPubnubSpaceSuccess(response)),
       ...nextPubnubAction,
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
 
   } catch (error) {
     yield put(PubnubActions.getAllPubnubSpaceFailure())
@@ -122,7 +132,10 @@ export function* updatePubnubSpace(action) {
   try {
     const { uid, name, description, custom } = action.data
     const response = yield PubnubManager.updateSpace(uid, name, description, custom)
-    yield put(PubnubActions.updatePubnubSpaceSucccess(response))
+    const task = yield put(PubnubActions.updatePubnubSpaceSucccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.updatePubnubSpaceFailure())
   }
@@ -132,7 +145,10 @@ export function* deletePubnubSpace(action) {
   try {
     const { uid } = action.data
     const response = yield PubnubManager.deleteSpace(uid)
-    yield put(PubnubActions.deletePubnubSpaceSuccess(response))
+    const task = yield put(PubnubActions.deletePubnubSpaceSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.deletePubnubSpaceFailure())
   }
@@ -142,7 +158,10 @@ export function* joinPubnubSpace(action) {
   try {
     const { userId, spaces } = action.data
     const response = yield PubnubManager.joinSpace(userId, spaces)
-    yield put(PubnubActions.joinPubnubSpaceSuccess(response))
+    const task = yield put(PubnubActions.joinPubnubSpaceSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.joinPubnubSpaceFailure())
   }
@@ -152,7 +171,10 @@ export function* leavePubnubSpace(action) {
   try {
     const { userId, spaces } = action.data
     const response = yield PubnubManager.leaveSpace(userId, spaces)
-    yield put(PubnubActions.leavePubnubSpaceSuccess(response))
+    const task = yield put(PubnubActions.leavePubnubSpaceSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.leavePubnubSpaceFailure())
   }
@@ -162,7 +184,10 @@ export function* getPubnubSpaceMembership(action) {
   try {
     const { userId } = action.data
     const response = yield PubnubManager.getMembership(userId)
-    yield put(PubnubActions.getPubnubSpaceMembershipSuccess(response))
+    const task = yield put(PubnubActions.getPubnubSpaceMembershipSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.getPubnubSpaceMembershipFailure())
   }
@@ -172,7 +197,10 @@ export function* updatePubnubSpaceMembership(action) {
   try {
     const { userId, spaces } = action.data
     const response = yield PubnubManager.updateMembership(userId, spaces)
-    yield put(PubnubActions.updatePubnubSpaceMembershipSuccess(response))
+    const task = yield put(PubnubActions.updatePubnubSpaceMembershipSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.updatePubnubSpaceMembershipFailure())
   }
@@ -182,10 +210,13 @@ export function* getPubnubSpaceMember(action) {
   try {
     const { spaceId, limit, page } = action.data
     const response = yield PubnubManager.getMembers(spaceId, limit, page)
-    yield all([
+    const alltask = yield all([
       put(PubnubStoreActions.saveMembers({ channel: spaceId, members: response.data })),
       put(PubnubActions.getPubnubSpaceMemberSuccess(response)),
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
   } catch (error) {
     yield put(PubnubActions.getPubnubSpaceMemberFailure())
   }
@@ -198,7 +229,10 @@ export function* addPubnubSpaceMember(action) {
     if (invite_type === PubnubStrings.invite_type.invite) {
       NavigationServices.goBack()
     }
-    yield put(PubnubActions.addPubnubSpaceMemberSuccess(response.data))
+    yield task = yield put(PubnubActions.addPubnubSpaceMemberSuccess(response.data))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.addPubnubSpaceMemberFailure())
   }
@@ -208,7 +242,10 @@ export function* removePubnubSpaceMember(action) {
   try {
     const { spaceId, users } = action.data
     const response = yield PubnubManager.removeMembers(spaceId, users)
-    yield put(PubnubActions.removePubnubSpaceMemberSuccess(response))
+    const task = yield put(PubnubActions.removePubnubSpaceMemberSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.removePubnubSpaceMemberFailure())
   }
@@ -218,10 +255,13 @@ export function* getOnlineHere(action) {
   try {
     const { spaceIds } = action.data
     const response = yield PubnubManager.getUserOnline(spaceIds)
-    yield all([
+    const alltask = yield all([
       put(PubnubStoreActions.saveOnlineUser(response)),
       put(PubnubActions.getOnlineHereSuccess(response)),
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
   } catch (error) {
     yield put(PubnubActions.getOnlineHereFailure())
   }

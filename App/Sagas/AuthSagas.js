@@ -39,7 +39,6 @@ export function* logoutSaga() {
     yield all([
       put(SessionActions.setLogout()),
       put(AuthActions.logoutSuccess(response)),
-      put(PubnubStoreActions.resetStore())
     ])
   } catch (error) {
     yield put(AuthActions.logoutFailure())

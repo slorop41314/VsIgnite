@@ -10,7 +10,7 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all, select } from 'redux-saga/effects'
+import { call, put, all, select, cancel } from 'redux-saga/effects'
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubManager from '../../Pubnub/PubnubManager'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
@@ -20,16 +20,22 @@ import { firebaseUploadFile } from '../../Firebase/FirebaseHelper'
 import { Method } from 'react-native-awesome-component'
 import { Platform } from 'react-native'
 import { getLocalFileFromUrl, moveFileToLocal, isFileExist } from '../../Lib/DownloadHelper'
+import { AuthTypes } from '../../Redux/AuthRedux'
+
 
 export function* getPubnubMessage(action) {
   try {
     const { channels, limit, start, end } = action.data
     const response = yield PubnubManager.getMessage(channels, limit, start, end)
 
-    yield all([
+    const alltask = yield all([
       put(PubnubStoreActions.saveMessages(response.channels, limit === 1)),
       put(PubnubActions.getPubnubMessageSuccess(response))
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
+
   } catch (error) {
     yield put(PubnubActions.getPubnubMessageFailure())
   }
@@ -81,12 +87,15 @@ export function* sendPubnubMessage(action) {
       }
     }
 
-    yield all([
+    const alltask = yield all([
       put(PubnubStoreActions.messageQueueSuccess(action.data)),
       put(PubnubStoreActions.onReceiveMessage(response)),
       put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
       put(PubnubActions.sendPubnubMessageSuccess(response))
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
   } catch (error) {
     yield all([
       put(PubnubStoreActions.messageQueueFailure(action.data)),
@@ -99,7 +108,10 @@ export function* sendPubnubTyping(action) {
   try {
     const { channel, isTyping } = action.data
     const response = yield PubnubManager.sendTyping(channel, isTyping)
-    yield put(PubnubActions.sendPubnubTypingSuccess(response))
+    const task = yield put(PubnubActions.sendPubnubTypingSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.sendPubnubTypingFailure())
   }
@@ -123,11 +135,14 @@ export function* updatePubnubMessage(action) {
       data: response.data,
       event: 'added'
     }
-    yield all([
+    const alltask = yield all([
       ...actionToAdded,
       put(PubnubStoreActions.onReceiveMessageAction(payloadUdpateAction)),
       put(PubnubActions.updatePubnubMessageSuccess(response))
     ])
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(...alltask)
   } catch (error) {
     yield put(PubnubActions.updatePubnubMessageFailure())
   }
@@ -137,7 +152,10 @@ export function* deletePubnubMessage(action) {
   try {
     const { channel, startAt, endAt } = action.data
     const response = yield PubnubManager.deleteMessage(channel, startAt, endAt)
-    yield put(PubnubActions.deletePubnubMessageSuccess(response))
+    const task = yield put(PubnubActions.deletePubnubMessageSuccess(response))
+
+    yield take(AuthTypes.LOGOUT_REQUEST)
+    yield cancel(task)
   } catch (error) {
     yield put(PubnubActions.deletePubnubMessageFailure())
   }
@@ -150,10 +168,13 @@ export function* getPubnubUnreadCount(action) {
       const channels = channelTimetokens.map((c) => c.channel)
       const timetokens = channelTimetokens.map((c) => c.timetoken)
       const response = yield PubnubManager.getUnreadCount(channels, timetokens)
-      yield all([
+      const alltask = yield all([
         put(PubnubStoreActions.setMessageCount({ ...response, channelIds: channels })),
         put(PubnubActions.getPubnubUnreadCountSuccess(response)),
       ])
+
+      yield take(AuthTypes.LOGOUT_REQUEST)
+      yield cancel(...alltask)
     }
   } catch (error) {
     yield put(PubnubActions.getPubnubUnreadCountFailure())

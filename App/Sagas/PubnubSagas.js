@@ -17,6 +17,7 @@ import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubStrings from '../Pubnub/PubnubStrings';
 import PubnubStoreActions from '../Redux/PubnubStoreRedux'
 import { PubnubStoreSelectors } from '../Redux/PubnubStoreRedux'
+import { AuthTypes } from '../Redux/AuthRedux'
 
 export function pubnubEventHandler() {
   return eventChannel(emit => {
@@ -194,9 +195,13 @@ export function* resendQueueMessage(action) {
     for (let i = 0; i < messageQueue.length; i++) {
       actionToPut.push(put(PubnubActions.sendPubnubMessageRequest({ ...messageQueue[i], status: PubnubStrings.message.status.waiting })))
     }
-    yield all([
+    const alltask = yield all([
       ...actionToPut
     ])
+
+    yield take(AuthTypes.LOGOUT_SUCCESS)
+    yield cancel(...alltask)
+
   } catch (error) {
     console.tron.error('PUBNUB QUEUE RESEND ERROR');
   }
