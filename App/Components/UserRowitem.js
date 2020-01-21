@@ -9,10 +9,9 @@ import { Colors } from '../Themes'
 const UserRowItem = (props) => {
   const { currentUser, data, onPress, isSelected } = props
   const isMe = data.id === currentUser.id
-
   let renderCheck = null
 
-  if ((data.loading === undefined) && !isMe) {
+  if ((data.loading === undefined) && !isMe && isSelected !== undefined) {
     if (isSelected) {
       renderCheck = <Icons name='circle' solid size={18} color={Colors.eggplant} />
     } else {

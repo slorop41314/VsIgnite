@@ -96,7 +96,7 @@ class UserListScreen extends Component {
         <CustomFlatList
           fetchFunction={this.fetchFunction}
           data={userList}
-          renderItem={({ item }) => <UserRowitem isSelected={selectedMember[item.id] !== undefined} data={item} onPress={() => this.onPressItem(item)} />}
+          renderItem={({ item }) => <UserRowitem isSelected={this.isGroup ? selectedMember[item.id] !== undefined : undefined} data={item} onPress={() => this.onPressItem(item)} />}
           meta={{ current_page: 1, next_page: undefined }}
           loading={fetching}
           error={error}
