@@ -6,7 +6,7 @@ import { ToastAndroid, Alert, Platform } from 'react-native';
 
 
 export function getLocalFileFromUrl(url) {
-  const rootDir = Platform.OS === 'ios' ? RNFS.TemporaryDirectoryPath : `file://${RNFS.TemporaryDirectoryPath}`;
+  const rootDir = `file://${RNFS.TemporaryDirectoryPath}`;
   return `${rootDir}/${Method.Helper.getFileNameFromURL(url)}`;
 }
 
@@ -14,6 +14,15 @@ export async function isLocalFileExist(url) {
   const localFile = getLocalFileFromUrl(url)
   try {
     const isExist = await RNFS.exists(localFile)
+    return isExist
+  } catch (error) {
+    console.tron.error('ERROR CHECK EXIST')
+  }
+}
+
+export async function isFileExist(path) {
+  try {
+    const isExist = await RNFS.exists(path)
     return isExist
   } catch (error) {
     console.tron.error('ERROR CHECK EXIST')
@@ -62,12 +71,23 @@ export function silentDownload(url) {
     };
     console.tron.error({ options })
     RNFS.downloadFile(options).promise
-      .then((res) => {
-        resolve(res)
+      .then(() => {
+        resolve(options.toFile)
       })
       .catch((e) => {
         reject(e)
       })
-    // }
+  })
+}
+
+export function moveFileToLocal(currentPath, targetPath) {
+  return new Promise(async (resolve, reject) => {
+    RNFS.moveFile(currentPath, targetPath)
+      .then(() => {
+        resolve(targetPath)
+      })
+      .catch((e) => {
+        reject(e)
+      })
   })
 }

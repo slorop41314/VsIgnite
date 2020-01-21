@@ -38,6 +38,10 @@ const { Types, Creators } = createActions({
   messageQueueSuccess: ['data'],
   messageQueueFailure: ['data'],
   resendQueueMessage: ['data'],
+
+  // CACHE IMAGE
+  putLocalImageMessage: ['data'],
+  putLocalImageUser: ['data'],
 })
 
 export const PubnubStoreTypes = Types
@@ -531,6 +535,37 @@ export const resendQueueMessageReducer = (state, { data }) => {
   return state
 }
 
+export const putLocalImageMessageReducer = (state, { data }) => {
+  const { message, localPath } = data
+  const { channel, timetoken } = message
+
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [timetoken]: {
+            ...spaces[channel].messages[timetoken],
+            message: {
+              ...spaces[channel].messages[timetoken].message,
+              localPath,
+            }
+          }
+        },
+      }
+    }
+  }
+  
+  return state.merge({ ...state, spaces })
+}
+
+export const putLocalImageUserReducer = (state, { data }) => {
+  return state
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -556,4 +591,6 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.MESSAGE_QUEUE_SUCCESS]: messageQueueSuccessReducer,
   [Types.MESSAGE_QUEUE_FAILURE]: messageQueueFailureReducer,
   [Types.RESEND_QUEUE_MESSAGE]: resendQueueMessageReducer,
+  [Types.PUT_LOCAL_IMAGE_MESSAGE]: putLocalImageMessageReducer,
+  [Types.PUT_LOCAL_IMAGE_USER]: putLocalImageUserReducer,
 })

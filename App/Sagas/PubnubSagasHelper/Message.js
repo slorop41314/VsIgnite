@@ -19,6 +19,7 @@ import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
 import { firebaseUploadFile } from '../../Firebase/FirebaseHelper'
 import { Method } from 'react-native-awesome-component'
 import { Platform } from 'react-native'
+import { getLocalFileFromUrl, moveFileToLocal, isFileExist } from '../../Lib/DownloadHelper'
 
 export function* getPubnubMessage(action) {
   try {
@@ -42,19 +43,42 @@ export function* getPubnubMessage(action) {
 export function* sendPubnubMessage(action) {
   try {
     yield put(PubnubStoreActions.addMessageQueue(action.data))
+
     let { channel, message } = action.data
     const { type } = message
+    let localPath = undefined
+
+
     if (type === PubnubStrings.message.type.images) {
       const { image } = message
       const filePath = Platform.OS === 'ios' ? image.uri : `file://${image.path}`
-      const res = yield firebaseUploadFile(`${channel}/${Method.Helper.getFileNameFromPath(filePath)}`, filePath)
+      const res = yield firebaseUploadFile(Method.Helper.getFileNameFromPath(filePath), filePath)
       const { downloadURL } = res
+      // move file to local
+      localPath = getLocalFileFromUrl(downloadURL)
+      if (!isFileExist(localPath)) {
+        localPath = yield moveFileToLocal(filePath, localPath)
+      }
+
       message = {
         ...message,
         image: downloadURL
       }
     }
-    const response = yield PubnubManager.sendMessage(channel, message)
+
+
+    let response = yield PubnubManager.sendMessage(channel, message)
+
+    if (type === PubnubStrings.message.type.images) {
+      response = {
+        ...response,
+        message: {
+          ...response.message,
+          localPath,
+        }
+      }
+    }
+
     yield all([
       put(PubnubStoreActions.messageQueueSuccess(action.data)),
       put(PubnubStoreActions.onReceiveMessage(response)),

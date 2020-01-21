@@ -12,6 +12,8 @@ import ImagePreview from './ImagePreview'
 import { PlaceholderImage } from 'react-native-awesome-component'
 import R from 'ramda'
 import { TouchableOpacity } from 'react-native-gesture-handler'
+import { isLocalFileExist, silentDownload, getLocalFileFromUrl } from '../Lib/DownloadHelper'
+import PubnubStoreActions from '../Redux/PubnubStoreRedux'
 
 const { width, height } = Dimensions.get('window')
 
@@ -153,6 +155,7 @@ export class MessageItem extends Component {
     super(props)
 
     this.checkAndUpdateActions = this.checkAndUpdateActions.bind(this)
+    this.checkAndDownloadLocalImageMessage = this.checkAndDownloadLocalImageMessage.bind(this)
     this.onPressResend = this.onPressResend.bind(this)
   }
 
@@ -161,6 +164,38 @@ export class MessageItem extends Component {
     const { timetoken, actions, channel, status } = data
     this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.delivered, actions, status)
     this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, actions, status)
+  }
+
+  async checkAndDownloadLocalImageMessage(data) {
+    const { putLocalImageMessage } = this.props
+    const { message } = data
+
+    try {
+      if (message) {
+        if (message.type === PubnubStrings.message.type.images) {
+          let { image, localPath } = message
+
+          if (localPath === undefined) {
+            const isExist = await isLocalFileExist(image)
+            if (isExist) {
+              localPath = getLocalFileFromUrl(image)
+            } else {
+              localPath = await silentDownload(image)
+            }
+
+            putLocalImageMessage({ message: data, localPath })
+          } else {
+            const isExist = await isLocalFileExist(image)
+            if (!isExist) {
+              localPath = await silentDownload(image)
+              putLocalImageMessage({ message: data, localPath })
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.tron.error('FAILED TO PUT LOCAL IMAGE MESSAGE')
+    }
   }
 
   checkAndUpdateActions(channel, actiontype, timetoken, value, actions, status) {
@@ -219,6 +254,8 @@ export class MessageItem extends Component {
         this.checkAndUpdateActions(channel, PubnubStrings.message.type.receipt, timetoken, PubnubStrings.event.value.read, nextActions, status)
       }
     }
+
+    this.checkAndDownloadLocalImageMessage(nextProps.data)
 
     return shouldUpdate
   }
@@ -306,14 +343,15 @@ export class MessageItem extends Component {
       }
 
       if (type === PubnubStrings.message.type.images) {
-        const { image } = message
+        const { image, localPath } = message
+
         let imageContent = (
           <ImagePreview
             index={imageIndex}
             images={parseImageMessages}
           >
             <PlaceholderImage
-              uri={image}
+              uri={localPath}
               width={imageWidth}
               height={imageWidth}
             />
@@ -338,8 +376,8 @@ export class MessageItem extends Component {
               </View>
             )
           }
-
         }
+
         return (
           <View>
             {renderTopDateSeparator}
@@ -389,7 +427,7 @@ const mapStateToProps = (state, props) => {
           let newMessage = {
             ...m,
             ...m.message,
-            url: m.message.image,
+            url: m.message.localPath
           }
           delete newMessage.message
           delete newMessage.image
@@ -414,6 +452,7 @@ const mapDispatchToProps = (dispatch) => {
   return {
     updatePubnubMessageRequest: (params) => dispatch(PubnubActions.updatePubnubMessageRequest(params)),
     sendPubnubMessage: (params) => dispatch(PubnubActions.sendPubnubMessageRequest(params)),
+    putLocalImageMessage: (params) => dispatch(PubnubStoreActions.putLocalImageMessage(params))
   }
 }
 
