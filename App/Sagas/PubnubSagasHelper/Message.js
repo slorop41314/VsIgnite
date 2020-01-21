@@ -52,7 +52,7 @@ export function* sendPubnubMessage(action) {
     if (type === PubnubStrings.message.type.images) {
       const { image } = message
       const filePath = Platform.OS === 'ios' ? image.uri : `file://${image.path}`
-      const res = yield firebaseUploadFile(Method.Helper.getFileNameFromPath(filePath), filePath)
+      const res = yield firebaseUploadFile(`${channel}/${Method.Helper.getFileNameFromPath(filePath)}`, filePath)
       const { downloadURL } = res
       // move file to local
       localPath = getLocalFileFromUrl(downloadURL)

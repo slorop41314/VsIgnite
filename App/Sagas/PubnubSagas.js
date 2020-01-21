@@ -72,10 +72,16 @@ export function pubnubEventHandler() {
 }
 
 export function* initPubnub(data) {
-  const pubnubUser = yield PubnubManager.init(data)
-  if (pubnubUser) {
+  const { user } = yield PubnubManager.init(data)
+  const localUser = select(PubnubStoreSelectors.getPubnubUser)
+  if (user) {
     yield all([
-      put(PubnubStoreActions.saveUser(pubnubUser.user)),
+      put(PubnubStoreActions.saveUser(user)),
+      put(PubnubStoreActions.resendQueueMessage()),
+    ])
+  } else {
+    yield all([
+      put(PubnubStoreActions.saveUser(localUser)),
       put(PubnubStoreActions.resendQueueMessage()),
     ])
   }
@@ -85,7 +91,6 @@ export function* initPubnub(data) {
       try {
         // An error from socketChannel will cause the saga jump to the catch block
         const eventPayload = yield take(pubnubEvent);
-        console.tron.error({ eventPayload })
         const { type, payload } = eventPayload;
         switch (type) {
           case PubnubStrings.event.type.status: {

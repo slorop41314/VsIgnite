@@ -7,7 +7,8 @@ import { ToastAndroid, Alert, Platform } from 'react-native';
 
 export function getLocalFileFromUrl(url) {
   const rootDir = `file://${RNFS.TemporaryDirectoryPath}`;
-  return `${rootDir}/${Method.Helper.getFileNameFromURL(url)}`;
+  const filename = Method.Helper.getFileNameFromURL(url).split('%2')
+  return `${rootDir}/${filename[filename.length - 1]}`;
 }
 
 export async function isLocalFileExist(url) {
@@ -69,7 +70,6 @@ export function silentDownload(url) {
       // begin: (resBegin) => console.tron.error({ resBegin }),
       // progress: (resProgress) => console.tron.error({ resProgress }),
     };
-    console.tron.error({ options })
     RNFS.downloadFile(options).promise
       .then(() => {
         resolve(options.toFile)

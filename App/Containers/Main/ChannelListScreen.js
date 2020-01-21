@@ -64,6 +64,7 @@ class ChannelListScreen extends Component {
           loading={fetching}
           error={error}
           ItemSeparatorComponent={() => <View style={{ height: 1, backgroundColor: Colors.steel }} />}
+          disableRenderNoConnection={true}
         />
         <ActionButton buttonColor="rgba(231,76,60,1)">
           <ActionButton.Item buttonColor='#9b59b6' title="New Chat" onPress={this.onPressNewChat}>

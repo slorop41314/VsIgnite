@@ -110,13 +110,14 @@ class ChatScreen extends Component {
           renderItem={({ item, index }) => {
             return <MessageItem isLast={index === (messages.length - 1)} isFirst={index === 0} data={item} />
           }}
-          // loading={false}
+          loading={false}
           error={false}
           ItemSeparatorComponent={() => <View style={[styles.itemSeparator]} />}
           inverted
           contentContainerStyle={[styles.contentContainer, { paddingBottom: 0 }]}
           onRefresh={undefined}
           refreshing={undefined}
+          disableRenderNoConnection={true}
         />
         <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
           <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />

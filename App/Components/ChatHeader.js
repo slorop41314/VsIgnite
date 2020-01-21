@@ -9,6 +9,7 @@ import { Colors } from '../Themes'
 import moment from 'moment'
 import Icons from 'react-native-vector-icons/FontAwesome5'
 import PubnubStrings from '../Pubnub/PubnubStrings'
+import { ConnectionContext } from '../Containers/RootContainer'
 
 const styles = StyleSheet.create({
   headerContaienr: {
@@ -45,6 +46,7 @@ const ChatHeader = (props) => {
   let channelAvatar = undefined
   let typingsMessage = undefined
   let status = ''
+  let presence
   const isSingle = isSingleChat(data.id)
   if (isSingle) {
     const { custom, name } = data
@@ -53,8 +55,7 @@ const ChatHeader = (props) => {
     const targetUser = JSON.parse(custom[targetUserId])
     channelName = targetUser.name
     channelAvatar = targetUser.profileUrl
-    const presence = userPresence[targetUserId]
-
+    presence = userPresence[targetUserId]
     if (presence) {
       if (presence.online) {
         status = 'online'
@@ -78,32 +79,48 @@ const ChatHeader = (props) => {
   }
 
   return (
-    <CustomHeader
-      navigation={navigation}
-      isCard={true}
-      renderTitle={() => {
+    <ConnectionContext.Consumer>
+      {(isConnected) => {
+        if (isSingle) {
+          if (!isConnected) {
+            if (presence) {
+              status = `last online ${moment.unix(presence.timestamp).format('DD/MM/YYYY HH:mm')}`
+            } else {
+              status = ''
+            }
+          }
+        }
+
         return (
-          <View style={[styles.headerContaienr]}>
-            <View style={[styles.avatarContainer]}>
-              <Avatar source={channelAvatar} name={channelName} size={40} />
-            </View>
-            <View style={[styles.titleContainer]}>
-              <Text style={[styles.textTitle]}>{channelName}</Text>
-              {typingsMessage ? (
-                <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{`${typingsMessage} typing`}</Text>
-              ) : (
-                  <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{status}</Text>
-                )}
-            </View>
-            {!isSingle && (
-              <TouchableOpacity activeOpacity={0.8} style={styles.rightAction} onPress={onPressInvite}> 
-                <Icons name='user-plus' size={20} color={Colors.eggplant} />
-              </TouchableOpacity>
-            )}
-          </View>
+          <CustomHeader
+            navigation={navigation}
+            isCard={true}
+            renderTitle={() => {
+              return (
+                <View style={[styles.headerContaienr]}>
+                  <View style={[styles.avatarContainer]}>
+                    <Avatar source={channelAvatar} name={channelName} size={40} />
+                  </View>
+                  <View style={[styles.titleContainer]}>
+                    <Text style={[styles.textTitle]}>{channelName}</Text>
+                    {typingsMessage ? (
+                      <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{`${typingsMessage} typing`}</Text>
+                    ) : (
+                        <Text numberOfLines={1} lineBreakMode={'tail'} style={styles.textTyping}>{status}</Text>
+                      )}
+                  </View>
+                  {!isSingle && (
+                    <TouchableOpacity activeOpacity={0.8} style={styles.rightAction} onPress={onPressInvite}>
+                      <Icons name='user-plus' size={20} color={Colors.eggplant} />
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )
+            }}
+          />
         )
       }}
-    />
+    </ConnectionContext.Consumer>
   )
 }
 

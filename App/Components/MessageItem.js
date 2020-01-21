@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Image } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
@@ -344,7 +344,6 @@ export class MessageItem extends Component {
 
       if (type === PubnubStrings.message.type.images) {
         const { image, localPath } = message
-
         let imageContent = (
           <ImagePreview
             index={imageIndex}
@@ -427,7 +426,7 @@ const mapStateToProps = (state, props) => {
           let newMessage = {
             ...m,
             ...m.message,
-            url: m.message.localPath
+            url: m.message.localPath ? m.message.localPath : m.message.image
           }
           delete newMessage.message
           delete newMessage.image

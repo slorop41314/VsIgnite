@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
+import { ConnectionContext } from '../Containers/RootContainer'
 
 const styles = StyleSheet.create({
   container: {
@@ -46,7 +47,15 @@ class OnlineIndicator extends Component {
     }
 
     return (
-      <View style={[styles.container, isOnline ? styles.online : styles.offline]} />
+      <ConnectionContext.Consumer>
+        {(isConnected) => {
+          let userOnline = isOnline
+          if (!isConnected) {
+            userOnline = isConnected
+          }
+          return <View style={[styles.container, userOnline ? styles.online : styles.offline]} />
+        }}
+      </ConnectionContext.Consumer>
     )
   }
 }

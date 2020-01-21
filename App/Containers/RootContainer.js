@@ -1,16 +1,25 @@
-import React, { Component } from 'react'
+import React, { Component, createContext } from 'react'
 import { View, StatusBar } from 'react-native'
 import ReduxNavigation from '../Navigation/ReduxNavigation'
 import { connect } from 'react-redux'
 import StartupActions from '../Redux/StartupRedux'
 import ReduxPersist from '../Config/ReduxPersist'
+import { ConnectionHandler } from 'react-native-awesome-component'
 
 // Styles
 import styles from './Styles/RootContainerStyles'
-import firebase from 'react-native-firebase'
+
+export const ConnectionContext = createContext(false)
 
 class RootContainer extends Component {
-  componentDidMount () {
+  constructor(props) {
+    super(props)
+    this.state = {
+      isConnected: true
+    }
+  }
+
+  componentDidMount() {
     // if redux persist is not active fire startup action
     if (!ReduxPersist.active) {
       this.props.startup()
@@ -23,11 +32,15 @@ class RootContainer extends Component {
     // firebase.crashlytics().recordError(37,"Test Error");
   }
 
-  render () {
+  render() {
+    const { isConnected } = this.state
     return (
       <View style={styles.applicationView}>
-        <StatusBar barStyle='light-content' />
-        <ReduxNavigation />
+        <ConnectionContext.Provider value={isConnected}>
+          <ConnectionHandler onStateChange={(isConnected) => this.setState({ isConnected })} />
+          <StatusBar barStyle='light-content' />
+          <ReduxNavigation />
+        </ConnectionContext.Provider>
       </View>
     )
   }

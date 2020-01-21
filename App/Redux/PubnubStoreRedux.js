@@ -81,7 +81,8 @@ export const PubnubStoreSelectors = {
     } else {
       return R.values(pubnubStore.messageQueue)
     }
-  }
+  },
+  getPubnubUser: ({ pubnubStore }) => pubnubStore.pubnubUser,
 }
 
 /* ------------- Reducers ------------- */
@@ -558,7 +559,7 @@ export const putLocalImageMessageReducer = (state, { data }) => {
       }
     }
   }
-  
+
   return state.merge({ ...state, spaces })
 }
 
