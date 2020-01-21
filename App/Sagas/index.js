@@ -16,6 +16,8 @@ import { PubnubTypes } from '../Redux/PubnubRedux'
 import { getPubnubUserList, getPubnubUserDetail, createPubnubUser, updatePubnubUser, deletePubnubUser } from './PubnubSagasHelper/User'
 import { getPubnubMessage, sendPubnubMessage, sendPubnubTyping, updatePubnubMessage, deletePubnubMessage, getPubnubUnreadCount } from './PubnubSagasHelper/Message'
 import { createPubnubSpace, getPubnubSpace, getAllPubnubSpace, updatePubnubSpace, deletePubnubSpace, joinPubnubSpace, leavePubnubSpace, getPubnubSpaceMembership, updatePubnubSpaceMembership, getPubnubSpaceMember, addPubnubSpaceMember, removePubnubSpaceMember, getOnlineHere } from './PubnubSagasHelper/Space'
+import { resendQueueMessage } from './PubnubSagas'
+import { PubnubStoreTypes } from '../Redux/PubnubStoreRedux'
 
 /* ------------- API ------------- */
 
@@ -66,6 +68,9 @@ export default function* root() {
     takeLatest(PubnubTypes.ADD_PUBNUB_SPACE_MEMBER_REQUEST, addPubnubSpaceMember),
     takeLatest(PubnubTypes.REMOVE_PUBNUB_SPACE_MEMBER_REQUEST, removePubnubSpaceMember),
 
-    takeLatest(PubnubTypes.GET_ONLINE_HERE_REQUEST, getOnlineHere)
+    takeLatest(PubnubTypes.GET_ONLINE_HERE_REQUEST, getOnlineHere),
+
+    /** PUBNUB STORE */
+    takeEvery(PubnubStoreTypes.RESEND_QUEUE_MESSAGE, resendQueueMessage),
   ])
 }

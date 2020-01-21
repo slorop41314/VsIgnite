@@ -31,8 +31,9 @@ class ChatScreen extends Component {
   }
 
   componentDidMount() {
-    const { getPubnubSpaceMemberRequest } = this.props
+    const { getPubnubSpaceMemberRequest, resendQueueMessage } = this.props
     getPubnubSpaceMemberRequest({ spaceId: this.chatData.id })
+    resendQueueMessage({ spaceId: this.chatData.id })
   }
 
   fetchFunction({ page }) {
@@ -145,6 +146,7 @@ const mapDispatchToProps = (dispatch) => {
     sendPubnubTyping: (params) => dispatch(PubnubActions.sendPubnubTypingRequest(params)),
     getMessageRequest: (params) => dispatch(PubnubActions.getPubnubMessageRequest(params)),
     getPubnubSpaceMemberRequest: (params) => dispatch(PubnubActions.getPubnubSpaceMemberRequest(params)),
+    resendQueueMessage: (params) => dispatch(PubnubStoreActions.resendQueueMessage(params)),
   }
 }
 

@@ -74,8 +74,10 @@ export function pubnubEventHandler() {
 export function* initPubnub(data) {
   const pubnubUser = yield PubnubManager.init(data)
   if (pubnubUser) {
-    yield put(PubnubStoreActions.saveUser(pubnubUser.user))
-    // yield fork(handleUnsendMessage)
+    yield all([
+      put(PubnubStoreActions.saveUser(pubnubUser.user)),
+      put(PubnubStoreActions.resendQueueMessage()),
+    ])
   }
   const pubnubEvent = yield call(pubnubEventHandler);
   try {
@@ -174,24 +176,23 @@ export function* initPubnub(data) {
   }
 }
 
-export function* handleUnsendMessage() {
+export function* resendQueueMessage(action) {
   try {
-    // while (true) {
-    //   try {
-    //     const messageQueue = yield select(PubnubStoreSelectors.getMessageQueue)
-    //     console.tron.error({ messageQueue })
-    //     if (messageQueue.length > 0) {
-    //       const message = messageQueue.shift()
-    //       yield delay(1000)
-    //       yield put(PubnubStoreActions.messageQueueSuccess(message))
-    //     }
-    //   } catch (err) {
-    //     console.tron.log('PUBNUB QUEUE MANAGER ERROR', err);
-    //   }
-    // }
-  } finally {
-    if (yield cancelled()) {
-      console.tron.error('PUBNUB QUEUE MANAGER CANCELED');
+    let spaceId = undefined
+    const { data } = action
+    if (data && data.spaceId) {
+      spaceId = data.spaceId
     }
+    const messageQueue = yield select(PubnubStoreSelectors.getMessageQueue, spaceId)
+    console.tron.error({ messageQueue })
+    const actionToPut = []
+    for (let i = 0; i < messageQueue.length; i++) {
+      actionToPut.push(put(PubnubActions.sendPubnubMessageRequest({ ...messageQueue[i], status: PubnubStrings.message.status.waiting })))
+    }
+    yield all([
+      ...actionToPut
+    ])
+  } catch (error) {
+    console.tron.error('PUBNUB QUEUE RESEND ERROR');
   }
 }

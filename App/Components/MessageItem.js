@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
@@ -98,6 +98,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 5
+  },
+  resendBig: {
+    backgroundColor: Colors.eggplant,
+    height: 60,
+    width: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  imageEmptyContainer: {
+    width: imageWidth,
+    height: imageWidth,
+    backgroundColor: Colors.steel,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })
 
@@ -210,7 +225,7 @@ export class MessageItem extends Component {
 
   onPressResend() {
     const { data, sendPubnubMessage } = this.props
-    sendPubnubMessage(data)
+    sendPubnubMessage({ ...data, status: PubnubStrings.message.status.waiting })
   }
 
   render() {
@@ -292,6 +307,39 @@ export class MessageItem extends Component {
 
       if (type === PubnubStrings.message.type.images) {
         const { image } = message
+        let imageContent = (
+          <ImagePreview
+            index={imageIndex}
+            images={parseImageMessages}
+          >
+            <PlaceholderImage
+              uri={image}
+              width={imageWidth}
+              height={imageWidth}
+            />
+          </ImagePreview>
+        )
+
+        if (status) {
+          if (status === PubnubStrings.message.status.waiting) {
+            imageContent = (
+              <View style={styles.imageEmptyContainer}>
+                <ActivityIndicator size='large' color={Colors.eggplant} />
+              </View>
+            )
+          }
+
+          if (status === PubnubStrings.message.status.failure) {
+            imageContent = (
+              <View style={styles.imageEmptyContainer}>
+                <TouchableOpacity activeOpacity={0.8} style={styles.resendBig} onPress={this.onPressResend}>
+                  <Icons name='redo' size={30} color={Colors.snow} />
+                </TouchableOpacity>
+              </View>
+            )
+          }
+
+        }
         return (
           <View>
             {renderTopDateSeparator}
@@ -300,16 +348,7 @@ export class MessageItem extends Component {
                 <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
               )}
               <View style={styles.imageContainer}>
-                <ImagePreview
-                  index={imageIndex}
-                  images={parseImageMessages}
-                >
-                  <PlaceholderImage
-                    uri={image}
-                    width={imageWidth}
-                    height={imageWidth}
-                  />
-                </ImagePreview>
+                {imageContent}
               </View>
               <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
                 <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>

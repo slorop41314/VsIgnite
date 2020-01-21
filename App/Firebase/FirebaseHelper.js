@@ -10,7 +10,8 @@ export const firebaseUploadFile = (refDir, filePath) => {
         resolve(res)
       })
       .catch((err) => {
+        console.tron.error({err})
         reject(err)
-      });
+      })
   })
 }

@@ -37,6 +37,7 @@ const { Types, Creators } = createActions({
   addMessageQueue: ['data'],
   messageQueueSuccess: ['data'],
   messageQueueFailure: ['data'],
+  resendQueueMessage: ['data'],
 })
 
 export const PubnubStoreTypes = Types
@@ -70,7 +71,13 @@ export const PubnubStoreSelectors = {
     const channelWithTimetoken = R.values(spaces).filter(space => (space.lastReadMessageTimetoken !== null))
     return channelWithTimetoken.map(space => { return { channel: space.id, timetoken: space.lastReadMessageTimetoken } })
   },
-  getMessageQueue: ({ pubnubStore }) => R.values(pubnubStore.messageQueue)
+  getMessageQueue: ({ pubnubStore }, spaceId) => {
+    if (spaceId) {
+      return R.values(pubnubStore.messageQueue).filter((m) => m.channel === spaceId)
+    } else {
+      return R.values(pubnubStore.messageQueue)
+    }
+  }
 }
 
 /* ------------- Reducers ------------- */
@@ -474,8 +481,6 @@ export const addMessageQueueReducer = (state, { data }) => {
         lastMessageTimetoken: convertTimestampToDate(timetoken).valueOf(),
       }
     }
-
-    console.tron.error({messages: spaces[channel].messages})
   }
 
   return state.merge({ ...state, messageQueue, spaces })
@@ -522,6 +527,10 @@ export const messageQueueFailureReducer = (state, { data }) => {
   return state.merge({ ...state, spaces })
 }
 
+export const resendQueueMessageReducer = (state, { data }) => {
+  return state
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -546,4 +555,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.ADD_MESSAGE_QUEUE]: addMessageQueueReducer,
   [Types.MESSAGE_QUEUE_SUCCESS]: messageQueueSuccessReducer,
   [Types.MESSAGE_QUEUE_FAILURE]: messageQueueFailureReducer,
+  [Types.RESEND_QUEUE_MESSAGE]: resendQueueMessageReducer,
 })
