@@ -5,6 +5,7 @@ import { connect } from 'react-redux'
 import StartupActions from '../Redux/StartupRedux'
 import ReduxPersist from '../Config/ReduxPersist'
 import { ConnectionHandler } from 'react-native-awesome-component'
+import PubnubActions from '../Redux/PubnubRedux'
 
 // Styles
 import styles from './Styles/RootContainerStyles'
@@ -37,7 +38,17 @@ class RootContainer extends Component {
     return (
       <View style={styles.applicationView}>
         <ConnectionContext.Provider value={isConnected}>
-          <ConnectionHandler onStateChange={(isConnected) => this.setState({ isConnected })} />
+          <ConnectionHandler
+            onStateChange={(isConnected) => {
+              if (this.state.isConnected !== isConnected) {
+                this.setState({ isConnected }, () => {
+                  if (isConnected) {
+                    this.props.reconnectPubnub()
+                  }
+                })
+              }
+            }}
+          />
           <StatusBar barStyle='light-content' />
           <ReduxNavigation />
         </ConnectionContext.Provider>
@@ -48,7 +59,8 @@ class RootContainer extends Component {
 
 // wraps dispatch to create nicer functions to call within our component
 const mapDispatchToProps = (dispatch) => ({
-  startup: () => dispatch(StartupActions.startup())
+  startup: () => dispatch(StartupActions.startup()),
+  reconnectPubnub: () => dispatch(PubnubActions.reconnectPubnub())
 })
 
 export default connect(null, mapDispatchToProps)(RootContainer)

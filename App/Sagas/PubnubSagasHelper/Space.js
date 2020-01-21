@@ -104,9 +104,9 @@ export function* getAllPubnubSpace(action) {
       spaces = response.data.map((s) => s.space)
       spaceIds = response.data.map((s) => s.id)
       PubnubManager.subscribeSpaces(spaceIds)
+      // yield PubnubManager.deleteSpace('group-669249c0-3c43-11ea-a665-d1086948e8e8')
 
       for (let i = 0; i < spaceIds.length; i++) {
-        // yield PubnubManager.deleteSpace(spaceIds[i])
         nextPubnubAction.push(put(PubnubActions.getPubnubSpaceMemberRequest({ spaceId: spaceIds[i] })))
       }
     }

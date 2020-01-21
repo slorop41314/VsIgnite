@@ -8,6 +8,8 @@ import { PubnubSpaceActions, PubnubSpaceStore, PubnubSpaceTypes } from './Pubnub
 /* ------------- Types and Action Creators ------------- */
 
 const { Types, Creators } = createActions({
+  reconnectPubnub: null,
+
   // USER ACTION
   ...PubnubUserActions,
 

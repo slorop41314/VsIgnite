@@ -50,7 +50,7 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-  pubnubUser: {},
+  user: {},
   spaces: {},
   typings: {},
   userPresence: {},
@@ -82,7 +82,9 @@ export const PubnubStoreSelectors = {
       return R.values(pubnubStore.messageQueue)
     }
   },
-  getPubnubUser: ({ pubnubStore }) => pubnubStore.pubnubUser,
+  getPubnubUser: ({ pubnubStore }) => {
+    return pubnubStore.user
+  },
 }
 
 /* ------------- Reducers ------------- */

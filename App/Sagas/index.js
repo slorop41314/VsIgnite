@@ -16,7 +16,7 @@ import { PubnubTypes } from '../Redux/PubnubRedux'
 import { getPubnubUserList, getPubnubUserDetail, createPubnubUser, updatePubnubUser, deletePubnubUser } from './PubnubSagasHelper/User'
 import { getPubnubMessage, sendPubnubMessage, sendPubnubTyping, updatePubnubMessage, deletePubnubMessage, getPubnubUnreadCount } from './PubnubSagasHelper/Message'
 import { createPubnubSpace, getPubnubSpace, getAllPubnubSpace, updatePubnubSpace, deletePubnubSpace, joinPubnubSpace, leavePubnubSpace, getPubnubSpaceMembership, updatePubnubSpaceMembership, getPubnubSpaceMember, addPubnubSpaceMember, removePubnubSpaceMember, getOnlineHere } from './PubnubSagasHelper/Space'
-import { resendQueueMessage } from './PubnubSagas'
+import { resendQueueMessage, reconnectPubnub } from './PubnubSagas'
 import { PubnubStoreTypes } from '../Redux/PubnubStoreRedux'
 
 /* ------------- API ------------- */
@@ -37,6 +37,8 @@ export default function* root() {
     takeLatest(AuthTypes.REGISTER_REQUEST, registerSaga),
 
     /** PUBNUB SECTION */
+    takeLatest(PubnubTypes.RECONNECT_PUBNUB, reconnectPubnub),
+
     /** USER */
     takeLatest(PubnubTypes.CREATE_PUBNUB_USER_REQUEST, createPubnubUser),
     takeLatest(PubnubTypes.UPDATE_PUBNUB_USER_REQUEST, updatePubnubUser),

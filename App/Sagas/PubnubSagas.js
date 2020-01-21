@@ -73,11 +73,11 @@ export function pubnubEventHandler() {
 }
 
 export function* initPubnub(data) {
-  const { user } = yield PubnubManager.init(data)
-  const localUser = select(PubnubStoreSelectors.getPubnubUser)
-  if (user) {
+  const response = yield PubnubManager.init(data)
+  const localUser = yield select(PubnubStoreSelectors.getPubnubUser)
+  if (response && response.user) {
     yield all([
-      put(PubnubStoreActions.saveUser(user)),
+      put(PubnubStoreActions.saveUser(response.user)),
       put(PubnubStoreActions.resendQueueMessage()),
     ])
   } else {
@@ -206,3 +206,17 @@ export function* resendQueueMessage(action) {
     console.tron.error('PUBNUB QUEUE RESEND ERROR');
   }
 }
+
+export function* reconnectPubnub(action) {
+  try {
+    PubnubManager.reconnect()
+    const alltask = yield all([
+      put(PubnubActions.getAllPubnubSpaceRequest({ limit: 100 })),
+    ])
+
+    yield take(AuthTypes.LOGOUT_SUCCESS)
+    yield cancel(...alltask)
+  } catch (error) {
+    console.tron.error('ERRRO RECONNECT PUBNUB')
+  }
+} 

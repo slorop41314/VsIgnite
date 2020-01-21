@@ -16,6 +16,7 @@ class PubnubManager {
     this.disconnect = this.disconnect.bind(this)
     this.getInstance = this.getInstance.bind(this)
     this.publishSignal = this.publishSignal.bind(this)
+    this.reconnect = this.reconnect.bind(this)
 
     // user
     this.createUser = this.createUser.bind(this)
@@ -117,6 +118,10 @@ class PubnubManager {
         }
       });
     })
+  }
+
+  reconnect() {
+    this.pubnub.reconnect();
   }
 
   createUser({ id, name, email, profileUrl }) {

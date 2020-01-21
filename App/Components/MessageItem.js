@@ -274,6 +274,7 @@ export class MessageItem extends Component {
       const { message, timetoken, actions, channel, status } = data
 
       const { user, type } = message
+      console.tron.error({ currentUser })
       const isMe = user.id === currentUser.id
       const sameDay = _isSameDay(timetoken)
 
