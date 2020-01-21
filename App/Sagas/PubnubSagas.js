@@ -212,6 +212,7 @@ export function* reconnectPubnub(action) {
     PubnubManager.reconnect()
     const alltask = yield all([
       put(PubnubActions.getAllPubnubSpaceRequest({ limit: 100 })),
+      put(PubnubStoreActions.resendQueueMessage())
     ])
 
     yield take(AuthTypes.LOGOUT_SUCCESS)

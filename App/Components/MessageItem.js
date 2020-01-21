@@ -234,6 +234,9 @@ export class MessageItem extends Component {
     let thisActions = undefined
     let nextActions = undefined
 
+    let thisStatus = undefined
+    let nextStatus = undefined
+
     const { data, currentUser, isLast, isFirst, members } = nextProps
     const { message, timetoken, actions, channel, status } = data
 
@@ -243,12 +246,20 @@ export class MessageItem extends Component {
     if (thisProps.data && thisProps.data.actions) thisActions = thisProps.data.actions
     if (nextProps.data && nextProps.data.actions) nextActions = nextProps.data.actions
 
+    if (thisProps.data && thisProps.data.status) thisStatus = thisProps.data.status
+    if (nextProps.data && nextProps.data.status) nextStatus = nextProps.data.status
+
+
     let shouldUpdate = true
 
     if (JSON.stringify(thisMessage) === JSON.stringify(nextMessage)) {
       shouldUpdate = false
 
       if (JSON.stringify(thisActions) !== JSON.stringify(nextActions)) {
+        shouldUpdate = true
+      }
+
+      if (thisStatus !== nextStatus) {
         shouldUpdate = true
       }
 
@@ -274,7 +285,6 @@ export class MessageItem extends Component {
       const { message, timetoken, actions, channel, status } = data
 
       const { user, type } = message
-      console.tron.error({ currentUser })
       const isMe = user.id === currentUser.id
       const sameDay = _isSameDay(timetoken)
 
