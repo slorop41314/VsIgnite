@@ -67,15 +67,14 @@ class UserListScreen extends Component {
 
   onPressCreateGroup() {
     const { selectedMember } = this.state
-    const { navigation, addPubnubSpaceMemberRequest } = this.props
+    const { navigation, addPubnubSpaceMemberRequest, currentUser } = this.props
     if (this.action === PubnubStrings.invite_type.invite) {
       const channelId = navigation.getParam('channelId')
       addPubnubSpaceMemberRequest({ spaceId: channelId, users: R.values(selectedMember), invite_type: PubnubStrings.invite_type.invite })
     }
 
     if (this.action === PubnubStrings.invite_type.create) {
-      const currentPubnubUser = PubnubManager.getCurrentUser()
-      navigation.navigate('GroupCreateScreen', { members: [currentPubnubUser].concat(R.values(selectedMember)) })
+      navigation.navigate('GroupCreateScreen', { members: [currentUser].concat(R.values(selectedMember)) })
     }
   }
 

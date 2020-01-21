@@ -29,7 +29,7 @@ export function* craeteSpace(spaceId, name, description, newCustom, users, type)
   const space = response.data
   PubnubManager.subscribeSpaces([space.id])
 
-  const currentUser = PubnubManager.getCurrentUser()
+  const currentUser = yield select(PubnubStoreSelectors.getPubnubUser)
   const inviteUsers = type === PubnubStrings.space.type.single ? users.concat([currentUser]) : users
 
   const alltask = yield all([
@@ -54,7 +54,7 @@ export function* createPubnubSpace(action) {
     let newCustom = {}
     if (custom) newCustom = { ...custom }
 
-    const currentUser = PubnubManager.getCurrentUser()
+    const currentUser = yield select(PubnubStoreSelectors.getPubnubUser)
 
     if (type === PubnubStrings.space.type.single) {
       newCustom = {
@@ -95,7 +95,7 @@ export function* getPubnubSpace(action) {
 export function* getAllPubnubSpace(action) {
   try {
     const { limit, page } = action.data
-    const currentUser = PubnubManager.getCurrentUser()
+    const currentUser = yield select(PubnubStoreSelectors.getPubnubUser)
     const response = yield PubnubManager.getMembership(currentUser.id, limit, page)
     let spaceIds = []
     let spaces = []

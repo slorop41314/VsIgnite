@@ -12,7 +12,7 @@
 
 import { call, put, all, cancelled, take, fork, select, delay } from 'redux-saga/effects'
 import { eventChannel } from 'redux-saga';
-import PubnubActions from '../Redux/PubnubRedux'
+import PubnubActions, { PubnubTypes } from '../Redux/PubnubRedux'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubStrings from '../Pubnub/PubnubStrings';
 import PubnubStoreActions from '../Redux/PubnubStoreRedux'
@@ -74,13 +74,13 @@ export function pubnubEventHandler() {
 
 export function* initPubnub(data) {
   const response = yield PubnubManager.init(data)
-  const localUser = yield select(PubnubStoreSelectors.getPubnubUser)
   if (response && response.user) {
     yield all([
       put(PubnubStoreActions.saveUser(response.user)),
       put(PubnubStoreActions.resendQueueMessage()),
     ])
   } else {
+    const localUser = yield select(PubnubStoreSelectors.getPubnubUser)
     yield all([
       put(PubnubStoreActions.saveUser(localUser)),
       put(PubnubStoreActions.resendQueueMessage()),
@@ -107,7 +107,7 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.message: {
-            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const currentPubnubUser = yield select(PubnubStoreSelectors.getPubnubUser)
             const { channel, timetoken, publisher } = payload
             if (publisher !== currentPubnubUser.id) {
               yield all([
@@ -120,7 +120,7 @@ export function* initPubnub(data) {
           }
           case PubnubStrings.event.type.signal: {
             const { message, publisher } = payload
-            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const currentPubnubUser = yield select(PubnubStoreSelectors.getPubnubUser)
             if (message && publisher !== currentPubnubUser.id) {
               yield all([
                 put(PubnubStoreActions.onReceiveSignal(payload))
@@ -129,7 +129,7 @@ export function* initPubnub(data) {
             break;
           }
           case PubnubStrings.event.type.messageAction: {
-            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const currentPubnubUser = yield select(PubnubStoreSelectors.getPubnubUser)
             const { publisher } = payload
             if (publisher !== currentPubnubUser.id) {
               yield all([
@@ -152,7 +152,7 @@ export function* initPubnub(data) {
           }
           case PubnubStrings.event.type.membership: {
             const { message, channel } = payload
-            const currentPubnubUser = PubnubManager.getCurrentUser()
+            const currentPubnubUser = yield select(PubnubStoreSelectors.getPubnubUser)
             if (channel === currentPubnubUser.id) {
               const { event, type } = message
               if (type === PubnubStrings.event.type.membership) {
@@ -210,13 +210,11 @@ export function* resendQueueMessage(action) {
 export function* reconnectPubnub(action) {
   try {
     PubnubManager.reconnect()
-    const alltask = yield all([
-      put(PubnubActions.getAllPubnubSpaceRequest({ limit: 100 })),
-      put(PubnubStoreActions.resendQueueMessage())
-    ])
+    const task1 = yield put(PubnubActions.getAllPubnubSpaceRequest({ limit: 100 }))
 
     yield take(AuthTypes.LOGOUT_SUCCESS)
-    yield cancel(...alltask)
+    yield cancel(task1)
+
   } catch (error) {
     console.tron.error('ERRRO RECONNECT PUBNUB')
   }

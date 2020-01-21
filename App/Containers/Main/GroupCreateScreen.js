@@ -39,7 +39,6 @@ class GroupCreateScreen extends Component {
       groupNameError: true
     }
 
-    this.currentPubnubUser = PubnubManager.getCurrentUser()
     this.onPressCreateGroup = this.onPressCreateGroup.bind(this)
   }
 
@@ -56,6 +55,7 @@ class GroupCreateScreen extends Component {
   }
 
   render() {
+    const { currentUser } = this.props
     const { groupNameError } = this.state
     return (
       <Styled.FlexContainer padded padding={PADDING}>
@@ -85,7 +85,7 @@ class GroupCreateScreen extends Component {
               {this.members.map((u) => {
                 let spliceName = u.name.length > 10 ? `${u.name.slice(0, 10)}...` : u.name
 
-                if (u.id === this.currentPubnubUser.id) {
+                if (u.id === currentUser.id) {
                   spliceName = 'You'
                 }
 
@@ -106,7 +106,7 @@ class GroupCreateScreen extends Component {
 
 const mapStateToProps = (state) => {
   return {
-
+    currentUser: state.pubnubStore.user,
   }
 }
 
