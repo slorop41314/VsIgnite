@@ -103,22 +103,25 @@ class ChatScreen extends Component {
 
     return (
       <Styled.FlexContainer>
-        <CustomFlatList
-          data={messages}
-          fetchFunction={this.fetchFunction}
-          meta={meta}
-          renderItem={({ item, index }) => {
-            return <MessageItem isLast={index === (messages.length - 1)} isFirst={index === 0} data={item} />
-          }}
-          loading={false}
-          error={false}
-          ItemSeparatorComponent={() => <View style={[styles.itemSeparator]} />}
-          inverted
-          contentContainerStyle={[styles.contentContainer, { paddingBottom: 0 }]}
-          onRefresh={undefined}
-          refreshing={undefined}
-          disableRenderNoConnection={true}
-        />
+        <Styled.FlexContainer>
+          <CustomFlatList
+            style={{ flexGrow: 0 }}
+            data={messages}
+            fetchFunction={this.fetchFunction}
+            meta={meta}
+            renderItem={({ item, index }) => {
+              return <MessageItem isLast={index === (messages.length - 1)} isFirst={index === 0} data={item} />
+            }}
+            loading={false}
+            error={false}
+            ItemSeparatorComponent={() => <View style={[styles.itemSeparator]} />}
+            inverted
+            contentContainerStyle={[styles.contentContainer, { paddingBottom: 0 }]}
+            onRefresh={undefined}
+            refreshing={undefined}
+            disableRenderNoConnection={true}
+          />
+        </Styled.FlexContainer>
         <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
           <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
         </KeyboardAvoidingView>
