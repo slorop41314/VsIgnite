@@ -4,11 +4,15 @@ import CameraRoll from "@react-native-community/cameraroll";
 import { Method } from 'react-native-awesome-component';
 import { ToastAndroid, Alert, Platform } from 'react-native';
 
+export const ROOT_DIR = `file://${RNFS.TemporaryDirectoryPath}`;
+
+const DELIMITER = '%2F'
 
 export function getLocalFileFromUrl(url) {
-  const rootDir = `file://${RNFS.TemporaryDirectoryPath}`;
-  const filename = Method.Helper.getFileNameFromURL(url).split('%2')
-  return `${rootDir}/${filename[filename.length - 1]}`;
+  const filename = Method.Helper.getFileNameFromURL(url)
+  const name = filename.replace(DELIMITER, '-')
+  const localFile = `${ROOT_DIR}${name}`;
+  return localFile
 }
 
 export async function isLocalFileExist(url) {

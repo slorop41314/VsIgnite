@@ -146,11 +146,7 @@ export const saveMessagesReducer = (state, { data, isInit }) => {
           }
         }
       } else {
-        const messages = {
-          ...spaces[channelsIds[i]].messages,
-          ...convertArrToObj(data[channelsIds[i]], 'timetoken')
-        }
-
+        const messages = R.mergeDeepRight(spaces[channelsIds[i]].messages, convertArrToObj(data[channelsIds[i]], 'timetoken'))
         const lastMessage = R.values(messages).sort(Method.Array.compareValues('timetoken', 'desc', true, true))[0]
         nextMessageTimetoken = convertTimestampToDate(lastMessage.timetoken).valueOf()
         if (nextMessageTimetoken > lastMessageTimetoken) {

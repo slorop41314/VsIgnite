@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Image } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
@@ -168,13 +168,15 @@ export class MessageItem extends Component {
 
   async checkAndDownloadLocalImageMessage(data) {
     const { putLocalImageMessage } = this.props
-    const { message } = data
+    const { message, status } = data
+
+    if ((status === PubnubStrings.message.status.waiting) || (status === PubnubStrings.message.status.failure)) return
+
 
     try {
       if (message) {
         if (message.type === PubnubStrings.message.type.images) {
           let { image, localPath } = message
-
           if (localPath === undefined) {
             const isExist = await isLocalFileExist(image)
             if (isExist) {
@@ -195,6 +197,7 @@ export class MessageItem extends Component {
       }
     } catch (error) {
       console.tron.error('FAILED TO PUT LOCAL IMAGE MESSAGE')
+      console.tron.error({ error })
     }
   }
 

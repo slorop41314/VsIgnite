@@ -10889,10 +10889,10 @@ react-native-animatable@^1.3.2:
   dependencies:
     prop-types "^15.5.10"
 
-react-native-awesome-component@^0.1.40:
-  version "0.1.40"
-  resolved "https://registry.yarnpkg.com/react-native-awesome-component/-/react-native-awesome-component-0.1.40.tgz#1b6759899da0146ebbf794c20e348080b5511950"
-  integrity sha512-Wu95HW5gYqS1TprttP+JK1tAW/pdbuPTwE+fKX4KHEDq83adt9hc5HT0vzsTtqcR+4XiyE0TNJAFZx1BzBY1LA==
+react-native-awesome-component@~0.1.43:
+  version "0.1.43"
+  resolved "https://registry.yarnpkg.com/react-native-awesome-component/-/react-native-awesome-component-0.1.43.tgz#df18ece236fd37bd0c1c234d349bda0f1d09baec"
+  integrity sha512-Q7PxrOffDBImF9EJTRy41geGS4SACo/wAUXJ0XnUhJGsvn1qQqg/j3omBZMiaAQ094Cac0uzrbYtQK7iGwBUlg==
   dependencies:
     "@react-native-community/netinfo" "^4.4.0"
     formik "^1.1.1"
@@ -10974,6 +10974,11 @@ react-native-image-picker@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-2.0.0.tgz#237f08109ec6824607de2458847700242186bd2a"
   integrity sha512-svmQJ5bBuCgX9RG5DU3A38udgemze1/HtYUXgUAvP2i3LzrzW5ub5GT3L8n87pg/DNj2rRHi1wLtNaNEoV4ZAw==
+
+react-native-image-resizer@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-resizer/-/react-native-image-resizer-1.1.0.tgz#90646bb6dbf0ccc81e53cba69130479e9198d88b"
+  integrity sha512-OgDOV/0J5ERy6qqu9PTSEiJmNkDrsJluqGM20Tj3JX1836VPO3oeIzQvd8pVdvBiuDq+Z6ZKrsy5SdxP8/O+Ig==
 
 react-native-image-zoom-viewer@^2.2.27:
   version "2.2.27"
