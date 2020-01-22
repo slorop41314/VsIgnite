@@ -44,6 +44,11 @@ const PubnubStrings = {
       delivered: 'message_delivered',
       read: 'message_read',
       added: 'added',
+    },
+    upload: {
+      success: 'success',
+      failure: 'failure',
+      running: 'running'
     }
   },
   presence: {

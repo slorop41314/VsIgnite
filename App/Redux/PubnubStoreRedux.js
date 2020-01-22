@@ -38,6 +38,7 @@ const { Types, Creators } = createActions({
   messageQueueSuccess: ['data'],
   messageQueueFailure: ['data'],
   resendQueueMessage: ['data'],
+  putUploadProgress: ['data'],
 
   // CACHE IMAGE
   putLocalImageMessage: ['data'],
@@ -565,6 +566,33 @@ export const putLocalImageUserReducer = (state, { data }) => {
   return state
 }
 
+export const putUploadProgressReducer = (state, { data }) => {
+  const { message, progress } = data
+  const { channel, timetoken } = message
+  const { bytesTransferred, totalBytes } = progress
+
+  let spaces = { ...state.spaces }
+  if (spaces[channel]) {
+    spaces = {
+      ...spaces,
+      [channel]: {
+        ...spaces[channel],
+        messages: {
+          ...spaces[channel].messages,
+          [timetoken]: {
+            ...spaces[channel].messages[timetoken],
+            upload: {
+              bytesTransferred, totalBytes
+            }
+          }
+        },
+      }
+    }
+  }
+
+  return state.merge({ ...state, spaces })
+}
+
 
 /* ------------- Hookup Reducers To Types ------------- */
 
@@ -592,4 +620,5 @@ export const reducer = createReducer(INITIAL_STATE, {
   [Types.RESEND_QUEUE_MESSAGE]: resendQueueMessageReducer,
   [Types.PUT_LOCAL_IMAGE_MESSAGE]: putLocalImageMessageReducer,
   [Types.PUT_LOCAL_IMAGE_USER]: putLocalImageUserReducer,
+  [Types.PUT_UPLOAD_PROGRESS]: putUploadProgressReducer,
 })

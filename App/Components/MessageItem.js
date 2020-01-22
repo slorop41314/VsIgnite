@@ -14,6 +14,7 @@ import R from 'ramda'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { isLocalFileExist, silentDownload, getLocalFileFromUrl } from '../Lib/DownloadHelper'
 import PubnubStoreActions from '../Redux/PubnubStoreRedux'
+import ProgressCircle from 'react-native-progress-circle'
 
 const { width, height } = Dimensions.get('window')
 
@@ -237,6 +238,9 @@ export class MessageItem extends Component {
     let thisStatus = undefined
     let nextStatus = undefined
 
+    let thisUpload = undefined
+    let nextUpload = undefined
+
     const { data, currentUser, isLast, isFirst, members } = nextProps
     const { message, timetoken, actions, channel, status } = data
 
@@ -249,6 +253,8 @@ export class MessageItem extends Component {
     if (thisProps.data && thisProps.data.status) thisStatus = thisProps.data.status
     if (nextProps.data && nextProps.data.status) nextStatus = nextProps.data.status
 
+    if (thisProps.data && thisProps.data.upload) thisUpload = thisProps.data.upload
+    if (nextProps.data && nextProps.data.upload) nextUpload = nextProps.data.upload
 
     let shouldUpdate = true
 
@@ -260,6 +266,10 @@ export class MessageItem extends Component {
       }
 
       if (thisStatus !== nextStatus) {
+        shouldUpdate = true
+      }
+
+      if (thisUpload && nextUpload && (JSON.stringify(thisUpload) !== JSON.stringify(nextUpload))) {
         shouldUpdate = true
       }
 
@@ -373,9 +383,25 @@ export class MessageItem extends Component {
 
         if (status) {
           if (status === PubnubStrings.message.status.waiting) {
+            const { upload } = data
+            let progress = 0
+            if (upload) {
+              const { bytesTransferred, totalBytes } = upload
+              progress = (bytesTransferred / totalBytes) * 100
+            }
             imageContent = (
               <View style={styles.imageEmptyContainer}>
-                <ActivityIndicator size='large' color={Colors.eggplant} />
+                {/* <ActivityIndicator size='large' color={Colors.eggplant} /> */}
+                <ProgressCircle
+                  percent={progress}
+                  radius={30}
+                  borderWidth={8}
+                  color={Colors.eggplant}
+                  shadowColor={Colors.steel}
+                  bgColor={Colors.snow}
+                >
+                  <Icons name='upload' size={25} color={Colors.eggplant} />
+                </ProgressCircle>
               </View>
             )
           }
@@ -415,15 +441,31 @@ export class MessageItem extends Component {
         const { video, localPath } = message
         let videoContent = (
           <View>
-            <Text>VIDEOOO</Text>
+            <Text>VIDEOO</Text>
           </View>
         )
 
         if (status) {
           if (status === PubnubStrings.message.status.waiting) {
+            const { upload } = data
+            let progress = 0
+            if (upload) {
+              const { bytesTransferred, totalBytes } = upload
+              progress = (bytesTransferred / totalBytes) * 100
+            }
             videoContent = (
               <View style={styles.imageEmptyContainer}>
-                <ActivityIndicator size='large' color={Colors.eggplant} />
+                {/* <ActivityIndicator size='large' color={Colors.eggplant} /> */}
+                <ProgressCircle
+                  percent={progress}
+                  radius={30}
+                  borderWidth={8}
+                  color={Colors.eggplant}
+                  shadowColor={Colors.steel}
+                  bgColor={Colors.snow}
+                >
+                  <Icons name='upload' size={25} color={Colors.eggplant} />
+                </ProgressCircle>
               </View>
             )
           }

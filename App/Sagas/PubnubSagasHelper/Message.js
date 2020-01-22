@@ -10,13 +10,14 @@
 *    you'll need to define a constant in that file.
 *************************************************************/
 
-import { call, put, all, select, cancel } from 'redux-saga/effects'
+import { call, put, all, select, cancel, take } from 'redux-saga/effects'
+import { eventChannel } from 'redux-saga';
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubManager from '../../Pubnub/PubnubManager'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 import { PubnubStoreSelectors } from '../../Redux/PubnubStoreRedux'
-import { firebaseUploadFile } from '../../Firebase/FirebaseHelper'
+import { firebaseUploadFile, uplaodFileHelper } from '../../Firebase/FirebaseHelper'
 import { Method } from 'react-native-awesome-component'
 import { Platform } from 'react-native'
 import { getLocalFileFromUrl, moveFileToLocal, isFileExist } from '../../Lib/DownloadHelper'
@@ -41,6 +42,46 @@ export function* getPubnubMessage(action) {
   }
 }
 
+export function uplaodEventHelper(data) {
+  return eventChannel(emit => {
+    let { message } = data
+    const { type } = message
+
+    const uploadSuccess = payload => {
+      emit({ actionType: PubnubStrings.event.upload.success, type: type, payload: payload });
+    };
+
+    const uploadFailure = payload => {
+      emit({ actionType: PubnubStrings.event.upload.failure, type: type, payload: payload });
+    };
+
+    const uploadRunning = payload => {
+      emit({ actionType: PubnubStrings.event.upload.running, type: type, payload: payload });
+    }
+
+    switch (type) {
+      case PubnubStrings.message.type.image:
+      case PubnubStrings.message.type.video: {
+        uplaodFileHelper(data, uploadSuccess, uploadFailure, uploadRunning)
+        break
+      }
+
+      case PubnubStrings.message.type.text: {
+        setTimeout(uploadSuccess, 0)
+        break
+      }
+      default: {
+      }
+    }
+
+    const unsubscribe = () => {
+      // unsubscribe
+    };
+
+    return unsubscribe;
+  });
+}
+
 /**
  * 
  * @param {string} channel: space uid
@@ -49,73 +90,89 @@ export function* getPubnubMessage(action) {
 export function* sendPubnubMessage(action) {
   try {
     yield put(PubnubStoreActions.addMessageQueue(action.data))
+    const uploadEvent = yield call(uplaodEventHelper, action.data);
+    while (true) {
+      try {
+        // An error from socketChannel will cause the saga jump to the catch block
+        const eventPayload = yield take(uploadEvent);
+        const { actionType, type, payload } = eventPayload;
+        switch (actionType) {
+          case PubnubStrings.event.upload.success: {
+            let { message, channel } = action.data
+            let localPath = undefined
 
-    let { channel, message } = action.data
-    const { type } = message
-    let localPath = undefined
+            if (payload) {
+              const { downloadURL, filePath } = payload
+              // move file to local
+              localPath = getLocalFileFromUrl(downloadURL)
+              const isExist = yield isFileExist(localPath)
 
+              if (!isExist) {
+                localPath = yield moveFileToLocal(filePath, localPath)
+              }
 
-    if (type === PubnubStrings.message.type.image) {
-      const { image } = message
-      const filePath = image.path.includes('file://') ? image.path : `file://${image.path}`
-      const res = yield firebaseUploadFile(channel, filePath, true)
-      const { downloadURL } = res
-      // move file to local
-      localPath = getLocalFileFromUrl(downloadURL)
-      const isExist = yield isFileExist(localPath)
+              if (type === PubnubStrings.message.type.image) {
+                message = {
+                  ...message,
+                  image: downloadURL
+                }
+              }
 
-      if (!isExist) {
-        localPath = yield moveFileToLocal(filePath, localPath)
-      }
+              if (type == PubnubStrings.message.type.video) {
+                message = {
+                  ...message,
+                  video: downloadURL
+                }
+              }
 
-      message = {
-        ...message,
-        image: downloadURL
-      }
-    }
+            }
 
-    if (type === PubnubStrings.message.type.video) {
-      const { video } = message
-      const filePath = video.path.includes('file://') ? video.path : `file://${video.path}`
-      console.tron.error({ filePath })
-      const res = yield firebaseUploadFile(channel, filePath, false)
-      const { downloadURL } = res
-      // move file to local
-      localPath = getLocalFileFromUrl(downloadURL)
-      const isExist = yield isFileExist(localPath)
+            let response = yield PubnubManager.sendMessage(channel, message)
 
-      if (!isExist) {
-        localPath = yield moveFileToLocal(filePath, localPath)
-      }
+            if ((type === PubnubStrings.message.type.image) || (type === PubnubStrings.message.type.video)) {
+              response = {
+                ...response,
+                message: {
+                  ...response.message,
+                  localPath,
+                }
+              }
+            }
 
-      message = {
-        ...message,
-        video: downloadURL
-      }
-    }
+            const alltask = yield all([
+              put(PubnubStoreActions.messageQueueSuccess(action.data)),
+              put(PubnubStoreActions.onReceiveMessage(response)),
+              put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
+              put(PubnubActions.sendPubnubMessageSuccess(response))
+            ])
 
-    let response = yield PubnubManager.sendMessage(channel, message)
+            yield take(AuthTypes.LOGOUT_REQUEST)
+            yield cancel(...alltask)
 
-    if ((type === PubnubStrings.message.type.image) || (type === PubnubStrings.message.type.video)) {
-      response = {
-        ...response,
-        message: {
-          ...response.message,
-          localPath,
+            break
+          }
+          case PubnubStrings.event.upload.failure: {
+            yield all([
+              put(PubnubStoreActions.messageQueueFailure(action.data)),
+              put(PubnubActions.sendPubnubMessageFailure()),
+            ])
+            break
+          }
+          case PubnubStrings.event.upload.running: {
+            yield all([
+              put(PubnubStoreActions.putUploadProgress({ message: action.data, progress: payload }))
+            ])
+            break;
+          }
         }
+      } catch (err) {
+        yield all([
+          put(PubnubStoreActions.messageQueueFailure(action.data)),
+          put(PubnubActions.sendPubnubMessageFailure()),
+        ])
       }
     }
-
-    const alltask = yield all([
-      put(PubnubStoreActions.messageQueueSuccess(action.data)),
-      put(PubnubStoreActions.onReceiveMessage(response)),
-      put(PubnubActions.updatePubnubMessageRequest({ channel, timetoken: response.timetoken, actiontype: PubnubStrings.message.type.receipt, value: PubnubStrings.event.value.delivered })),
-      put(PubnubActions.sendPubnubMessageSuccess(response))
-    ])
-
-    yield take(AuthTypes.LOGOUT_REQUEST)
-    yield cancel(...alltask)
-  } catch (error) {
+  } catch (err) {
     yield all([
       put(PubnubStoreActions.messageQueueFailure(action.data)),
       put(PubnubActions.sendPubnubMessageFailure()),
