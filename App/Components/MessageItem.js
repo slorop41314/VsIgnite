@@ -175,7 +175,7 @@ export class MessageItem extends Component {
 
     try {
       if (message) {
-        if (message.type === PubnubStrings.message.type.images) {
+        if (message.type === PubnubStrings.message.type.image) {
           let { image, localPath } = message
           if (localPath === undefined) {
             const isExist = await isLocalFileExist(image)
@@ -356,7 +356,7 @@ export class MessageItem extends Component {
         )
       }
 
-      if (type === PubnubStrings.message.type.images) {
+      if (type === PubnubStrings.message.type.image) {
         const { image, localPath } = message
         let imageContent = (
           <ImagePreview
@@ -410,6 +410,55 @@ export class MessageItem extends Component {
           </View>
         )
       }
+
+      if (type === PubnubStrings.message.type.video) {
+        const { video, localPath } = message
+        let videoContent = (
+          <View>
+            <Text>VIDEOOO</Text>
+          </View>
+        )
+
+        if (status) {
+          if (status === PubnubStrings.message.status.waiting) {
+            videoContent = (
+              <View style={styles.imageEmptyContainer}>
+                <ActivityIndicator size='large' color={Colors.eggplant} />
+              </View>
+            )
+          }
+
+          if (status === PubnubStrings.message.status.failure) {
+            videoContent = (
+              <View style={styles.imageEmptyContainer}>
+                <TouchableOpacity activeOpacity={0.8} style={styles.resendBig} onPress={this.onPressResend}>
+                  <Icons name='redo' size={30} color={Colors.snow} />
+                </TouchableOpacity>
+              </View>
+            )
+          }
+        }
+
+        return (
+          <View>
+            {renderTopDateSeparator}
+            <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+              {!isMe && !isSingleChat(channel) && (
+                <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
+              )}
+              <View style={styles.imageContainer}>
+                {videoContent}
+              </View>
+              <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
+                <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
+                {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}
+              </View>
+            </View>
+            {renderBottomDateSeparator}
+          </View>
+        )
+      }
+
     } else {
       return <View />
     }
@@ -430,11 +479,11 @@ const mapStateToProps = (state, props) => {
     }
 
     const { type } = message
-    if (type === PubnubStrings.message.type.images) {
+    if (type === PubnubStrings.message.type.image) {
       if (state.pubnubStore.spaces[channel].messages) {
 
         const messages = R.values(state.pubnubStore.spaces[channel].messages)
-        imageMessages = messages.filter(m => m && (m.message.type === PubnubStrings.message.type.images) && (typeof m.message.image === 'string'))
+        imageMessages = messages.filter(m => m && (m.message.type === PubnubStrings.message.type.image) && (typeof m.message.image === 'string'))
         imageIndex = imageMessages.findIndex(m => m.timetoken === timetoken)
         parseImageMessages = imageMessages.map(m => {
           let newMessage = {

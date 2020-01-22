@@ -2,7 +2,8 @@ const PubnubStrings = {
   message: {
     type: {
       text: 'text',
-      images: 'images',
+      image: 'image',
+      video: 'video',
       system: 'system',
       custom: 'custom',
       update: 'update',

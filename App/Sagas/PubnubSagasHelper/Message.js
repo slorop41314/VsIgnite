@@ -55,10 +55,10 @@ export function* sendPubnubMessage(action) {
     let localPath = undefined
 
 
-    if (type === PubnubStrings.message.type.images) {
+    if (type === PubnubStrings.message.type.image) {
       const { image } = message
-      const filePath = Platform.OS === 'ios' ? image.uri : `file://${image.path}`
-      const res = yield firebaseUploadFile(channel, filePath)
+      const filePath = image.path.includes('file://') ? image.path : `file://${image.path}`
+      const res = yield firebaseUploadFile(channel, filePath, true)
       const { downloadURL } = res
       // move file to local
       localPath = getLocalFileFromUrl(downloadURL)
@@ -74,10 +74,29 @@ export function* sendPubnubMessage(action) {
       }
     }
 
+    if (type === PubnubStrings.message.type.video) {
+      const { video } = message
+      const filePath = video.path.includes('file://') ? video.path : `file://${video.path}`
+      console.tron.error({ filePath })
+      const res = yield firebaseUploadFile(channel, filePath, false)
+      const { downloadURL } = res
+      // move file to local
+      localPath = getLocalFileFromUrl(downloadURL)
+      const isExist = yield isFileExist(localPath)
+
+      if (!isExist) {
+        localPath = yield moveFileToLocal(filePath, localPath)
+      }
+
+      message = {
+        ...message,
+        video: downloadURL
+      }
+    }
 
     let response = yield PubnubManager.sendMessage(channel, message)
 
-    if (type === PubnubStrings.message.type.images) {
+    if ((type === PubnubStrings.message.type.image) || (type === PubnubStrings.message.type.video)) {
       response = {
         ...response,
         message: {

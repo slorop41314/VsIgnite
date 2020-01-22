@@ -64,11 +64,25 @@ class ChatScreen extends Component {
       sendPubnubMessage(params)
     }
 
-    if (type === PubnubStrings.message.type.images) {
+    if (type === PubnubStrings.message.type.image) {
       const params = {
         message: {
-          type: PubnubStrings.message.type.images,
+          type: PubnubStrings.message.type.image,
           image: message,
+          user: currentUser,
+        },
+        channel: this.chatData.id,
+        timetoken: new Date().valueOf() * 1e4,
+        status: PubnubStrings.message.status.waiting
+      }
+      sendPubnubMessage(params)
+    }
+
+    if (type === PubnubStrings.message.type.video) {
+      const params = {
+        message: {
+          type: PubnubStrings.message.type.video,
+          video: message,
           user: currentUser,
         },
         channel: this.chatData.id,

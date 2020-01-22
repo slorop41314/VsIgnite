@@ -10965,15 +10965,15 @@ react-native-i18n@^2.0.14:
   dependencies:
     i18n-js "3.0.11"
 
+react-native-image-crop-picker@^0.27.0:
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-crop-picker/-/react-native-image-crop-picker-0.27.0.tgz#f4684e77e6b25bb6d2cb5e37cfad130b4ed23e90"
+  integrity sha512-QR9d3FQVYO1vIUOHt5kozyyTUzHV71wGsLKbzqINjF4kKW9++lHHt7DgEkXBuOHWOZ26LHyQHXV6GdQRPA2EkQ==
+
 react-native-image-pan-zoom@^2.1.9:
   version "2.1.11"
   resolved "https://registry.yarnpkg.com/react-native-image-pan-zoom/-/react-native-image-pan-zoom-2.1.11.tgz#61bcb69219d95e76a9797d23e4a2e8e0bd654ae9"
   integrity sha512-ZCisGUFpPchHXsjT7ZI0anlSLPgcTmjRKXqpVnPu3RDWFXfKjuL4zpY57DX4Y8YgGZCpbf9fApN7KjVYody2Mw==
-
-react-native-image-picker@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-2.0.0.tgz#237f08109ec6824607de2458847700242186bd2a"
-  integrity sha512-svmQJ5bBuCgX9RG5DU3A38udgemze1/HtYUXgUAvP2i3LzrzW5ub5GT3L8n87pg/DNj2rRHi1wLtNaNEoV4ZAw==
 
 react-native-image-resizer@^1.1.0:
   version "1.1.0"

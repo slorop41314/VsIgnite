@@ -121,9 +121,16 @@ class ChannelRowItem extends Component {
           let textMessage = ''
           if (lastMessage.message.type === PubnubStrings.message.type.text) {
             textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: ${lastMessage.message.text}`
-          } else {
+          }
+
+          if (lastMessage.message.type === PubnubStrings.message.type.image) {
             textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send image`
           }
+
+          if (lastMessage.message.type === PubnubStrings.message.type.video) {
+            textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send video`
+          }
+
 
           return (
             <Text numberOfLines={2} ellipsizeMode={'tail'} style={[styles.lastMessage]}>{textMessage}</Text>
