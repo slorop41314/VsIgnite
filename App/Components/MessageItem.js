@@ -15,6 +15,8 @@ import { TouchableOpacity } from 'react-native-gesture-handler'
 import { isLocalFileExist, silentDownload, getLocalFileFromUrl } from '../Lib/DownloadHelper'
 import PubnubStoreActions from '../Redux/PubnubStoreRedux'
 import ProgressCircle from 'react-native-progress-circle'
+import Video from 'react-native-video';
+import VideoPreview from './VideoPreview'
 
 const { width, height } = Dimensions.get('window')
 
@@ -91,7 +93,7 @@ const styles = StyleSheet.create({
     marginBottom: 3,
   },
   imageContainer: {
-    height: imageWidth
+    // height: imageWidth
   },
   resend: {
     backgroundColor: Colors.eggplant,
@@ -154,10 +156,16 @@ export class MessageItem extends Component {
 
   constructor(props) {
     super(props)
+    this.state = {
+      activeVideo: false
+    }
 
     this.checkAndUpdateActions = this.checkAndUpdateActions.bind(this)
     this.checkAndDownloadLocalImageMessage = this.checkAndDownloadLocalImageMessage.bind(this)
     this.onPressResend = this.onPressResend.bind(this)
+
+    // video event
+    // this.onVideoLoadStart = this.onVideoLoadStart.bind(this)
   }
 
   componentDidMount() {
@@ -173,6 +181,7 @@ export class MessageItem extends Component {
 
     if ((status === PubnubStrings.message.status.waiting) || (status === PubnubStrings.message.status.failure)) return
 
+    return
 
     try {
       if (message) {
@@ -373,11 +382,7 @@ export class MessageItem extends Component {
             index={imageIndex}
             images={parseImageMessages}
           >
-            <PlaceholderImage
-              uri={localPath}
-              width={imageWidth}
-              height={imageWidth}
-            />
+            <Image source={{ uri: localPath }} style={{ width: imageWidth, height: imageWidth }} />
           </ImagePreview>
         )
 
@@ -441,7 +446,7 @@ export class MessageItem extends Component {
         const { video, localPath } = message
         let videoContent = (
           <View>
-            <Text>VIDEOO</Text>
+            <VideoPreview source={video} />
           </View>
         )
 
@@ -488,7 +493,7 @@ export class MessageItem extends Component {
               {!isMe && !isSingleChat(channel) && (
                 <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
               )}
-              <View style={styles.imageContainer}>
+              <View>
                 {videoContent}
               </View>
               <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
