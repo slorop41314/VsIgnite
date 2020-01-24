@@ -1,5 +1,5 @@
 import React, { Component, PureComponent } from 'react'
-import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Image } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, ActivityIndicator, Image, Linking } from 'react-native'
 import PubnubStrings from '../Pubnub/PubnubStrings'
 import { connect } from 'react-redux'
 import { Colors } from '../Themes'
@@ -9,7 +9,7 @@ import Icons from 'react-native-vector-icons/FontAwesome5'
 import PubnubManager from '../Pubnub/PubnubManager'
 import PubnubActions from '../Redux/PubnubRedux'
 import ImagePreview from './ImagePreview'
-import { PlaceholderImage } from 'react-native-awesome-component'
+import { PlaceholderImage, Method } from 'react-native-awesome-component'
 import R from 'ramda'
 import { TouchableOpacity } from 'react-native-gesture-handler'
 import { isLocalFileExist, silentDownload, getLocalFileFromUrl } from '../Lib/DownloadHelper'
@@ -17,6 +17,7 @@ import PubnubStoreActions from '../Redux/PubnubStoreRedux'
 import ProgressCircle from 'react-native-progress-circle'
 import Video from 'react-native-video';
 import VideoPreview from './VideoPreview'
+import { getUrlsFromString, generateTextWithLinkCompoent } from '../Lib/Helper'
 
 const { width, height } = Dimensions.get('window')
 
@@ -118,6 +119,34 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.steel,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  urlPreviewContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    padding: 5,
+    borderRadius: 5,
+    marginBottom: 5,
+    width: '100%',
+    flexGrow: 1,
+    alignItems: 'center',
+  },
+  urlPreviewImage: {
+    width: 50, height: 50, borderRadius: 5
+  },
+  urlPreviewTitle: {
+    fontSize: 14,
+    color: Colors.coal
+  },
+  urlPreviewDesc: {
+    fontSize: 12,
+    color: Colors.coal
+  },
+  urlPreviewLink: {
+    fontSize: 10,
+    color: Colors.link
+  },
+  textHyperlink: {
+    color: Colors.link
   }
 })
 
@@ -163,9 +192,8 @@ export class MessageItem extends Component {
     this.checkAndUpdateActions = this.checkAndUpdateActions.bind(this)
     this.checkAndDownloadLocalImageMessage = this.checkAndDownloadLocalImageMessage.bind(this)
     this.onPressResend = this.onPressResend.bind(this)
+    this.getTextMessageContent = this.getTextMessageContent.bind(this)
 
-    // video event
-    // this.onVideoLoadStart = this.onVideoLoadStart.bind(this)
   }
 
   componentDidMount() {
@@ -180,8 +208,6 @@ export class MessageItem extends Component {
     const { message, status } = data
 
     if ((status === PubnubStrings.message.status.waiting) || (status === PubnubStrings.message.status.failure)) return
-
-    return
 
     try {
       if (message) {
@@ -298,6 +324,45 @@ export class MessageItem extends Component {
     sendPubnubMessage({ ...data, status: PubnubStrings.message.status.waiting })
   }
 
+  getTextMessageContent(isMe, message) {
+    const urls = getUrlsFromString(message.text)
+    if (urls.length > 0) {
+      const { preview, text } = message
+      const { url, title, description, images } = preview
+
+      const mainText = <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]} />
+      const linkText = <Text style={{ color: Colors.link }} />
+      const styledMessage = generateTextWithLinkCompoent(mainText, linkText, text)
+
+      console.log({styledMessage})
+
+      return (
+        <View>
+          {preview && (
+            <TouchableOpacity
+              style={styles.urlPreviewContainer}
+              activeOpacity={0.8}
+              onPress={() => {
+                Linking.openURL(url);
+              }}
+            >
+              {images.length > 0 && <Image source={{ uri: images[0] }} style={styles.urlPreviewImage} />}
+              <View style={{ flex: 1, marginLeft: 5 }}>
+                {title && <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.urlPreviewTitle}>{title}</Text>}
+                {description && <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.urlPreviewDesc}>{description}</Text>}
+                {url && <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.urlPreviewLink}>{url}</Text>}
+              </View>
+            </TouchableOpacity>
+          )}
+          {styledMessage}
+        </View>
+      )
+    }
+
+    return <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
+
+  }
+
   render() {
     const { data, currentUser, isLast, isFirst, members, imageIndex, parseImageMessages } = this.props
     if (data.loading !== true) {
@@ -350,15 +415,17 @@ export class MessageItem extends Component {
       }
 
       if (type === PubnubStrings.message.type.text) {
+        const urls = getUrlsFromString(message.text)
+
         return (
           <View>
             {renderTopDateSeparator}
             <View style={styles.container(isMe)}>
-              <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage]}>
+              <View style={[styles.messageContainer, isMe ? styles.myMessage : styles.othetMessage, { flexGrow: urls.length > 0 ? 1 : 0 }]}>
                 {!isMe && !isSingleChat(channel) && (
                   <Text style={[styles.messageText, styles.groupUserName]}>{`${user.name}:`}</Text>
                 )}
-                <Text style={[styles.messageText, isMe ? styles.myMessageText : styles.otherMessageText]}>{message.text}</Text>
+                {this.getTextMessageContent(isMe, message)}
                 <View style={[styles.timeContainer, isMe ? styles.timeContainerMe : styles.timeContainerOther]}>
                   <Text style={[styles.dateText, isMe ? styles.dateMe : styles.dateOther]}>{moment(convertTimestampToDate(timetoken)).format('HH:mm')}</Text>
                   {isMe && <Icons name={checkIcon} size={11} color={checkColor} style={[styles.iconCheck]} />}

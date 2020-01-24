@@ -23,6 +23,10 @@ const colors = {
   banner: '#5F3E63',
   text: '#E0D7E5',
   green: '#32A54A',
+
+
+  mainColors: '#251a34',
+  link: 'blue'
 }
 
 export default colors

@@ -9,6 +9,7 @@ import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
 import PubnubStrings from '../../Pubnub/PubnubStrings'
 import { values } from 'ramda'
 import MessageItem from '../../Components/MessageItem'
+import { checkOrGetUrlFromString, getUrlsFromString } from '../../Lib/Helper'
 
 const styles = StyleSheet.create({
   itemSeparator: {
@@ -48,10 +49,11 @@ class ChatScreen extends Component {
     }
   }
 
-  onPressSendMessage(type, message) {
+  async onPressSendMessage(type, message) {
     const { sendPubnubMessage, currentUser } = this.props
     if (type === PubnubStrings.message.type.text) {
-      const params = {
+
+      let params = {
         message: {
           type: PubnubStrings.message.type.text,
           text: message,
@@ -61,6 +63,26 @@ class ChatScreen extends Component {
         timetoken: new Date().valueOf() * 1e4,
         status: PubnubStrings.message.status.waiting
       }
+
+      const urls = getUrlsFromString(message)
+
+      if (urls.length > 0) {
+        try {
+          const { hasPreview, preview } = await checkOrGetUrlFromString(message)
+          if (hasPreview) {
+            params = {
+              ...params,
+              message: {
+                ...params.message,
+                preview: preview
+              }
+            }
+          }
+        } catch (error) {
+          console.tron.error('failed to get url preview')
+        }
+      }
+
       sendPubnubMessage(params)
     }
 
@@ -119,7 +141,7 @@ class ChatScreen extends Component {
       <Styled.FlexContainer>
         <Styled.FlexContainer>
           <CustomFlatList
-            style={{ flexGrow: 0 }}
+            // style={{ flexGrow: 0 }}
             data={messages}
             fetchFunction={this.fetchFunction}
             meta={meta}

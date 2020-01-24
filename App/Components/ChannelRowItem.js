@@ -119,18 +119,21 @@ class ChannelRowItem extends Component {
       if (lastMessage) {
         if (lastMessage && lastMessage.message) {
           let textMessage = ''
-          if (lastMessage.message.type === PubnubStrings.message.type.text) {
-            textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: ${lastMessage.message.text}`
-          }
 
-          if (lastMessage.message.type === PubnubStrings.message.type.image) {
-            textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send image`
+          switch (lastMessage.message.type) {
+            case PubnubStrings.message.type.text: {
+              textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: ${lastMessage.message.text}`
+              break
+            }
+            case PubnubStrings.message.type.image: {
+              textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send image`
+              break
+            }
+            case PubnubStrings.message.type.video: {
+              textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send video`
+              break
+            }
           }
-
-          if (lastMessage.message.type === PubnubStrings.message.type.video) {
-            textMessage = `${currentUser.id !== lastMessage.message.user.id ? lastMessage.message.user.name : 'You'}: send video`
-          }
-
 
           return (
             <Text numberOfLines={2} ellipsizeMode={'tail'} style={[styles.lastMessage]}>{textMessage}</Text>

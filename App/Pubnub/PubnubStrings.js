@@ -4,6 +4,7 @@ const PubnubStrings = {
       text: 'text',
       image: 'image',
       video: 'video',
+      link: 'link',
       system: 'system',
       custom: 'custom',
       update: 'update',

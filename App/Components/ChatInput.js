@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Component } from 'react'
 import { Styled } from 'react-native-awesome-component'
-import { View, TextInput, KeyboardAvoidingView, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { View, TextInput, KeyboardAvoidingView, StyleSheet, TouchableOpacity, Text, Image } from 'react-native';
 import { getBottomSpace, isIphoneX } from 'react-native-iphone-x-helper';
 import Icons from 'react-native-vector-icons/FontAwesome5';
 import { Colors } from '../Themes';
@@ -8,6 +8,7 @@ import _ from 'lodash'
 import ImagePicker from 'react-native-image-crop-picker';
 import PubnubStrings from '../Pubnub/PubnubStrings';
 import Modal from 'react-native-modal'
+import { checkOrParseString2Url, getUrlFromText, checkOrGetUrlFromString } from '../Lib/Helper'
 
 const styles = StyleSheet.create({
   textInputContainer: {
@@ -297,6 +298,7 @@ class StaticTextInput extends Component {
   constructor(props) {
     super(props)
     this.onChangeMessage = _.debounce(this.onChangeMessage, 500)
+
   }
 
   onChangeMessage() {
@@ -338,38 +340,158 @@ class StaticTextInput extends Component {
   }
 }
 
-const ChatInput = (props) => {
-  const { onSendMessage, onStartTyping, onEndTyping } = props
+const urlPreviewStyles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.steel,
+    alignItems: 'center'
+  },
+  imageContainer: {
 
-  let textinputRef = undefined
+  },
+  imagePreview: {
+    width: 70,
+    height: 70,
+    borderRadius: 5,
+  },
+  contentContainer: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  closeAction: {
+    marginLeft: 10,
+  },
+  titlePreview: {
+    color: Colors.coal,
+    fontSize: 16,
+  },
+  descPreview: {
+    color: Colors.coal,
+    fontSize: 14,
+  },
+  urlPreview: {
+    color: Colors.link,
+    fontSize: 12,
+  },
+})
 
-  const [message, setMessage] = useState('')
+class UrlPreview extends Component {
+  constructor(props) {
+    super(props)
+  }
 
-  function sendMessage(type, data) {
+  shouldComponentUpdate(nextProps, nextState) {
+    const thisData = this.props.data
+    const nextData = nextProps.data
 
-    if (typeof sendMessage === 'function') {
+    return JSON.stringify(thisData) !== JSON.stringify(nextData)
+  }
+
+  render() {
+    const { data, onClose } = this.props
+    const { url, title, description, images } = data
+    return (
+      <Styled.Container padded isCard style={urlPreviewStyles.container}>
+        <View>
+          {(images.length > 0) && (
+            <Image source={{ uri: images[0] }} style={urlPreviewStyles.imagePreview} />
+          )}
+        </View>
+        <View style={urlPreviewStyles.contentContainer}>
+          {(title !== undefined) && <Text numberOfLines={1} ellipsizeMode={'tail'} style={urlPreviewStyles.titlePreview}>{title}</Text>}
+          {(description !== undefined) && <Text numberOfLines={2} ellipsizeMode={'tail'} style={urlPreviewStyles.descPreview}>{description}</Text>}
+          {(url !== undefined) && <Text numberOfLines={1} ellipsizeMode={'tail'} style={urlPreviewStyles.urlPreview}>{url}</Text>}
+        </View>
+        <TouchableOpacity activeOpacity={0.8} onPress={onClose} style={urlPreviewStyles.closeAction}>
+          <Icons name='times-circle' color={Colors.eggplant} size={20} />
+        </TouchableOpacity>
+      </Styled.Container>
+    )
+  }
+}
+
+class ChatInput extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      message: '',
+      urlPreview: undefined,
+      hidePreview: false,
+    }
+
+    this.sendMessage = this.sendMessage.bind(this)
+    this.onChangeText = this.onChangeText.bind(this)
+    this.checkMessageIfUrlExist = _.debounce(this.checkMessageIfUrlExist.bind(this), 500)
+    this.checkMessageIfMentionExist = _.debounce(this.checkMessageIfMentionExist.bind(this), 500)
+    this.onClosePreview = this.onClosePreview.bind(this)
+  }
+
+  textinputRef = undefined
+
+  sendMessage(type, data) {
+    const { onSendMessage } = this.props
+
+    if (typeof onSendMessage === 'function') {
       onSendMessage(type, data)
     }
 
     if (type === PubnubStrings.message.type.text) {
       textinputRef.clear()
-      setMessage('')
+      this.setState({ message: '', urlPreview: undefined, hidePreview: false })
     }
   }
 
-  function onChangeText(text) {
-    setMessage(text)
+  onChangeText(message) {
+    this.setState({ message }, () => {
+      if (message.length > 0) {
+        this.checkMessageIfUrlExist(message)
+        this.checkMessageIfMentionExist(message)
+      }
+    })
   }
 
-  return (
-    <View style={[styles.textInputContainer]}>
-      <ChatInputContext.Provider value={{ message }}>
-        <PlusButton onSubmit={sendMessage} />
-        <StaticTextInput setRef={r => textinputRef = r} onChangeText={onChangeText} onStartTyping={onStartTyping} onEndTyping={onEndTyping} />
-        <SubmitButton onPress={sendMessage} />
-      </ChatInputContext.Provider>
-    </View>
-  )
+  checkMessageIfUrlExist(message) {
+    checkOrGetUrlFromString(message).then(res => {
+      const { urlPreview } = this.state
+      if (res.hasPreview) {
+        if (urlPreview) {
+          if (JSON.stringify(urlPreview) !== JSON.stringify(res.preview)) {
+            this.setState({ urlPreview: res.preview, hidePreview: false })
+          }
+        } else {
+          this.setState({ urlPreview: res.preview, hidePreview: false })
+        }
+      } else {
+        this.setState({ urlPreview: undefined, hidePreview: false })
+      }
+    })
+  }
+
+  checkMessageIfMentionExist() {
+    console.tron.error('HELLO CHECK MENTION')
+  }
+
+  onClosePreview() {
+    this.setState({ hidePreview: true })
+  }
+
+  render() {
+    const { onStartTyping, onEndTyping } = this.props
+    const { message, urlPreview, hidePreview } = this.state
+    return (
+      <View>
+        {urlPreview && !hidePreview && <UrlPreview data={urlPreview} onClose={this.onClosePreview} />}
+        <View style={[styles.textInputContainer]}>
+          <ChatInputContext.Provider value={{ message }}>
+            <PlusButton onSubmit={this.sendMessage} />
+            <StaticTextInput setRef={r => textinputRef = r} onChangeText={this.onChangeText} onStartTyping={onStartTyping} onEndTyping={onEndTyping} />
+            <SubmitButton onPress={this.sendMessage} />
+          </ChatInputContext.Provider>
+        </View>
+      </View>
+    )
+  }
 }
 
 export default ChatInput
