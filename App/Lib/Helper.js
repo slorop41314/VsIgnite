@@ -104,3 +104,7 @@ export function generateTextWithLinkCompoent(defaultTextComponent, linkTextCompo
     return Method.Object.appendChildToView(defaultTextComponent, text)
   }
 }
+
+export function stringInsertAndReplace(currentString, insertString, startPos, endPos) {
+  return currentString.slice(0, startPos) + insertString + currentString.slice(endPos, currentString.length - 1)
+}

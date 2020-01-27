@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { Styled, CustomFlatList, Method } from 'react-native-awesome-component'
 import { KeyboardAvoidingView, View, StyleSheet } from 'react-native'
-import ChatInput from '../../Components/ChatInput'
+import ChatInput from '../../Components/ChatInput/index'
 import { isIphoneX } from 'react-native-iphone-x-helper'
 import PubnubActions from '../../Redux/PubnubRedux'
 import PubnubStoreActions from '../../Redux/PubnubStoreRedux'
@@ -158,8 +158,8 @@ class ChatScreen extends Component {
             disableRenderNoConnection={true}
           />
         </Styled.FlexContainer>
-        <KeyboardAvoidingView {...keyboardAvoidingViewProps}>
-          <ChatInput onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
+        <KeyboardAvoidingView {...keyboardAvoidingViewProps} >
+          <ChatInput channel={this.chatData.id} onSendMessage={this.onPressSendMessage} onStartTyping={this.onStartTyping} onEndTyping={this.onEndTyping} />
         </KeyboardAvoidingView>
       </Styled.FlexContainer>
     )

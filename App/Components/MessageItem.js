@@ -334,8 +334,6 @@ export class MessageItem extends Component {
       const linkText = <Text style={{ color: Colors.link }} />
       const styledMessage = generateTextWithLinkCompoent(mainText, linkText, text)
 
-      console.log({styledMessage})
-
       return (
         <View>
           {preview && (
