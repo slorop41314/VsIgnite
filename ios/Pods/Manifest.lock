@@ -313,16 +313,16 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
-  - Crashlytics (~> 3.13.2)
+  - Crashlytics
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
-  - Fabric (~> 1.10.2)
+  - Fabric
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
-  - Firebase/Core (~> 6.3.0)
-  - Firebase/Messaging (~> 6.3.0)
+  - Firebase/Core
+  - Firebase/Messaging
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
-  - GoogleIDFASupport (~> 3.14.0)
+  - GoogleIDFASupport
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
   - RCTTypeSafety (from `../node_modules/react-native/Libraries/TypeSafety`)
   - React (from `../node_modules/react-native/`)
@@ -357,7 +357,7 @@ DEPENDENCIES:
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  trunk:
     - boost-for-react-native
     - Crashlytics
     - Fabric
@@ -493,6 +493,6 @@ SPEC CHECKSUMS:
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   Yoga: 14927e37bd25376d216b150ab2a561773d57911f
 
-PODFILE CHECKSUM: d7baf35409eccf18000bf755cfe710d9dd4c2217
+PODFILE CHECKSUM: 8e69f66058592d0da22994a931ca976e60a17027
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.9.0

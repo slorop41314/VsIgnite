@@ -8,6 +8,7 @@ import ReduxPersist from '../Config/ReduxPersist'
 // Styles
 import styles from './Styles/RootContainerStyles'
 import firebase from 'react-native-firebase'
+import { setupNotificationPermission, setupTokenRegistration, setupNotificationListener } from '../../FIrebase/NotificationHelper'
 
 class RootContainer extends Component {
   componentDidMount () {
@@ -21,6 +22,25 @@ class RootContainer extends Component {
      * remove thi code after you test crashlytic
      */
     // firebase.crashlytics().recordError(37,"Test Error");
+
+    setupNotificationPermission().then((isGrant) => {
+      if (isGrant) {
+        setupTokenRegistration().then(deviceToken => {
+          if (deviceToken) {
+            console.tron.error({deviceToken})
+          }
+        })
+
+        setupNotificationListener(notification => {
+          if (notification) {
+            console.tron.error({notification})
+          }
+        })
+      }
+    })
+    .catch(error => {
+      console.tron.error('NOTIFICATION PERMISSION ERROR')
+    })
   }
 
   render () {
