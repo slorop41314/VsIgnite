@@ -11,14 +11,16 @@ const styles = StyleSheet.create({
     width: scale(377),
     backgroundColor: Colors.mainActive,
     borderRadius: scale(8),
+
     shadowColor: Colors.black50,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 1,
     },
-    shadowRadius: 4,
+    shadowRadius: 2,
     shadowOpacity: 1,
     elevation: 2,
+
     justifyContent: 'center',
     alignItems: 'center',
     alignSelf: 'center',
@@ -28,13 +30,45 @@ const styles = StyleSheet.create({
     color: Colors.snow,
     fontSize: scale(45),
   },
+  countContainer: {
+    position: 'absolute',
+    zIndex: 100,
+    height: scale(50),
+    width: scale(50),
+    borderRadius: scale(25),
+    backgroundColor: Colors.snow,
+    justifyContent: 'center',
+    alignItems: 'center',
+    right: 10,
+    top: -10,
+
+    shadowColor: Colors.black50,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowRadius: 2,
+    shadowOpacity: 1,
+    elevation: 2,
+  },
+  countText: {
+    color: Colors.mainActive,
+    fontSize: scale(18),
+  },
 });
 
 export default props => {
-  const {total} = props;
+  const {total, itemCount} = props;
   return (
-    <View style={styles.container}>
-      <Text style={styles.textMain}>{NumToRp(total.toString(), 'Rp.')}</Text>
+    <View>
+      {itemCount > 0 && (
+        <View style={styles.countContainer}>
+          <Text style={styles.countText}>{itemCount}</Text>
+        </View>
+      )}
+      <View style={styles.container}>
+        <Text style={styles.textMain}>{NumToRp(total.toString(), 'Rp.')}</Text>
+      </View>
     </View>
   );
 };

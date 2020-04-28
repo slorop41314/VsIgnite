@@ -40,7 +40,7 @@ class MainScreen extends Component {
         : {flexGrow: 1, justifyContent: 'center', alignItems: 'center'};
     return (
       <Styled.FlexContainer style={[styles.mainContainer]}>
-        <TotalCount total={totalPrice} />
+        <TotalCount total={totalPrice} itemCount={activeCartItems.length} />
         <FlatList
           data={activeCartItems}
           contentContainerStyle={containerStyle}
