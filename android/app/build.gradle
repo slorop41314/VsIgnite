@@ -129,7 +129,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.vsignite"
+        applicationId "xyz.rahmatzulfikri.keranjangbelanja"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

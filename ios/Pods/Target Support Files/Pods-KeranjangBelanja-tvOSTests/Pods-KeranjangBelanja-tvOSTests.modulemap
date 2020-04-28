@@ -1,0 +1,6 @@
+framework module Pods_KeranjangBelanja_tvOSTests {
+  umbrella header "Pods-KeranjangBelanja-tvOSTests-umbrella.h"
+
+  export *
+  module * { export * }
+}
