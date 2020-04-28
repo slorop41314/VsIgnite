@@ -14,7 +14,7 @@ import R from 'ramda';
 
 // Styles
 import styles from './Styles/MainScreenStyle';
-import {Styled} from 'react-native-awesome-component';
+import {Styled, CustomButton} from 'react-native-awesome-component';
 import TotalCount from '../Components/Main/TotalCount';
 import FAB from 'react-native-fab';
 import {Colors} from '../Themes';
@@ -50,18 +50,31 @@ class MainScreen extends Component {
           }}
           ListEmptyComponent={() => {
             return (
-              <View>
-                <Text>Belum Ada Barang Ditambahkan</Text>
+              <View style={{marginTop: scale(-100)}}>
+                <Text style={styles.emptyText}>
+                  {`Belum Ada Barang\nDitambahkan`}
+                </Text>
+
+                <View style={{marginTop: scale(20)}}>
+                  <CustomButton
+                    title="Belanja Sekarang"
+                    onPress={this.addItem}
+                    isCard
+                    radius={scale(5)}
+                  />
+                </View>
               </View>
             );
           }}
         />
-        <FAB
-          buttonColor={Colors.mainActive}
-          iconTextColor={Colors.snow}
-          onClickAction={this.addItem}
-          visible
-        />
+        {activeCartItems.length > 0 && (
+          <FAB
+            buttonColor={Colors.mainActive}
+            iconTextColor={Colors.snow}
+            onClickAction={this.addItem}
+            visible
+          />
+        )}
       </Styled.FlexContainer>
     );
   }

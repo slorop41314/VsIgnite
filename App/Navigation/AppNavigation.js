@@ -4,6 +4,8 @@ import {createStackNavigator} from 'react-navigation-stack';
 
 import styles from './Styles/NavigationStyles';
 import AddItemScreen from '../Containers/AddItemScreen';
+import {scale} from '../Transforms/Scale';
+import {Colors, Images} from '../Themes';
 
 // Manifest of possible screens
 const PrimaryNav = createStackNavigator(
@@ -11,7 +13,8 @@ const PrimaryNav = createStackNavigator(
     MainScreen: {
       screen: MainScreen,
       navigationOptions: {
-        title: 'Kerangjang Belanja',
+        // title: 'Kerangjang Belanja',
+        headerShown: false,
       },
     },
     AddItemScreen: {
@@ -39,8 +42,18 @@ const PrimaryNav = createStackNavigator(
     // Default config for all screens
     headerMode: 'float',
     initialRouteName: 'MainScreen',
-    navigationOptions: {
-      headerStyle: styles.header,
+    defaultNavigationOptions: {
+      headerTitleStyle: {
+        fontFamily: 'Galvji',
+        fontSize: scale(17),
+        color: Colors.blackNavi,
+      },
+      headerBackTitleStyle: {
+        fontFamily: 'Galvji',
+        fontSize: scale(15),
+        color: Colors.mainActive,
+      },
+      headerTintColor: Colors.mainActive,
     },
   },
 );

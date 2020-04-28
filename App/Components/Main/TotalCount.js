@@ -27,8 +27,9 @@ const styles = StyleSheet.create({
     marginBottom: scale(20),
   },
   textMain: {
+    fontFamily: 'digital-7',
     color: Colors.snow,
-    fontSize: scale(45),
+    fontSize: scale(55),
   },
   countContainer: {
     position: 'absolute',
@@ -52,8 +53,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   countText: {
+    fontFamily: 'digital-7MonoItalic',
     color: Colors.mainActive,
-    fontSize: scale(18),
+    fontSize: scale(25),
   },
 });
 

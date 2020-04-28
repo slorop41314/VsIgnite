@@ -19,11 +19,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: scale(20),
   },
   textName: {
+    fontFamily: 'Galvji',
     fontSize: scale(18),
     color: Colors.blackNavi,
   },
   textPrice: {
-    fontSize: scale(18),
+    fontFamily: 'digital-7Mono',
+    fontSize: scale(25),
     color: Colors.blackNavi,
   },
   separator: {
@@ -98,13 +100,19 @@ class CartItem extends Component {
 
   render() {
     const {data} = this.props;
+    const {qty, name, price, discount} = data;
+
+    let totalPrice = price * qty;
+    if (discount > 0) {
+      totalPrice -= totalPrice * (discount / 100);
+    }
     return (
       <SwipeOut ref={r => (this.refSwipeOut = r)} right={this.renderSwipeOut}>
         <TouchableOpacity activeOpacity={0.8} onPress={this.onPressItem}>
           <View style={styles.container}>
-            <Text style={styles.textName}>{data.name}</Text>
+            <Text style={styles.textName}>{`${name} (${qty})`}</Text>
             <Text style={styles.textPrice}>
-              {`${NumToRp(data.price, 'Rp. ')}`}
+              {`${NumToRp(totalPrice.toString(), 'Rp.')}`}
             </Text>
           </View>
           <View style={styles.separator} />

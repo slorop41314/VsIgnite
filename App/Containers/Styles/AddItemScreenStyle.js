@@ -6,7 +6,7 @@ export default StyleSheet.create({
   mainContainer: {
     ...ApplicationStyles.screen.mainContainer,
     paddingHorizontal: scale(20),
-    paddingVertical: scale(25),
+    paddingVertical: scale(10),
   },
   rowContainer: {
     flex: 1,

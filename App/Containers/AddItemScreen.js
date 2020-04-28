@@ -8,6 +8,7 @@ import {connect} from 'react-redux';
 import styles from './Styles/AddItemScreenStyle';
 import {CustomInput, CustomButton} from 'react-native-awesome-component';
 import CartActions from '../Redux/CartRedux';
+import {scale} from '../Transforms/Scale';
 
 class AddItemScreen extends Component {
   item = undefined;
@@ -52,7 +53,7 @@ class AddItemScreen extends Component {
       id: new Date().getTime(),
       name,
       price: price.length > 0 ? price : 0,
-      qty: qty.length > 0 ? qty : 0,
+      qty: qty.length > 0 ? qty : 1,
       discount: discount.length > 0 ? discount : 0,
     };
 
@@ -141,7 +142,7 @@ class AddItemScreen extends Component {
             <View style={styles.rowItem}>
               <CustomInput
                 labelType="top-label"
-                label="Diskon Barang (0%)"
+                label="Diskon Barang (%)"
                 setRef={r => (this.inputDiscount = r)}
                 placeholder="Default 0%"
                 onChangeText={text => this.setState({discount: text})}
@@ -163,6 +164,8 @@ class AddItemScreen extends Component {
             title="Simpan Barang"
             onPress={this.onSave}
             disabled={disableButton}
+            isCard
+            radius={scale(5)}
           />
         </KeyboardAvoidingView>
       </ScrollView>
