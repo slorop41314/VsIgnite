@@ -12,10 +12,6 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		44803BA32458AC50009641CE /* Digital-7-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44803B9F2458AC50009641CE /* Digital-7-italic.ttf */; };
-		44803BA42458AC50009641CE /* Digital-7-mono-italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44803BA02458AC50009641CE /* Digital-7-mono-italic.ttf */; };
-		44803BA52458AC50009641CE /* Digital-7-mono.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44803BA12458AC50009641CE /* Digital-7-mono.ttf */; };
-		44803BA62458AC50009641CE /* Digital-7.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 44803BA22458AC50009641CE /* Digital-7.ttf */; };
 		650CA4B2FCBA5870D7454A82 /* libPods-KeranjangBelanjaTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A2DE95CC91609D13203FAB3 /* libPods-KeranjangBelanjaTests.a */; };
 		6E92CCCB7968E5D08015388E /* libPods-KeranjangBelanja.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C0651E57C5B116C7B6184B6E /* libPods-KeranjangBelanja.a */; };
 /* End PBXBuildFile section */
@@ -48,10 +44,6 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D615378B2A97AE44C0F5861 /* Pods_KeranjangBelanja_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_KeranjangBelanja_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
-		44803B9F2458AC50009641CE /* Digital-7-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Digital-7-italic.ttf"; path = "../KeranjangBelanja/Fonts/Digital-7-italic.ttf"; sourceTree = "<group>"; };
-		44803BA02458AC50009641CE /* Digital-7-mono-italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Digital-7-mono-italic.ttf"; path = "../KeranjangBelanja/Fonts/Digital-7-mono-italic.ttf"; sourceTree = "<group>"; };
-		44803BA12458AC50009641CE /* Digital-7-mono.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Digital-7-mono.ttf"; path = "../KeranjangBelanja/Fonts/Digital-7-mono.ttf"; sourceTree = "<group>"; };
-		44803BA22458AC50009641CE /* Digital-7.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Digital-7.ttf"; path = "../KeranjangBelanja/Fonts/Digital-7.ttf"; sourceTree = "<group>"; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
 		6380B111BA2D49A7B36CD135 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		6C085DA9CCEA255461679048 /* Pods-KeranjangBelanjaTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-KeranjangBelanjaTests.release.xcconfig"; path = "Target Support Files/Pods-KeranjangBelanjaTests/Pods-KeranjangBelanjaTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -124,7 +116,6 @@
 		13B07FAE1A68108700A75B9A /* KeranjangBelanja */ = {
 			isa = PBXGroup;
 			children = (
-				44803BA72458AC5F009641CE /* Fonts */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -183,17 +174,6 @@
 				76F32806961F464F9371F486 /* libRNI18n-tvOS.a */,
 			);
 			name = "Recovered References";
-			sourceTree = "<group>";
-		};
-		44803BA72458AC5F009641CE /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				44803B9F2458AC50009641CE /* Digital-7-italic.ttf */,
-				44803BA02458AC50009641CE /* Digital-7-mono-italic.ttf */,
-				44803BA12458AC50009641CE /* Digital-7-mono.ttf */,
-				44803BA22458AC50009641CE /* Digital-7.ttf */,
-			);
-			path = Fonts;
 			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
@@ -340,10 +320,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
-				44803BA62458AC50009641CE /* Digital-7.ttf in Resources */,
-				44803BA42458AC50009641CE /* Digital-7-mono-italic.ttf in Resources */,
-				44803BA32458AC50009641CE /* Digital-7-italic.ttf in Resources */,
-				44803BA52458AC50009641CE /* Digital-7-mono.ttf in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
