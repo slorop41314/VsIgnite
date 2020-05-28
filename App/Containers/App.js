@@ -4,6 +4,9 @@ import React, { Fragment } from 'react'
 import { Provider } from 'react-redux'
 import RootContainer from './RootContainer'
 import createStore from '../Redux'
+import {enableScreens} from 'react-native-screens';
+
+enableScreens();
 
 // create our store
 const store = createStore()
