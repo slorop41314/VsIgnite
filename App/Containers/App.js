@@ -4,8 +4,10 @@ import React, {Fragment} from 'react';
 import {Provider} from 'react-redux';
 import RootContainer from './RootContainer';
 import createStore from '../Redux';
+import DropdownAlert from 'react-native-dropdownalert';
 // eslint-disable-next-line import/no-unresolved
 import {enableScreens} from 'react-native-screens';
+import {DropDownHolder} from '../Components/Alert/DropDownHolder';
 
 enableScreens();
 // create our store
@@ -25,6 +27,7 @@ const App = () => {
     <Fragment>
       <Provider store={store}>
         <RootContainer />
+        <DropdownAlert ref={ref => DropDownHolder.setDropDown(ref)} />
       </Provider>
     </Fragment>
   );
