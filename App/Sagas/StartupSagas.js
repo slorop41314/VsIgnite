@@ -1,25 +1,26 @@
-import { put, select } from 'redux-saga/effects'
-import GithubActions, { GithubSelectors } from '../Redux/GithubRedux'
-import { is } from 'ramda'
+/* eslint-disable no-undef */
+import {put, select} from 'redux-saga/effects';
+import GithubActions, {GithubSelectors} from '../Redux/GithubRedux';
+import {is} from 'ramda';
 
 // exported to make available for tests
-export const selectAvatar = GithubSelectors.selectAvatar
+export const selectAvatar = GithubSelectors.selectAvatar;
 
 // process STARTUP actions
-export function * startup (action) {
+export function* startup(action) {
   if (__DEV__ && console.tron) {
     // straight-up string logging
-    console.tron.log('Hello, I\'m an example of how to log via Reactotron.')
+    console.tron.log("Hello, I'm an example of how to log via Reactotron.");
 
     // logging an object for better clarity
     console.tron.log({
       message: 'pass objects for better logging',
       someGeneratorFunction: selectAvatar
-    })
+    });
 
     // fully customized!
-    const subObject = { a: 1, b: [1, 2, 3], c: true }
-    subObject.circularDependency = subObject // osnap!
+    const subObject = {a: 1, b: [1, 2, 3], c: true};
+    subObject.circularDependency = subObject; // osnap!
     console.tron.display({
       name: '🔥 IGNITE 🔥',
       preview: 'You should totally expand this',
@@ -30,11 +31,11 @@ export function * startup (action) {
         someGeneratorFunction: startup,
         someNormalFunction: selectAvatar
       }
-    })
+    });
   }
-  const avatar = yield select(selectAvatar)
+  const avatar = yield select(selectAvatar);
   // only get if we don't have it yet
   if (!is(String, avatar)) {
-    yield put(GithubActions.userRequest('GantMan'))
+    yield put(GithubActions.userRequest('GantMan'));
   }
 }
