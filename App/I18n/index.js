@@ -1,6 +1,8 @@
-import I18n from 'react-native-i18n'
+/* eslint-disable no-unused-expressions */
+/* eslint-disable no-undef */
+import I18n from 'react-native-i18n';
 
-const missingTranslationRegex = /^\[missing ".*" translation\]$/
+const missingTranslationRegex = /^\[missing ".*" translation\]$/;
 
 // This function is a wrapper to avoid exception wich leads in a crash
 const translateOrFallback = (initialMsg, options) => {
@@ -10,12 +12,12 @@ const translateOrFallback = (initialMsg, options) => {
     __DEV__ &&
       console.log(
         `I18n: you must give a string to translate instead of "${typeof initialMsg}"`
-      )
+      );
 
-    return '' // We don't return any message as we don't know what to send
+    return ''; // We don't return any message as we don't know what to send
   }
 
-  let localMsg = I18n.t(initialMsg, options)
+  let localMsg = I18n.t(initialMsg, options);
 
   // The translation does not exist, the default message is not very sexy
   // Instead we return the message we tried to translate
@@ -23,15 +25,15 @@ const translateOrFallback = (initialMsg, options) => {
     __DEV__ &&
       console.log(
         `translation "${initialMsg}" does not exists in translations files`
-      )
+      );
 
-    return initialMsg
+    return initialMsg;
   }
 
-  return localMsg
-}
+  return localMsg;
+};
 
 export default {
   ...I18n,
   t: translateOrFallback
-}
+};

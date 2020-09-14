@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 export default {
   useFixtures: false,
   ezLogin: false,
@@ -5,4 +6,4 @@ export default {
   reduxLogging: __DEV__,
   includeExamples: __DEV__,
   useReactotron: __DEV__
-}
+};
