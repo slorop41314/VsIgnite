@@ -11,6 +11,13 @@
 
 **Step 3:** Install the Application with `yarn` or `npm i`
 
+## :arrow_up: Instabug Setup
+
+**Step 1:** Create account in instabug website
+
+**Step 2:** Change INSTABUGLIVETOKEN AND INSTABUGBETATOKEN in all .env file(env, staging, production) from your instabug project dashboard
+
+
 
 ## :arrow_forward: How to Run App
 
