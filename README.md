@@ -27,6 +27,11 @@
 
  **Step 7:** Change YOUR_SCRET in AppCenter-Config.plist in the IOS folder
 
+## :arrow_up: Instabug Setup
+
+**Step 1:** Create account in instabug website
+
+**Step 2:** Change INSTABUGLIVETOKEN AND INSTABUGBETATOKEN in all .env file(env, staging, production) from your instabug project dashboard
 
 ## :arrow_forward: How to Run App
 

@@ -1,7 +1,7 @@
 package com.vsignite;
 
 import androidx.multidex.MultiDexApplication;
-
+import com.instabug.reactlibrary.RNInstabugReactnativePackage;
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
 import com.lugg.ReactNativeConfig.ReactNativeConfigPackage;
@@ -56,6 +56,13 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
   @Override
   public void onCreate() {
     super.onCreate();
+    new RNInstabugReactnativePackage
+         .Builder(BuildConfig.INSTABUG_TOKEN, MainApplication.this)
+         .setInvocationEvent("shake")
+         .setPrimaryColor("#1D82DC")
+         .setFloatingEdge("left")
+         .setFloatingButtonOffsetFromTop(250)
+         .build();
     SoLoader.init(this, /* native exopackage */ false);
     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
   }

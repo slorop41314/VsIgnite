@@ -81,6 +81,7 @@
 		96948AB7017D38C35E0791F1 /* Pods-VsIgnite.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgnite.release.xcconfig"; path = "Target Support Files/Pods-VsIgnite/Pods-VsIgnite.release.xcconfig"; sourceTree = "<group>"; };
 		A47E3F7591696E91523B8B98 /* Pods-VsIgnite-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VsIgnite-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-VsIgnite-tvOS/Pods-VsIgnite-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		A5595B60247F1CF36C94339B /* Pods_VsIgnite_tvOS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VsIgnite_tvOS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A7F218FBAC758AC302EF13F9 /* Instabug.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Instabug.framework; path = "../node_modules/instabug-reactnative/ios/Instabug.framework"; sourceTree = "<group>"; };
 		B2EA9ED598304B7B90469DA0 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		BE7F2ACE24274054903D19DE /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
 		C0651E57C5B116C7B6184B6E /* libPods-VsIgnite.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-VsIgnite.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -204,6 +205,7 @@
 				A5595B60247F1CF36C94339B /* Pods_VsIgnite_tvOS.framework */,
 				2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */,
 				8A2DE95CC91609D13203FAB3 /* libPods-VsIgniteTests.a */,
+				A7F218FBAC758AC302EF13F9 /* Instabug.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -305,6 +307,8 @@
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				BB1C2E9601727F8777EC609C /* [CP] Copy Pods Resources */,
+				50C3D73AACB7C79155C9237E /* Upload Sourcemap */,
+				6C51F1242972DFA10FE78B56 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -509,6 +513,42 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		50C3D73AACB7C79155C9237E /* Upload Sourcemap */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Upload Sourcemap";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+			shellPath = /bin/sh;
+			shellScript = "bash \"../node_modules/instabug-reactnative/ios/upload_sourcemap.sh\"\n";
+		};
+		6C51F1242972DFA10FE78B56 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-VsIgnite/Pods-VsIgnite-frameworks.sh",
+				"${PODS_ROOT}/../../node_modules/instabug-reactnative/ios/Instabug.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Instabug.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-VsIgnite/Pods-VsIgnite-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		746D9DE8B03BD8D1C9D7F7C9 /* [CP] Check Pods Manifest.lock */ = {

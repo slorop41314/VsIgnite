@@ -8550,6 +8550,10 @@ inquirer@^7.2.0:
     string-width "^4.1.0"
     strip-ansi "^6.0.0"
     through "^2.3.6"
+instabug-reactnative@^9.1.8:
+  version "9.1.8"
+  resolved "https://registry.yarnpkg.com/instabug-reactnative/-/instabug-reactnative-9.1.8.tgz#fd49ca5fad77cdfb84c92024c5d76450f7ba8d9f"
+  integrity sha512-p5eL23xW927JIlhOtJy9DZwGlxzlmwFEZ2W0RvBwOsaete6aYVmaLBUfbFzNAEDxA7HuOjq5MEF6KNYj0YjEOQ==
 
 internal-slot@^1.0.2:
   version "1.0.2"
