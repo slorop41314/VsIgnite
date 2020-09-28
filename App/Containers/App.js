@@ -1,6 +1,6 @@
 import '../Config';
 import DebugConfig from '../Config/DebugConfig';
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import {Provider} from 'react-redux';
 import RootContainer from './RootContainer';
 import createStore from '../Redux';
@@ -8,7 +8,7 @@ import DropdownAlert from 'react-native-dropdownalert';
 // eslint-disable-next-line import/no-unresolved
 import {enableScreens} from 'react-native-screens';
 import {DropDownHolder} from '../Components/Alert/DropDownHolder';
-
+import Instabug from 'instabug-reactnative';
 enableScreens();
 // create our store
 const store = createStore();
@@ -23,6 +23,9 @@ const store = createStore();
  * We separate like this to play nice with React Native's hot reloading.
  */
 const App = () => {
+  useEffect(() => {
+    Instabug.startWithToken('IOS_APP_TOKEN', [Instabug.invocationEvent.shake]);
+  },[])
   return (
     <Fragment>
       <Provider store={store}>

@@ -31,6 +31,7 @@
     "apisauce": "1.0.3",
     "format-json": "1.0.3",
     "identity-obj-proxy": "3.0.0",
+    "instabug-reactnative": "^9.1.8",
     "lodash": "4.17.19",
     "patch-package": "^6.2.2",
     "postinstall-postinstall": "^2.1.0",
