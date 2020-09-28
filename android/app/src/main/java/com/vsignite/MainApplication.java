@@ -52,7 +52,7 @@ public class MainApplication extends Application implements ReactApplication {
   public void onCreate() {
     super.onCreate();
     new RNInstabugReactnativePackage
-         .Builder("YOUR_APP_TOKEN", MainApplication.this)
+         .Builder(BuildConfig.INSTABUG_TOKEN, MainApplication.this)
          .setInvocationEvent("shake")
          .setPrimaryColor("#1D82DC")
          .setFloatingEdge("left")

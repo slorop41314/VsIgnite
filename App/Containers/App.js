@@ -9,6 +9,8 @@ import DropdownAlert from 'react-native-dropdownalert';
 import {enableScreens} from 'react-native-screens';
 import {DropDownHolder} from '../Components/Alert/DropDownHolder';
 import Instabug from 'instabug-reactnative';
+import Secrets from 'react-native-config';
+
 enableScreens();
 // create our store
 const store = createStore();
@@ -24,17 +26,19 @@ const store = createStore();
  */
 const App = () => {
   useEffect(() => {
-    Instabug.startWithToken('IOS_APP_TOKEN', [Instabug.invocationEvent.shake]);
-  },[])
+    Instabug.startWithToken(Secrets.INSTABUG_TOKEN, [
+      Instabug.invocationEvent.shake,
+    ]);
+  }, []);
   return (
     <Fragment>
       <Provider store={store}>
         <RootContainer />
-        <DropdownAlert ref={ref => DropDownHolder.setDropDown(ref)} />
+        <DropdownAlert ref={(ref) => DropDownHolder.setDropDown(ref)} />
       </Provider>
     </Fragment>
   );
 };
 
 // allow reactotron overlay for fast design in dev mode
-export default (DebugConfig.useReactotron ? console.tron.overlay(App) : App);
+export default DebugConfig.useReactotron ? console.tron.overlay(App) : App;
