@@ -1,6 +1,6 @@
 package com.vsignite;
 
-import android.app.Application;
+import androidx.multidex.MultiDexApplication;
 
 import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactInstanceManager;
@@ -15,11 +15,11 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
-
+import com.microsoft.codepush.react.CodePush;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainApplication extends Application implements ReactApplication {
+public class MainApplication extends MultiDexApplication implements ReactApplication {
 
   private final ReactNativeHost mReactNativeHost = 
     new ReactNativeHost(this) {
@@ -28,6 +28,11 @@ public class MainApplication extends Application implements ReactApplication {
         return BuildConfig.DEBUG;
       }
 
+      @Override
+       protected String getJSBundleFile() {
+           return CodePush.getJSBundleFile();
+       }
+      
       @Override
       protected List<ReactPackage> getPackages() {
         @SuppressWarnings("UnnecessaryLocalVariable")
