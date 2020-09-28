@@ -15,9 +15,8 @@
 
 **Step 1:** Create account in instabug website
 
-**Step 2:** Change the IOS_APP_TOKEN in App.js with new token from instabug dashboard
+**Step 2:** Change INSTABUGLIVETOKEN AND INSTABUGBETATOKEN in all .env file(env, staging, production) from your instabug project dashboard
 
-**Step 3:** Change the YOUR_APP_TOKEN in MainApplication.java with new token from instabug dashboard
 
 
 ## :arrow_forward: How to Run App
