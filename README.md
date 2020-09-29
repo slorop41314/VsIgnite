@@ -33,12 +33,23 @@
 
 **Step 2:** Change INSTABUGLIVETOKEN AND INSTABUGBETATOKEN in all .env file(env, staging, production) from your instabug project dashboard
 
+## :arrow_up: Firebase and Push Notification Setup
+
+**Step 1:** Create android and ios project in firebase console
+
+**Step 2:** Download and replace current google-services.json and GoogleService-Info.plist with your project file
+
+**Step 3:** For ios, you need to link APNS with FCM, follow this docs to enable push notifications in ios,(Linking APNs with FCM (iOS) section) https://rnfirebase.io/messaging/usage/ios-setup
+
+**Step 4:** You now can test sending noticiations from your firebase dashboard
+
+
 ## :arrow_forward: How to Run App
 
 1. cd to the repo
 2. Run Build for either OS
   * for iOS
-    * run `react-native run-ios`
+    * run `cd ios && pod install && cd .. && react-native run-ios`
   * for Android
     * Run Genymotion
     * run `react-native run-android`
