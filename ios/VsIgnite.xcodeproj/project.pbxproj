@@ -18,6 +18,7 @@
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2D16E6881FA4F8E400B85C8A /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2D16E6891FA4F8E400B85C8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* VsIgniteTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* VsIgniteTests.m */; };
+		424DE8F22522E9690071C59F /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 424DE8F12522E9690071C59F /* GoogleService-Info.plist */; };
 		443AB7C52518F226004424D4 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 443AB7C42518F226004424D4 /* LaunchScreen.storyboard */; };
 		472345244B4F48698B14EEA2 /* libRNVectorIcons-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DE3CADE5542142A2B7A95273 /* libRNVectorIcons-tvOS.a */; };
 		53CA1315DEAC455DB0080C37 /* libRNI18n-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76F32806961F464F9371F486 /* libRNI18n-tvOS.a */; };
@@ -65,6 +66,7 @@
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D615378B2A97AE44C0F5861 /* Pods_VsIgnite_tvOSTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VsIgnite_tvOSTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
+		424DE8F12522E9690071C59F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		443AB7C42518F226004424D4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VsIgnite/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		443AB7C62518F384004424D4 /* VsIgnite-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VsIgnite-Bridging-Header.h"; sourceTree = "<group>"; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				424DE8F12522E9690071C59F /* GoogleService-Info.plist */,
 				18835F16252216B0005E7A71 /* AppCenter-Config.plist */,
 				13B07FAE1A68108700A75B9A /* VsIgnite */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -423,6 +426,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				443AB7C52518F226004424D4 /* LaunchScreen.storyboard in Resources */,
+				424DE8F22522E9690071C59F /* GoogleService-Info.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				18835F17252216B0005E7A71 /* AppCenter-Config.plist in Resources */,
 			);
