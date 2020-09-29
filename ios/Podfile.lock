@@ -1,7 +1,31 @@
 PODS:
+  - appcenter-analytics (3.1.2):
+    - AppCenter/Analytics
+    - AppCenterReactNativeShared
+    - React
+  - appcenter-core (3.1.2):
+    - AppCenterReactNativeShared
+    - React
+  - appcenter-crashes (3.1.2):
+    - AppCenter/Crashes
+    - AppCenterReactNativeShared
+    - React
+  - AppCenter/Analytics (3.3.4):
+    - AppCenter/Core
+  - AppCenter/Core (3.3.4)
+  - AppCenter/Crashes (3.3.4):
+    - AppCenter/Core
+  - AppCenterReactNativeShared (3.1.2):
+    - AppCenter/Core (= 3.3.4)
+  - Base64 (1.1.2)
   - boost-for-react-native (1.63.0)
   - CocoaAsyncSocket (7.6.4)
   - CocoaLibEvent (1.0.0)
+  - CodePush (6.3.0):
+    - Base64 (~> 1.1)
+    - JWT (~> 3.0.0-beta.12)
+    - React
+    - SSZipArchive (~> 2.2.2)
   - DoubleConversion (1.1.6)
   - FBLazyVector (0.63.2)
   - FBReactNativeSpec (0.63.2):
@@ -67,6 +91,8 @@ PODS:
     - DoubleConversion
     - glog
   - glog (0.3.5)
+  - JWT (3.0.0-beta.12):
+    - Base64 (~> 1.1.2)
   - instabug-reactnative (9.1.8):
     - React
   - OpenSSL-Universal (1.0.2.19):
@@ -322,11 +348,16 @@ PODS:
     - React
   - RNVectorIcons (6.6.0):
     - React
+  - SSZipArchive (2.2.3)
   - Yoga (1.14.0)
   - YogaKit (1.18.1):
     - Yoga (~> 1.14)
 
 DEPENDENCIES:
+  - appcenter-analytics (from `../node_modules/appcenter-analytics/ios`)
+  - appcenter-core (from `../node_modules/appcenter/ios`)
+  - appcenter-crashes (from `../node_modules/appcenter-crashes/ios`)
+  - CodePush (from `../node_modules/react-native-code-push`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/Libraries/FBReactNativeSpec`)
@@ -389,6 +420,9 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - AppCenter
+    - AppCenterReactNativeShared
+    - Base64
     - boost-for-react-native
     - CocoaAsyncSocket
     - CocoaLibEvent
@@ -399,10 +433,20 @@ SPEC REPOS:
     - Flipper-PeerTalk
     - Flipper-RSocket
     - FlipperKit
+    - JWT
     - OpenSSL-Universal
+    - SSZipArchive
     - YogaKit
 
 EXTERNAL SOURCES:
+  appcenter-analytics:
+    :path: "../node_modules/appcenter-analytics/ios"
+  appcenter-core:
+    :path: "../node_modules/appcenter/ios"
+  appcenter-crashes:
+    :path: "../node_modules/appcenter-crashes/ios"
+  CodePush:
+    :path: "../node_modules/react-native-code-push"
   DoubleConversion:
     :podspec: "../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec"
   FBLazyVector:
@@ -481,9 +525,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  AppCenter: 0487be185c038ed2ecc5ed38219af1dcd280af23
+  appcenter-analytics: 86931681ba39a34856727e415d39e7d4693ad7fe
+  appcenter-core: 1cca3f4d1f01e820710dc82e14ad2b4806a4f907
+  appcenter-crashes: 5da5dca952c3d1a3eea2d596748d94ec0412fbd1
+  AppCenterReactNativeShared: 66667cd2dfad295b84bbf0f462e0e139e2128284
+  Base64: cecfb41a004124895a7bcee567a89bae5a89d49b
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CocoaAsyncSocket: 694058e7c0ed05a9e217d1b3c7ded962f4180845
   CocoaLibEvent: 2fab71b8bd46dd33ddb959f7928ec5909f838e3f
+  CodePush: 69186fd1143f7e5e5c6f65383cf14f4927e28213
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   FBLazyVector: 3ef4a7f62e7db01092f9d517d2ebc0d0677c4a37
   FBReactNativeSpec: dc7fa9088f0f2a998503a352b0554d69a4391c5a
@@ -496,7 +547,11 @@ SPEC CHECKSUMS:
   FlipperKit: bc68102cd4952a258a23c9c1b316c7bec1fecf83
   Folly: b73c3869541e86821df3c387eb0af5f65addfab4
   glog: 40a13f7840415b9a77023fbcae0f1e6f43192af3
+<<<<<<< HEAD
+  JWT: 9b5c05abbcc1a0e69c3c91e1655b3387fc7e581d
+=======
   instabug-reactnative: 9dc4969640e94b738c71c203f0fa3633ec96247d
+>>>>>>> 1d2477d19a310dfdd99f50b35d67bffa32dc08fa
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   RCTRequired: f13f25e7b12f925f1f6a6a8c69d929a03c0129fe
   RCTTypeSafety: 44982c5c8e43ff4141eb519a8ddc88059acd1f3a
@@ -529,9 +584,14 @@ SPEC CHECKSUMS:
   RNReanimated: b5ccb50650ba06f6e749c7c329a1bc3ae0c88b43
   RNScreens: 62211832af51e0aebcf6e8c36bcf7dd65592f244
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
+  SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
   Yoga: 7740b94929bbacbddda59bf115b5317e9a161598
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
 PODFILE CHECKSUM: 8ae0f04b2d5c67ced2cb49e2f39a6d933d13ed22
 
+<<<<<<< HEAD
+COCOAPODS: 1.9.3
+=======
 COCOAPODS: 1.8.4
+>>>>>>> 1d2477d19a310dfdd99f50b35d67bffa32dc08fa

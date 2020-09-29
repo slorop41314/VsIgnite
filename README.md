@@ -11,13 +11,27 @@
 
 **Step 3:** Install the Application with `yarn` or `npm i`
 
+## :arrow_up: Appcenter Setup
+
+ **Step 1:** Create Account in AppCenter website
+
+ **Step 2:** Create new apps for specific iOS and Android platforms in appcenter dashboard
+
+ **Step 3:** for android change APP_SCRET in android/app/src/main/assets/appcenter-config.json
+
+ **Step 4:** for android add key Staging and Production in android/app/build.gradle
+
+ **Step 5:** for iOS running command cd ios && pod install && cd ..
+
+ **Step 6:** open project via xcode
+
+ **Step 7:** Change YOUR_SCRET in AppCenter-Config.plist in the IOS folder
+
 ## :arrow_up: Instabug Setup
 
 **Step 1:** Create account in instabug website
 
 **Step 2:** Change INSTABUGLIVETOKEN AND INSTABUGBETATOKEN in all .env file(env, staging, production) from your instabug project dashboard
-
-
 
 ## :arrow_forward: How to Run App
 
