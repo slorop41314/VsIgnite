@@ -67,6 +67,7 @@
 		3429A690FD234C1089BA3C33 /* libRNGestureHandler-tvOS.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = "libRNGestureHandler-tvOS.a"; sourceTree = "<group>"; };
 		424DE8F12522E9690071C59F /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		424DE8F32522F6D60071C59F /* AppCenter-Config.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "AppCenter-Config.plist"; sourceTree = "<group>"; };
+		42C04FAA25230C590095F15A /* VsIgnite.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = VsIgnite.entitlements; path = VsIgnite/VsIgnite.entitlements; sourceTree = "<group>"; };
 		443AB7C42518F226004424D4 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = VsIgnite/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		443AB7C62518F384004424D4 /* VsIgnite-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "VsIgnite-Bridging-Header.h"; sourceTree = "<group>"; };
 		5ABEB769C5BE4666BD563288 /* libRNGestureHandler.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNGestureHandler.a; sourceTree = "<group>"; };
@@ -163,6 +164,7 @@
 		13B07FAE1A68108700A75B9A /* VsIgnite */ = {
 			isa = PBXGroup;
 			children = (
+				42C04FAA25230C590095F15A /* VsIgnite.entitlements */,
 				443AB7C42518F226004424D4 /* LaunchScreen.storyboard */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -814,6 +816,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = VsIgnite/VsIgnite.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = DCTSY42T2N;
@@ -842,6 +845,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = VsIgnite/VsIgnite.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = DCTSY42T2N;

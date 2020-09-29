@@ -10,6 +10,7 @@ import {enableScreens} from 'react-native-screens';
 import {DropDownHolder} from '../Components/Alert/DropDownHolder';
 import Instabug from 'instabug-reactnative';
 import Secrets from 'react-native-config';
+import messaging from '@react-native-firebase/messaging';
 
 enableScreens();
 // create our store
@@ -29,7 +30,28 @@ const App = () => {
     Instabug.startWithToken(Secrets.INSTABUG_TOKEN, [
       Instabug.invocationEvent.shake,
     ]);
+    requestUserPermission();
   }, []);
+
+  async function requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      getFcmToken();
+    }
+  }
+
+  async function getFcmToken() {
+    const fcmToken = await messaging().getToken();
+    if (fcmToken) {
+      console.log('Your Firebase Token is:', fcmToken);
+    } else {
+      console.log('Failed', 'No token received');
+    }
+  }
   return (
     <Fragment>
       <Provider store={store}>
